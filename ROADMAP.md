@@ -11,36 +11,36 @@
 
 # Phase 0 — Project Analysis
 
-- [ ] Inspect existing repository
-- [ ] Check Ruby version
-- [ ] Check Rails version
-- [ ] Check PostgreSQL configuration
-- [ ] Inspect Gemfile
-- [ ] Inspect existing models
-- [ ] Inspect existing controllers
-- [ ] Inspect routes
-- [ ] Inspect tests
-- [ ] Identify existing functionality
-- [ ] Identify technical risks
+- [x] Inspect existing repository
+- [x] Check Ruby version
+- [x] Check Rails version
+- [x] Check PostgreSQL configuration
+- [x] Inspect Gemfile
+- [x] Inspect existing models
+- [x] Inspect existing controllers
+- [x] Inspect routes
+- [x] Inspect tests
+- [x] Identify existing functionality
+- [x] Identify technical risks
 
 ---
 
 # Phase 1 — Foundation
 
-- [ ] Confirm Rails configuration
-- [ ] Confirm PostgreSQL
-- [ ] Configure Tailwind
-- [ ] Configure Hotwire
-- [ ] Configure testing
-- [ ] Configure development environment
-- [ ] Create initial application layout
-- [ ] Create landing page
+- [x] Confirm Rails configuration
+- [x] Confirm PostgreSQL
+- [x] Configure Tailwind
+- [x] Configure Hotwire
+- [x] Configure testing
+- [x] Configure development environment
+- [x] Create initial application layout
+- [x] Create landing page
 
 ### Verification
 
-- [ ] Application boots
-- [ ] Database connects
-- [ ] Tests pass
+- [x] Application boots
+- [x] Database connects
+- [x] Tests pass
 
 ---
 
@@ -48,43 +48,43 @@
 
 ## User
 
-- [ ] Create User
-- [ ] Add authentication flow
+- [x] Create User
+- [x] Add authentication flow
 
 ## SpotifyAccount
 
-- [ ] Create SpotifyAccount
-- [ ] Implement Spotify OAuth
-- [ ] Handle callback
-- [ ] Handle logout
-- [ ] Secure token storage
+- [x] Create SpotifyAccount
+- [x] Implement Spotify OAuth
+- [x] Handle callback
+- [x] Handle logout
+- [x] Secure token storage
 
 ### Verification
 
-- [ ] User can authenticate with Spotify
-- [ ] Existing user can log in
-- [ ] New user is created
-- [ ] Tokens are not exposed
-- [ ] Tests pass
+- [x] User can authenticate with Spotify
+- [x] Existing user can log in
+- [x] New user is created
+- [x] Tokens are not exposed
+- [x] Tests pass
 
 ---
 
 # Phase 3 — Tracks
 
-- [ ] Create Track
-- [ ] Add spotify_id
-- [ ] Add metadata
-- [ ] Add unique constraint
-- [ ] Implement Spotify search
-- [ ] Implement search UI
-- [ ] Implement Track page
+- [x] Create Track
+- [x] Add spotify_id
+- [x] Add metadata
+- [x] Add unique constraint
+- [x] Implement Spotify search
+- [x] Implement search UI
+- [x] Implement Track page
 
 ### Verification
 
-- [ ] Search works
-- [ ] Track metadata is displayed
-- [ ] Duplicate Spotify tracks are prevented
-- [ ] Tests pass
+- [x] Search works
+- [x] Track metadata is displayed
+- [x] Duplicate Spotify tracks are prevented
+- [x] Tests pass
 
 ---
 

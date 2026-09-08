@@ -1,311 +1,191 @@
-# Pick Up Your Epic!
+# CLAUDE.md
 
-## 1. Project Overview
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Descrição curta do produto.
-
-Pick Up Your Epic! é uma plataforma social de descoberta
-e curadoria musical baseada em momentos específicos de músicas.
-
-O usuário conecta sua conta Spotify, encontra uma música,
-seleciona um trecho e salva esse momento como um Epic.
-
-Outros usuários podem ouvir, descobrir e Pickar esses Epics.
+> Section numbers are referenced from code comments (`# ... (CLAUDE.md §7)`). When renumbering sections, update those references — `grep -rn "CLAUDE.md §" app lib test`.
 
 ---
 
-## 2. Core Product Concepts
+## 1. Product
 
-### Epic
+Pick Up Your Epic! é uma plataforma social de descoberta e curadoria musical baseada em momentos específicos de músicas.
 
-Um Epic representa um intervalo específico de uma Track.
+O usuário conecta sua conta Spotify, encontra uma música, seleciona um trecho e salva esse momento como um Epic. Outros usuários podem ouvir, descobrir e Pickar esses Epics.
 
-Um Epic possui:
+Product detail lives in `docs/product.md`. Phase-by-phase scope lives in `ROADMAP.md`.
 
-- owner
-- track
-- start_time
-- end_time
-- title
-- description
-- visibility
+### Core concepts
 
-O Epic NÃO contém áudio.
+**Epic** — an interval (`start_time`..`end_time`, in milliseconds) of a Track, owned by a User. An Epic **never contains audio**; it is a pointer into a Spotify track.
+
+**Pick** — a user choosing someone else's public Epic. A Pick does not duplicate the Epic; it records the choice. One Pick per user per Epic.
+
+**Collection** — a user's ordered grouping of Epics: their own Epics, or public Epics from others (picked or not).
 
 ---
 
-### Pick
+## 2. Commands
 
-Pick representa um usuário escolhendo um Epic criado por outro usuário.
+Development server (Puma + Tailwind watcher via Foreman):
 
-Um usuário não pode fazer Pick do mesmo Epic duas vezes.
+```bash
+docker compose up -d      # Postgres 17 on host port 5433
+bin/setup                 # bundle, db:prepare, then exec bin/dev
+bin/dev                   # web + tailwindcss:watch
+```
 
-O Pick não duplica o Epic.
+Tests:
 
----
+```bash
+bin/rails test                                  # unit + controller + integration (NOT system)
+bin/rails test test/models/epic_test.rb         # one file
+bin/rails test test/models/epic_test.rb:42      # one test by line number
+bin/rails test -n /pick/                        # by name pattern
+bin/rails test:system                           # Capybara + Selenium, run separately
+```
 
-### Collection
+Full local CI — the same steps GitHub Actions runs:
 
-Collection organiza Epics.
+```bash
+bin/ci                    # see config/ci.rb
+```
 
-Uma Collection pertence a um usuário e pode conter
-Epics próprios ou Epics que o usuário Pickou.
+Individual checks:
 
----
+```bash
+bin/rubocop -a            # rubocop-rails-omakase style
+bin/brakeman --no-pager   # static security analysis
+bin/bundler-audit         # gem CVEs
+bin/importmap audit       # JS dependency CVEs
+```
 
-## 3. Product Principles
+Note: `bin/ci` runs `bin/setup --skip-server`, which touches the development database. `bin/rails test` alone is the fast loop.
 
-### Rails First
+### Environment
 
-Preferir funcionalidades nativas do Rails antes de adicionar gems.
+Secrets come from `.env` via dotenv (development/test only) — see `.env.example`. `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET` are required for any Spotify flow; without them `Spotify::Config.configured?` is false and sign-in short-circuits with a flash instead of raising.
 
-### Simplicity
+The Spotify dashboard redirect URI must be exactly `http://127.0.0.1:3000/auth/spotify/callback` (Spotify rejects `localhost`).
 
-Não criar abstrações prematuras.
-
-### MVP Discipline
-
-Não implementar funcionalidades que não estejam no MVP.
-
-### Domain Integrity
-
-Regras importantes devem existir tanto na aplicação
-quanto no banco quando apropriado.
-
----
-
-## 4. Technology Stack
-
-- Ruby
-- Ruby on Rails
-- PostgreSQL
-- Hotwire
-- Turbo
-- Stimulus
-- Tailwind CSS
-- Active Storage
-- Solid Queue
-- Solid Cache
-- Solid Cable
-- Minitest
-- Capybara
-- Docker
-- GitHub Actions
+`SpotifyAccount#access_token` / `#refresh_token` use Active Record encryption, so `config/master.key` (or `RAILS_MASTER_KEY`) must be present or those columns cannot be read.
 
 ---
 
-## 5. Architecture
+## 3. Architecture
 
-Domain:
+### The Spotify boundary
 
-User
-SpotifyAccount
-Track
-Epic
-Pick
-Collection
-CollectionEpic
+The domain must not know Spotify's wire format. Three layers, in `lib/spotify/`:
 
-Integration:
+- `Spotify::Config` — credentials and OAuth scopes. Knows no models.
+- `Spotify::Client` — raw HTTP (Net::HTTP). Speaks only Hashes and raises `Spotify::Error` / `Spotify::AuthError`. Knows no models.
+- `Spotify::Search` — normalizes Spotify search payloads into the attribute hashes `Track.upsert_from_spotify!` accepts.
 
-Spotify
+`SpotifyAuthentication` (in `app/models/`, a plain service object, not an AR model) is the seam: it takes an already-normalized profile + tokens hash and returns a domain `User`, creating `User` + `SpotifyAccount` in one transaction.
 
-Frontend:
+Consequence for tests: nothing hits the network. `test/test_helper.rb` stubs `Spotify::Client.exchange_code` / `.me` directly.
 
-Hotwire
-Turbo
-Stimulus
-Tailwind
+### Token lifecycle
 
----
+Never read `spotify_account.access_token` directly for an API call. Always go through `SpotifyAccount#fresh_access_token!`, which refreshes when `token_expired?` (with a 60s leeway) and persists the new token. Spotify only sometimes returns a new `refresh_token`; the existing one is preserved when absent — do not overwrite it with nil.
 
-## 6. Domain Rules
+### Playback
 
-### Epic
+Playback is Spotify Web Playback SDK only, in the browser, and requires **Spotify Premium** (`SpotifyAccount#premium?`, from the `product` field). `preview_url` is deliberately not used: apps created after 2024-11-27 have no access to it.
 
-- start_time >= 0
-- end_time > start_time
-- end_time <= track duration when known
-- Epic belongs to User
-- Epic belongs to Track
+`GET /api/playback_token` (`Api::PlaybackController`) hands the browser a fresh access token — authenticated, and 403 for non-Premium. The Stimulus controllers `playback_controller.js` (single Epic) and `collection_playback_controller.js` (sequential Collection playback) start the track at `start_time` and stop at `end_time` on a timer.
 
-### Pick
+### Authentication
 
-Unique:
+Hand-rolled OAuth in `SessionsController`. The `omniauth*` gems are in the Gemfile but are **not used anywhere** — do not assume an OmniAuth strategy exists:
 
-user_id + epic_id
+- `POST /auth/spotify` starts the flow. It is POST so a third-party link cannot trigger login.
+- CSRF on the callback is covered by the `state` param, compared with `ActiveSupport::SecurityUtils.secure_compare`; `skip_forgery_protection` applies to `:callback` only.
+- `sign_in` calls `reset_session` first (session fixation).
 
-### CollectionEpic
+`Authentication` (concern in `app/controllers/concerns/`) provides `current_user`, `signed_in?`, and `require_authentication`. It is included in `ApplicationController`, but is **not** applied globally — each controller opts in with `before_action :require_authentication`. `HomeController`, `DiscoverController`, `ProfilesController`, and `EpicsController#show` are intentionally public.
 
-Unique:
+### Authorization
 
-collection_id + epic_id
+There is no authorization gem. Visibility is enforced per-controller with `before_action` guards that redirect (never raise), plus model-level validations for the rules that must hold regardless of entry point:
+
+- `Pick` — cannot pick a private Epic; cannot pick your own Epic.
+- `CollectionEpic` — cannot add another user's private Epic.
+
+Private content must never appear in Discover or on another user's profile.
 
 ---
 
-## 7. Spotify Rules
+## 4. Domain rules and where they are enforced
 
-Spotify is an external integration.
+Rules that matter exist in **both** the model and the database.
 
-Do not couple the domain directly to Spotify API clients.
+| Rule | Model | Database |
+|---|---|---|
+| `start_time >= 0` | `Epic` validation | check constraint `epics_start_time_non_negative` |
+| `end_time > start_time` | `Epic` validation | check constraint `epics_end_time_greater_than_start` |
+| `end_time <= track.duration_ms` | `Epic` validation | — (track-dependent) |
+| one Epic per user per track | — | unique index on `(user_id, track_id)` |
+| one Pick per user per Epic | `Pick` uniqueness | unique index on `(user_id, epic_id)` |
+| one Epic per Collection | `CollectionEpic` uniqueness | unique index on `(collection_id, epic_id)` |
+| username case-insensitively unique | `User` uniqueness | unique index on `lower(username)` |
+| `tracks.duration_ms > 0` | `Track` validation | check constraint `tracks_duration_positive` |
 
-Do not store Spotify audio.
+All times are **integer milliseconds** (matching Spotify's `duration_ms` and `position_ms`).
 
-Do not download Spotify tracks.
+Every foreign key is `on_delete: :cascade` except `spotify_accounts.user_id`.
 
-Do not circumvent Spotify playback restrictions.
+`Track.upsert_from_spotify!` rescues `RecordNotUnique` — the unique index, not a `find_or_create`, resolves the race between two concurrent searches for the same track.
 
-Do not expose OAuth credentials or tokens to the client.
+`User#to_param` is `username` and `Track#to_param` is `spotify_id`, so routes use handles and Spotify IDs, not numeric ids. `EpicsController` looks tracks up with `find_by!(spotify_id: params[:track_id])`.
 
-Any implementation involving playback must first
-verify the current Spotify API capabilities and policies.
-
----
-
-## 8. Privacy
-
-Supported visibility:
-
-- public
-- private
-
-Private content must not appear in public discovery.
+Both `Epic` and `Collection` use `enum :visibility, { public: 0, private: 1 }, prefix: :visibility` → `visibility_public?` / `visibility_private?`. `User` uses a different naming: `{ public_profile: 0, private_profile: 1 }` → `visibility_public_profile?`.
 
 ---
 
-## 9. Testing
+## 5. Conventions
 
-Use Minitest.
+**Rails first.** Prefer native Rails over adding a gem. There is no mocking gem, no authorization gem, no pagination gem — `test/test_helper.rb` defines a ~15-line `stub_method` helper rather than pulling in mocha.
 
-Domain rules must have tests.
+**No premature abstraction.** Introduce a service only for a meaningful application operation or an external integration (Spotify auth, search, token refresh). Do not create service objects for their own sake. Controllers stay thin; logic goes in the model or the integration layer.
 
-Important user flows must have integration/system tests.
+**MVP discipline.** Do not build what is not in the MVP: no chat, DMs, comments, followers, advanced notifications, AI recommendations, marketplace, monetization, or gamification. Implement only the requested ROADMAP phase; do not advance to the next one on your own.
 
-Every new feature must include appropriate tests.
+**Stack reality check.** Solid Queue / Solid Cache / Solid Cable and Active Storage are installed but currently unused — no jobs, no attachments, no `active_storage_*` tables. Avatars are external Spotify URLs (`users.avatar_url`), not attachments.
 
----
+**Frontend.** Mobile-first Tailwind, server-rendered ERB with Turbo. Reach for Stimulus only where server-rendered HTML genuinely cannot do the job (currently: Web Playback SDK). No SPA. JavaScript is delivered via importmap — there is no bundler and no `node_modules`.
 
-## 10. Database
+**Language.** Code comments and product docs are written in Portuguese; identifiers, commit messages, and this file are in English. User-facing flash messages are currently mixed (English in `epics`/`sessions`, Portuguese in `collections`/`picks`) — match the surrounding file.
 
-Use PostgreSQL constraints where appropriate.
-
-Use foreign keys.
-
-Use unique indexes for uniqueness rules.
-
-Avoid storing duplicated derived data unless justified.
+Comments explain *why*, not *what* — see `SpotifyAccount#fresh_access_token!` or `Track.upsert_from_spotify!` for the intended density.
 
 ---
 
-## 11. Controllers
+## 6. Spotify policy constraints
 
-Controllers should remain thin.
-
-Business logic belongs in the domain or appropriate application
-services when necessary.
-
-Do not create Service Objects simply for the sake of creating them.
+- Do not store or download Spotify audio. Store metadata only.
+- Do not circumvent playback restrictions.
+- Never expose `SPOTIFY_CLIENT_SECRET` to the client. The token endpoint uses HTTP Basic; the secret never appears in a body or in the frontend.
+- Before implementing anything touching playback, verify current Spotify API capabilities and policy — they change (e.g. `preview_url` removal).
 
 ---
 
-## 12. Services
+## 7. Testing
 
-Services should be introduced only when they represent
-a meaningful application operation or external integration.
+Minitest, run in parallel by processor count. Test types live in `test/models`, `test/controllers`, `test/integration`, and `test/system`.
 
-Examples:
+There are **no fixtures** — `fixtures :all` runs against an empty directory. Build records inline; `create_signed_in_user` in `test/test_helper.rb` is the shortcut for a user with a linked `SpotifyAccount`.
 
-Spotify authentication
-Spotify track search
-Spotify token refresh
+Helpers available in every test: `stub_method`, `with_spotify_configured`, `spotify_profile`, `spotify_tokens`, `stub_spotify_oauth`. Integration tests additionally get `sign_in_as`, which drives the real OAuth controller flow with stubbed HTTP.
 
-Do not create generic service abstractions.
+Every domain rule needs a test. Every important user flow needs an integration or system test.
 
 ---
 
-## 13. Frontend
+## 8. Definition of done
 
-Mobile-first.
-
-Use Hotwire wherever appropriate.
-
-Use Stimulus for client-side behavior that cannot reasonably
-be handled by server-rendered HTML/Turbo.
-
-Do not build a SPA unless explicitly required.
-
----
-
-## 14. Security
-
-Follow Rails security conventions.
-
-Validate all user input.
-
-Authorize private resources.
-
-Protect OAuth credentials.
-
-Use CSRF protection.
-
-Do not trust client-side timestamps or ownership information.
-
----
-
-## 15. MVP Scope
-
-The MVP includes:
-
-- Spotify authentication
-- music search
-- Track representation
-- Epic creation
-- Epic playback where Spotify permits
-- Collections
-- Picks
-- public profiles
-- Discover
-- Trending Epics
-
-The MVP does NOT include:
-
-- chat
-- private messages
-- comments
-- followers
-- advanced notifications
-- AI recommendations
-- marketplace
-- monetization
-- complex gamification
-
----
-
-## 16. Development Rules
-
-Before implementing a task:
-
-1. Read CLAUDE.md.
-2. Read ROADMAP.md.
-3. Inspect the existing code.
-4. Understand what already exists.
-5. Do not overwrite working functionality unnecessarily.
-6. Implement only the requested phase.
-7. Write tests.
-8. Run the relevant test suite.
-9. Report what changed.
-
-Do not advance to another roadmap phase automatically.
-
----
-
-## 17. Definition of Done
-
-A task is not complete until:
-
-- implementation is complete;
-- tests exist;
-- tests pass;
-- database changes are migrated;
-- security considerations are addressed;
-- no unrelated features were introduced.
+- implementation complete;
+- tests exist and pass;
+- migrations applied and `db/schema.rb` committed;
+- security considerations addressed;
+- no unrelated features introduced.
