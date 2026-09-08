@@ -50,4 +50,11 @@ Rails.application.configure do
 
   # Raise error when a before_action's only/except options reference missing actions.
   config.action_controller.raise_on_missing_callback_actions = true
+
+  # SpotifyAccount encripta os tokens, o que exige chaves de Active Record
+  # Encryption. Em teste elas sao fixas e publicas: o banco e descartavel e
+  # nao guarda credencial real, e assim o CI nao depende do master.key.
+  config.active_record.encryption.primary_key = "test_primary_key_00000000000000000"
+  config.active_record.encryption.deterministic_key = "test_deterministic_key_0000000000"
+  config.active_record.encryption.key_derivation_salt = "test_key_derivation_salt_00000000"
 end

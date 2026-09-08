@@ -19,6 +19,12 @@ Rails.application.routes.draw do
     get "playback_token", to: "playback#token"
   end
 
+  # O login real passa pelo OAuth do Spotify, que um system test nao pode
+  # percorrer. Esta rota existe SOMENTE em teste e da o atalho equivalente.
+  if Rails.env.test?
+    post "test_session/:user_id", to: "test_sessions#create", as: :test_session
+  end
+
   # Reveal health status on /up that returns 200 if the app boots with no exceptions,
   # otherwise 500. Used by load balancers and uptime monitors.
   get "up" => "rails/health#show", as: :rails_health_check
