@@ -44,10 +44,19 @@
 
   <% if current_user && !(@epic.user_id == current_user.id) && @epic.visibility_public? %>
     <div class="mb-4">
-      <%= button_to "Pick this Epic",
-          epic_picks_path(@epic),
-          method: :post,
-          class: "px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600" %>
+      <%# Ja pickado vira o botao de desfazer: antes o "Pick this Epic"
+          aparecia de novo e o segundo clique so gerava erro de validacao. %>
+      <% if current_user.picks.exists?(epic_id: @epic.id) %>
+        <%= button_to "Picked ✓ — Unpick",
+            epic_pick_path(@epic),
+            method: :delete,
+            class: "px-4 py-2 border border-green-600 text-green-700 rounded hover:bg-green-50" %>
+      <% else %>
+        <%= button_to "Pick this Epic",
+            epic_pick_path(@epic),
+            method: :post,
+            class: "px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600" %>
+      <% end %>
     </div>
   <% end %>
 

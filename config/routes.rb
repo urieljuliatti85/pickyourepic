@@ -7,7 +7,9 @@ Rails.application.routes.draw do
 
   resources :tracks, only: :index
   resources :epics, only: [ :new, :create, :show ] do
-    resources :picks, only: [ :create ]
+    # Um user tem no maximo um Pick por Epic, entao o destroy nao precisa de
+    # id proprio: o Pick e identificado pelo par (current_user, epic).
+    resource :pick, only: [ :create, :destroy ]
   end
   resources :profiles, only: [ :show ], param: :username
   resources :collections do

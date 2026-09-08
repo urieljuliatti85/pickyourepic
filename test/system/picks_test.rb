@@ -38,6 +38,29 @@ class PicksTest < ApplicationSystemTestCase
     assert_text "1 Pick"
   end
 
+  test "User can unpick an epic from epic page" do
+    visit epic_path(@public_epic)
+    click_button "Pick this Epic"
+    assert_text "1 Pick"
+
+    click_button "Picked ✓ — Unpick"
+
+    assert_text "Pick desfeito."
+    assert_text "0 Picks"
+    # Volta a oferecer o Pick, entao o usuario pode refazer.
+    assert_button "Pick this Epic"
+  end
+
+  test "Unpicking from discover keeps the user on discover" do
+    visit epic_path(@public_epic)
+    click_button "Pick this Epic"
+
+    visit discover_path
+    click_button "Picked ✓"
+
+    assert_text "Pick desfeito."
+  end
+
   test "User cannot pick private epic" do
     visit epic_path(@private_epic)
 

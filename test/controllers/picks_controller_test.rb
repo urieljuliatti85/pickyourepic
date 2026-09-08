@@ -39,7 +39,7 @@ class PicksControllerTest < ActionDispatch::IntegrationTest
   test "POST /epics/:epic_id/picks requires authentication" do
     # Logout
     delete sign_out_path
-    post epic_picks_path(@public_epic)
+    post epic_pick_path(@public_epic)
 
     assert_redirected_to root_path
     assert_equal "Sign in with Spotify to continue.", flash[:alert]
@@ -47,7 +47,7 @@ class PicksControllerTest < ActionDispatch::IntegrationTest
 
   test "POST creates a pick for public epic" do
     assert_difference "Pick.count", 1 do
-      post epic_picks_path(@public_epic)
+      post epic_pick_path(@public_epic)
     end
 
     assert_redirected_to epic_path(@public_epic)
@@ -55,7 +55,7 @@ class PicksControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "POST sets current_user as pick owner" do
-    post epic_picks_path(@public_epic)
+    post epic_pick_path(@public_epic)
 
     pick = Pick.last
     assert_equal @user.id, pick.user_id
@@ -63,7 +63,7 @@ class PicksControllerTest < ActionDispatch::IntegrationTest
 
   test "POST cannot pick private epic" do
     assert_no_difference "Pick.count" do
-      post epic_picks_path(@private_epic)
+      post epic_pick_path(@private_epic)
     end
 
     assert_redirected_to epic_path(@private_epic)
@@ -72,7 +72,7 @@ class PicksControllerTest < ActionDispatch::IntegrationTest
 
   test "POST cannot pick own epic" do
     assert_no_difference "Pick.count" do
-      post epic_picks_path(@own_epic)
+      post epic_pick_path(@own_epic)
     end
 
     assert_redirected_to epic_path(@own_epic)
@@ -80,9 +80,9 @@ class PicksControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "POST prevents duplicate pick" do
-    post epic_picks_path(@public_epic)
+    post epic_pick_path(@public_epic)
     assert_difference "Pick.count", 0 do
-      post epic_picks_path(@public_epic)
+      post epic_pick_path(@public_epic)
     end
 
     assert_redirected_to epic_path(@public_epic)
@@ -128,22 +128,75 @@ class PicksControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "POST returns not found for unknown epic" do
-    post epic_picks_path(9999)
+    post epic_pick_path(9999)
     assert_response :not_found
   end
 
   test "Multiple users can pick same epic" do
-    user2 = User.create!(username: "bob")
+    post epic_pick_path(@public_epic)
 
-    post epic_picks_path(@public_epic)
-    assert_difference "Pick.count", 0 do
-      post_as(user2, epic_picks_path(@public_epic))
+    # post_as ignorava o user recebido, entao o segundo POST vinha do mesmo
+    # usuario e o teste passava afirmando 0 — o oposto do que o nome diz.
+    sign_in_as(create_signed_in_user(username: "bob"))
+
+    assert_difference "Pick.count", 1 do
+      post epic_pick_path(@public_epic)
     end
+
+    assert_equal 2, @public_epic.picks.count
   end
 
-  private
+  # DESTROY
 
-  def post_as(user, path, params = {})
-    post path, params: params
+  test "DELETE requires authentication" do
+    Pick.create!(user: @user, epic: @public_epic)
+    delete sign_out_path
+
+    delete epic_pick_path(@public_epic)
+
+    assert_redirected_to root_path
+  end
+
+  test "DELETE removes the pick" do
+    Pick.create!(user: @user, epic: @public_epic)
+
+    assert_difference "Pick.count", -1 do
+      delete epic_pick_path(@public_epic)
+    end
+
+    assert_redirected_to epic_path(@public_epic)
+    assert_equal "Pick desfeito.", flash[:notice]
+  end
+
+  test "DELETE without an existing pick says so" do
+    assert_no_difference "Pick.count" do
+      delete epic_pick_path(@public_epic)
+    end
+
+    assert_redirected_to epic_path(@public_epic)
+    assert_includes flash[:alert], "ainda não pickou"
+  end
+
+  test "DELETE only removes the current user's pick" do
+    other = create_signed_in_user(username: "bob")
+    Pick.create!(user: @user, epic: @public_epic)
+    Pick.create!(user: other, epic: @public_epic)
+
+    assert_difference "Pick.count", -1 do
+      delete epic_pick_path(@public_epic)
+    end
+
+    # O Pick da outra pessoa continua de pe.
+    assert Pick.exists?(user: other, epic: @public_epic)
+    assert_not Pick.exists?(user: @user, epic: @public_epic)
+  end
+
+  test "pick can be redone after unpicking" do
+    post epic_pick_path(@public_epic)
+    delete epic_pick_path(@public_epic)
+
+    assert_difference "Pick.count", 1 do
+      post epic_pick_path(@public_epic)
+    end
   end
 end
