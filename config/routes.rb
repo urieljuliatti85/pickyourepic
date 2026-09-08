@@ -6,12 +6,12 @@ Rails.application.routes.draw do
   delete "sign_out", to: "sessions#destroy", as: :sign_out
 
   resources :tracks, only: :index
-  resources :epics, only: [:new, :create, :show] do
-    resources :picks, only: [:create]
+  resources :epics, only: [ :new, :create, :show ] do
+    resources :picks, only: [ :create ]
   end
-  resources :profiles, only: [:show], param: :username
+  resources :profiles, only: [ :show ], param: :username
   resources :collections do
-    resources :collection_epics, only: [:create, :destroy]
+    resources :collection_epics, only: [ :create, :destroy ]
   end
   get "discover", to: "discover#index"
 

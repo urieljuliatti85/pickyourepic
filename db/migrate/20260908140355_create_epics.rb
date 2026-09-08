@@ -17,6 +17,6 @@ class CreateEpics < ActiveRecord::Migration[8.1]
     add_check_constraint :epics, "end_time > start_time", name: "epics_end_time_greater_than_start"
 
     # Um user cria apenas 1 Epic por Track
-    add_index :epics, [:user_id, :track_id], unique: true
+    add_index :epics, [ :user_id, :track_id ], unique: true
   end
 end

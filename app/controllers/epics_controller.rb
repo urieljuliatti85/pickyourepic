@@ -1,8 +1,8 @@
 class EpicsController < ApplicationController
-  before_action :require_authentication, except: [:show]
-  before_action :set_track, only: [:new, :create]
-  before_action :set_epic, only: [:show]
-  before_action :authorize_epic_visibility, only: [:show]
+  before_action :require_authentication, except: [ :show ]
+  before_action :set_track, only: [ :new, :create ]
+  before_action :set_epic, only: [ :show ]
+  before_action :authorize_epic_visibility, only: [ :show ]
 
   # GET /epics/new?track_id=:id
   def new

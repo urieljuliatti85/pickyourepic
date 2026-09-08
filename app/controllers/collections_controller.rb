@@ -1,7 +1,7 @@
 class CollectionsController < ApplicationController
   before_action :require_authentication
-  before_action :set_collection, only: [:show, :edit, :update, :destroy]
-  before_action :authorize_collection_owner, only: [:edit, :update, :destroy]
+  before_action :set_collection, only: [ :show, :edit, :update, :destroy ]
+  before_action :authorize_collection_owner, only: [ :edit, :update, :destroy ]
 
   # GET /collections
   def index

@@ -9,6 +9,6 @@ class CreateCollectionEpics < ActiveRecord::Migration[8.0]
     end
 
     # Unique index to prevent duplicate epics in same collection
-    add_index :collection_epics, [:collection_id, :epic_id], unique: true
+    add_index :collection_epics, [ :collection_id, :epic_id ], unique: true
   end
 end
