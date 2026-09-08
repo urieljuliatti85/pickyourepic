@@ -184,8 +184,27 @@ Every domain rule needs a test. Every important user flow needs an integration o
 
 ## 8. Definition of done
 
+A ROADMAP item becomes `[x]` when CI is green on the pushed commit — not
+when the code is written, and not when it passes locally. Until then it is
+`[~]`. Verify with `gh run list --limit 1`, and record the commit SHA in the
+phase note.
+
+This rule exists because it was already broken once: the MVP phases were
+marked complete and the notes claimed "226 tests across 25 test files"
+while the suite had never passed a single run. Four production bugs shipped
+behind that claim — every profile page raised, creating an Epic through the
+UI 404'd, two templates linked to a route that does not exist, and flash
+messages never rendered outside two pages.
+
+The rest of the checklist:
+
 - implementation complete;
-- tests exist and pass;
+- tests exist and pass — **both** `bin/rails test` and `bin/rails test:system`,
+  since the first excludes the second and `bin/ci` does not run system tests
+  either (the step is commented out in `config/ci.rb`);
 - migrations applied and `db/schema.rb` committed;
 - security considerations addressed;
 - no unrelated features introduced.
+
+A phase note that states a test count must be the count from the green run
+that justified the `[x]`. If you did not read it off CI, do not write it.

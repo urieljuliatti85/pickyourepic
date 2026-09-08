@@ -3,9 +3,32 @@
 ## Status Legend
 
 - [ ] Not started
-- [~] In progress
-- [x] Completed
+- [~] In progress — includes code that is written, reviewed, and passing locally
+- [x] Completed — CI green on the pushed commit
 - [!] Blocked
+
+## What `[x]` Means
+
+An item is `[x]` only when CI is green on the commit that contains it.
+Locally passing is `[~]`. Check with `gh run list --limit 1` and record the
+commit SHA in the phase note.
+
+Both suites must be green, because neither command runs the other:
+
+```bash
+bin/rails test          # unit, controller, integration
+bin/rails test:system   # NOT included above; also commented out in config/ci.rb
+```
+
+This is not bureaucracy. The MVP phases below were once all `[x]` with a note
+claiming "226 tests across 25 test files" while the suite had never passed a
+single run. Four production bugs shipped behind that claim: every profile page
+raised NoMethodError, creating an Epic through the UI always 404'd, two
+templates linked to a nonexistent route, and flash messages rendered on only
+two pages. A green CI run would have caught all four.
+
+If you write a test count in a phase note, it must come from the CI run that
+justified the `[x]`.
 
 ---
 
@@ -238,7 +261,17 @@
 - [x] Review performance
 - [x] Run complete test suite
 
-**Note:** 226 tests across 25 test files (110 model, 84 controller, 16 system, 14 integration, 2 helper). Security audit: all write controllers require authentication, all owner-only actions have authorization, all params use strong params or model validation. Bug fix: EpicsController#show changed from owner-only to visibility-based access (public epics visible to all, private only to owner). Database indexes verified on all foreign keys, unique constraints, and case-insensitive username.
+**Note:** Green on CI at `0c1f83e`: 216 runs / 625 assertions in `bin/rails test`, 16 runs / 49 assertions in `bin/rails test:system`, zero failures and zero errors in both.
+
+An earlier version of this note claimed "226 tests across 25 test files" while the suite had never passed. Getting it green took four production fixes:
+
+- `ProfilesController` called `visibility_private?`; `User` declares its enum as `public_profile`/`private_profile`, so the predicate is `visibility_private_profile?` and every profile page raised.
+- `epics/new` and `epics/show` linked to `track_path`, which does not exist — routes only define `resources :tracks, only: :index`.
+- The new-Epic form never submitted `track_id`, which `EpicsController#set_track` reads, so creating an Epic through the UI always 404'd.
+- `shared/_flash` was rendered only by `home` and `tracks`; every other page dropped its flash silently. It now renders in the layout.
+- `Spotify::Error`/`AuthError` lived inside `client.rb`, so Zeitwerk could not resolve them unless the client had already been loaded — `SpotifyAccount#fresh_access_token!` raises `AuthError` without touching it.
+
+Security audit: all write controllers require authentication, all owner-only actions have authorization, all params use strong params or model validation. Database indexes verified on all foreign keys, unique constraints, and case-insensitive username.
 
 ### Security Audit
 
