@@ -142,11 +142,13 @@ justified the `[x]`.
 
 ### Verification
 
-- [ ] Valid Epic can be created
-- [ ] Invalid timestamps are rejected
-- [ ] Epic belongs to correct user
-- [ ] Epic belongs to correct Track
-- [ ] Tests pass
+Green on CI at `b89c627`.
+
+- [x] Valid Epic can be created — `epics_controller_test` "POST /epics creates epic", `epic_test` "is valid with all attributes"
+- [x] Invalid timestamps are rejected — `epic_test` covers `end_time <= start_time` and `end_time > track duration`; `epics_controller_test` "rejects invalid timestamps"; `epics_test` (system) asserts the error reaches the page
+- [x] Epic belongs to correct user — `epics_controller_test` "sets current_user as owner", plus the system test that creates an Epic on someone else's Track and asserts the owner is the signed-in user
+- [x] Epic belongs to correct Track — `epic_test` "belongs to track"
+- [x] Tests pass
 
 ---
 
@@ -213,16 +215,17 @@ justified the `[x]`.
 - [x] Picked Epics
 - [x] Play user's Epics (via Epic detail page player)
 
-**Note:** GET /profiles/:username route with param: :username. ProfilesController with show action. Privacy enforcement: private profiles show notice + hide content (except to owner). View shows public epics grid + picked epics grid. 12 controller tests + 3 system tests covering all flows and edge cases.
-- [x] Public profile is accessible
-- [x] Private content is protected
-- [x] Tests pass (15 testes: 12 controller + 3 system)
+**Note:** GET /profiles/:username route with param: :username. ProfilesController with show action. Privacy enforcement: private profiles show notice + hide content (except to owner). View shows public epics grid + picked epics grid.
+
+The show action shipped calling `visibility_private?`, which `User` does not define — its enum is `public_profile`/`private_profile`, so the predicate is `visibility_private_profile?`. Every profile page raised NoMethodError until it was fixed this session.
 
 ### Verification
 
-- [ ] Public profile is accessible
-- [ ] Private content is protected
-- [ ] Tests pass
+Green on CI at `b89c627`.
+
+- [x] Public profile is accessible — `profiles_controller_test` "shows profile" and "shows public epics"; `profiles_test` (system) "Visit public profile shows user info and epics"
+- [x] Private content is protected — private profile shows the notice to visitors and full content to the owner, and a public profile hides its private Epics
+- [x] Tests pass
 
 ---
 
