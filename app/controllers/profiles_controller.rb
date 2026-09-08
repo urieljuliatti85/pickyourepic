@@ -4,7 +4,7 @@ class ProfilesController < ApplicationController
   # GET /profiles/:username
   def show
     # If profile is private and user is not the owner, show limited info
-    if @user.visibility_private? && (@user != current_user)
+    if @user.visibility_private_profile? && (@user != current_user)
       @is_private_profile = true
     end
   end

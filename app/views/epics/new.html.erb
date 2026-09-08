@@ -7,6 +7,8 @@
   </div>
 
   <%= form_with model: @epic, local: true do |form| %>
+    <%# O controller resolve a Track por spotify_id em params[:track_id]. %>
+    <%= hidden_field_tag :track_id, @track.spotify_id %>
     <% if @epic.errors.any? %>
       <div id="error_explanation" class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
         <h2 class="font-bold"><%= pluralize(@epic.errors.count, "error") %> prohibited this epic from being saved:</h2>
@@ -52,7 +54,7 @@
 
     <div class="flex gap-2">
       <%= form.submit "Create Epic", class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" %>
-      <%= link_to "Cancel", track_path(@track), class: "px-4 py-2 border border-gray-300 rounded hover:bg-gray-100" %>
+      <%= link_to "Cancel", tracks_path, class: "px-4 py-2 border border-gray-300 rounded hover:bg-gray-100" %>
     </div>
   <% end %>
 </div>
