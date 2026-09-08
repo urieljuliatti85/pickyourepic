@@ -4,8 +4,8 @@ require "json"
 require "base64"
 
 module Spotify
-  Error = Class.new(StandardError)
-  AuthError = Class.new(Error)
+  # Error e AuthError vivem em arquivos proprios (error.rb, auth_error.rb)
+  # para que o Zeitwerk os resolva sem depender deste arquivo ter sido lido.
 
   # Cliente HTTP do Spotify. Isolado do dominio (CLAUDE.md §3): fala apenas
   # HTTP e Hash, nao conhece User nem SpotifyAccount.
