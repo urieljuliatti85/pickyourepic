@@ -1,0 +1,23 @@
+<% content_for :title, "Search — Pick Up Your Epic!" %>
+
+<%= render "shared/nav" %>
+
+<div class="mx-auto max-w-2xl px-5 py-8">
+  <%= render "shared/flash" %>
+
+  <h1 class="text-2xl font-bold tracking-tight">Search a track</h1>
+  <p class="mt-2 text-sm text-neutral-400">
+    Encontre a música. O momento máximo vem depois.
+  </p>
+
+  <%= form_with url: tracks_path, method: :get, data: { turbo_frame: "search_results" }, class: "mt-6" do |form| %>
+    <%= form.search_field :q, value: @query,
+          placeholder: "Dödsrit, Amenra, Nocturnal Will…",
+          autofocus: true, autocomplete: "off",
+          class: "w-full rounded-full border border-neutral-800 bg-neutral-900 px-5 py-3 text-base placeholder:text-neutral-600 focus:border-emerald-500 focus:outline-none" %>
+  <% end %>
+
+  <%= turbo_frame_tag "search_results", class: "mt-8 block" do %>
+    <%= render "tracks/results", results: @results, query: @query %>
+  <% end %>
+</div>

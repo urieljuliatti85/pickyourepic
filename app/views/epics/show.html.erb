@@ -1,0 +1,63 @@
+<div class="max-w-2xl mx-auto p-4">
+  <h1 class="text-2xl font-bold mb-4"><%= @epic.title %></h1>
+
+  <div class="mb-6 p-4 bg-gray-100 rounded">
+    <p class="text-sm text-gray-600">
+      Track: <strong><%= @epic.track.name %></strong> by <%= @epic.track.artist_name %>
+    </p>
+    <p class="text-sm text-gray-600">
+      Duration: <%= number_to_duration(@epic.track.duration_ms) %>
+    </p>
+  </div>
+
+  <% if @epic.description.present? %>
+    <p class="mb-4"><%= @epic.description %></p>
+  <% end %>
+
+  <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded">
+    <p class="text-sm">
+      <strong>Interval:</strong> <%= number_to_duration(@epic.start_time) %> - <%= number_to_duration(@epic.end_time) %>
+    </p>
+    <p class="text-sm">
+      <strong>Duration:</strong> <%= number_to_duration(@epic.end_time - @epic.start_time) %>
+    </p>
+  </div>
+
+  <!-- Player -->
+  <div class="mb-6">
+    <%= render "shared/epic_player", epic: @epic %>
+  </div>
+
+  <div class="mb-6 p-4 bg-gray-100 rounded">
+    <p class="text-sm">
+      <strong>Visibility:</strong>
+      <% if @epic.visibility_public? %>
+        <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Public</span>
+      <% else %>
+        <span class="px-2 py-1 bg-gray-300 text-gray-800 rounded text-xs">Private</span>
+      <% end %>
+    </p>
+    <p class="text-sm text-gray-600">
+      Created by <strong><%= @epic.user.username %></strong>
+    </p>
+  </div>
+
+  <% if current_user && !(@epic.user_id == current_user.id) && @epic.visibility_public? %>
+    <div class="mb-4">
+      <%= button_to "Pick this Epic",
+          epic_picks_path(@epic),
+          method: :post,
+          class: "px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600" %>
+    </div>
+  <% end %>
+
+  <div class="mb-6 p-4 bg-gray-100 rounded">
+    <p class="text-sm">
+      <strong><%= pluralize(@epic.picks.count, "Pick") %></strong>
+    </p>
+  </div>
+
+  <div class="flex gap-2">
+    <%= link_to "Back", track_path(@epic.track), class: "px-4 py-2 border border-gray-300 rounded hover:bg-gray-100" %>
+  </div>
+</div>

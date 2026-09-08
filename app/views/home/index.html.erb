@@ -1,0 +1,32 @@
+<% content_for :title, "Pick Up Your Epic!" %>
+
+<div class="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-16">
+  <%= render "shared/flash" %>
+
+  <h1 class="text-4xl font-bold tracking-tight">
+    Pick Up Your Epic!
+  </h1>
+
+  <p class="mt-4 text-lg text-neutral-400">
+    O momento máximo de uma música — o riff, o vocal, a virada.
+    Salve como um Epic. Descubra os Epics dos outros.
+  </p>
+
+  <div class="mt-10">
+    <% if signed_in? %>
+      <p class="text-sm text-neutral-400">
+        Signed in as <span class="font-semibold text-neutral-100">@<%= current_user.username %></span>
+      </p>
+
+      <%= button_to "Sign out", sign_out_path, method: :delete,
+            class: "mt-4 text-sm text-neutral-500 underline underline-offset-4 hover:text-neutral-300" %>
+    <% else %>
+      <%= button_to "Sign in with Spotify", auth_spotify_path,
+            class: "w-full rounded-full bg-emerald-500 px-6 py-4 text-center text-base font-semibold text-neutral-950 hover:bg-emerald-400" %>
+    <% end %>
+  </div>
+
+  <p class="mt-10 text-sm font-semibold uppercase tracking-[0.2em] text-neutral-500">
+    Pick Your Epic
+  </p>
+</div>

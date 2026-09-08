@@ -1,0 +1,58 @@
+<div class="max-w-2xl mx-auto p-4">
+  <h1 class="text-2xl font-bold mb-6">Create Epic</h1>
+
+  <div class="mb-6">
+    <p class="text-sm text-gray-600">Track: <strong><%= @track.name %></strong> by <%= @track.artist_name %></p>
+    <p class="text-sm text-gray-600">Duration: <%= number_to_duration(@track.duration_ms) %></p>
+  </div>
+
+  <%= form_with model: @epic, local: true do |form| %>
+    <% if @epic.errors.any? %>
+      <div id="error_explanation" class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+        <h2 class="font-bold"><%= pluralize(@epic.errors.count, "error") %> prohibited this epic from being saved:</h2>
+        <ul class="list-disc list-inside">
+          <% @epic.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="mb-4">
+      <%= form.label :title, "Title" %>
+      <%= form.text_field :title, class: "w-full px-3 py-2 border border-gray-300 rounded" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :description, "Description (optional)" %>
+      <%= form.text_area :description, class: "w-full px-3 py-2 border border-gray-300 rounded", rows: 4 %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :start_time, "Start time (ms)" %>
+      <%= form.number_field :start_time, min: 0, class: "w-full px-3 py-2 border border-gray-300 rounded" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :end_time, "End time (ms)" %>
+      <%= form.number_field :end_time, min: 0, class: "w-full px-3 py-2 border border-gray-300 rounded" %>
+    </div>
+
+    <div class="mb-6">
+      <%= form.label :visibility, "Visibility" %>
+      <div>
+        <%= form.radio_button :visibility, "public" %>
+        <%= form.label :visibility_public, "Public" %>
+      </div>
+      <div>
+        <%= form.radio_button :visibility, "private" %>
+        <%= form.label :visibility_private, "Private" %>
+      </div>
+    </div>
+
+    <div class="flex gap-2">
+      <%= form.submit "Create Epic", class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" %>
+      <%= link_to "Cancel", track_path(@track), class: "px-4 py-2 border border-gray-300 rounded hover:bg-gray-100" %>
+    </div>
+  <% end %>
+</div>

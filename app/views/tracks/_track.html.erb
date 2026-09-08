@@ -1,0 +1,16 @@
+<div class="flex items-center gap-4">
+  <% if track[:album_artwork_url].present? %>
+    <%= image_tag track[:album_artwork_url], alt: "", loading: "lazy",
+          class: "h-14 w-14 flex-none rounded object-cover" %>
+  <% else %>
+    <div class="h-14 w-14 flex-none rounded bg-neutral-900"></div>
+  <% end %>
+
+  <div class="min-w-0 flex-1">
+    <p class="truncate font-semibold"><%= track[:name] %></p>
+    <p class="truncate text-sm text-neutral-400"><%= track[:artist_name] %></p>
+    <p class="truncate text-xs text-neutral-600">
+      <%= track[:album_name] %> · <%= formatted_duration(track[:duration_ms]) %>
+    </p>
+  </div>
+</div>

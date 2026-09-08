@@ -1,0 +1,116 @@
+<div class="max-w-4xl mx-auto p-4">
+  <!-- Profile Header -->
+  <div class="mb-6 p-4 bg-gray-100 rounded">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold"><%= @user.username %></h1>
+        <p class="text-sm text-gray-600 mt-1">
+          <% if @user.visibility_public_profile? %>
+            <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Public Profile</span>
+          <% else %>
+            <span class="px-2 py-1 bg-gray-300 text-gray-800 rounded text-xs">Private Profile</span>
+          <% end %>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Private Profile Notice -->
+  <% if @is_private_profile %>
+    <div class="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
+      <p class="text-sm text-yellow-800">
+        <strong>This profile is private.</strong> Only the owner can see full details.
+      </p>
+    </div>
+  <% else %>
+    <!-- Public Epics Section -->
+    <div class="mb-8">
+      <h2 class="text-2xl font-bold mb-4">Epics</h2>
+      <% if @user.epics.where(visibility: :public).any? %>
+        <div class="grid grid-cols-1 gap-4">
+          <% @user.epics.where(visibility: :public).each do |epic| %>
+            <div class="p-4 border border-gray-300 rounded hover:shadow-md transition">
+              <h3 class="font-semibold text-lg">
+                <%= link_to epic.title, epic_path(epic), class: "text-blue-600 hover:underline" %>
+              </h3>
+              <p class="text-sm text-gray-600 mt-1">
+                <strong><%= epic.track.name %></strong> by <%= epic.track.artist_name %>
+              </p>
+              <p class="text-sm text-gray-600">
+                Interval: <%= number_to_duration(epic.start_time) %> - <%= number_to_duration(epic.end_time) %>
+              </p>
+              <% if epic.description.present? %>
+                <p class="text-sm mt-2"><%= epic.description %></p>
+              <% end %>
+              <p class="text-xs text-gray-500 mt-2">
+                <%= pluralize(epic.picks.count, "Pick") %>
+              </p>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-600">No public Epics yet.</p>
+      <% end %>
+    </div>
+
+    <!-- Picked Epics Section -->
+    <div class="mb-8">
+      <h2 class="text-2xl font-bold mb-4">Picked Epics</h2>
+      <% if @user.picks.any? %>
+        <div class="grid grid-cols-1 gap-4">
+          <% @user.picks.each do |pick| %>
+            <div class="p-4 border border-blue-200 bg-blue-50 rounded hover:shadow-md transition">
+              <h3 class="font-semibold text-lg">
+                <%= link_to pick.epic.title, epic_path(pick.epic), class: "text-blue-600 hover:underline" %>
+              </h3>
+              <p class="text-sm text-gray-600 mt-1">
+                By <strong><%= pick.epic.user.username %></strong>
+              </p>
+              <p class="text-sm text-gray-600">
+                <strong><%= pick.epic.track.name %></strong> by <%= pick.epic.track.artist_name %>
+              </p>
+              <p class="text-sm text-gray-600">
+                Interval: <%= number_to_duration(pick.epic.start_time) %> - <%= number_to_duration(pick.epic.end_time) %>
+              </p>
+              <% if pick.epic.description.present? %>
+                <p class="text-sm mt-2"><%= pick.epic.description %></p>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-600">No Picked Epics yet.</p>
+      <% end %>
+    </div>
+
+    <!-- Public Collections Section -->
+    <div class="mb-8">
+      <h2 class="text-2xl font-bold mb-4">Collections</h2>
+      <% public_collections = @user.collections.where(visibility: :public) %>
+      <% if public_collections.any? %>
+        <div class="grid grid-cols-1 gap-4">
+          <% public_collections.each do |collection| %>
+            <div class="p-4 border border-purple-200 bg-purple-50 rounded hover:shadow-md transition">
+              <h3 class="font-semibold text-lg">
+                <%= link_to collection.title, collection_path(collection), class: "text-blue-600 hover:underline" %>
+              </h3>
+              <% if collection.description.present? %>
+                <p class="text-sm text-gray-600 mt-1"><%= collection.description %></p>
+              <% end %>
+              <p class="text-xs text-gray-500 mt-2">
+                <%= pluralize(collection.epics.count, "Epic") %>
+              </p>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-600">No public Collections yet.</p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- Back Link -->
+  <div class="flex gap-2 mt-8">
+    <%= link_to "Back", root_path, class: "px-4 py-2 border border-gray-300 rounded hover:bg-gray-100" %>
+  </div>
+</div>

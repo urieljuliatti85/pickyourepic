@@ -1,0 +1,42 @@
+<div class="max-w-4xl mx-auto p-4">
+  <h1 class="text-3xl font-bold mb-6">Discover Epics</h1>
+
+  <% if @epics.any? %>
+    <div class="grid grid-cols-1 gap-4">
+      <% @epics.each do |epic| %>
+        <div class="p-4 border border-gray-300 rounded hover:shadow-md transition">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="font-semibold text-lg">
+                <%= link_to epic.title, epic_path(epic), class: "text-blue-600 hover:underline" %>
+              </h2>
+              <p class="text-sm text-gray-600 mt-1">
+                <strong><%= epic.track.name %></strong> by <%= epic.track.artist_name %>
+              </p>
+              <p class="text-sm text-gray-600">
+                Interval: <%= number_to_duration(epic.start_time) %> - <%= number_to_duration(epic.end_time) %>
+              </p>
+              <p class="text-xs text-gray-500 mt-1">
+                By <%= link_to epic.user.username, profile_path(epic.user), class: "text-blue-500 hover:underline" %>
+                · <%= pluralize(epic.picks.count, "Pick") %>
+              </p>
+              <%= render "shared/epic_player", epic: epic %>
+            </div>
+            <div class="flex flex-col items-end gap-2">
+              <% if current_user && current_user.id != epic.user_id && !current_user.picks.exists?(epic_id: epic.id) %>
+                <%= button_to "Pick",
+                    epic_picks_path(epic),
+                    method: :post,
+                    class: "px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 text-sm" %>
+              <% elsif current_user && current_user.picks.exists?(epic_id: epic.id) %>
+                <span class="px-3 py-1 bg-green-100 text-green-800 rounded text-xs">Picked ✓</span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-gray-600">No public Epics yet. Be the first to create one!</p>
+  <% end %>
+</div>

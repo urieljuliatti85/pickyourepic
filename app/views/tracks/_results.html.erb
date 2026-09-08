@@ -1,0 +1,11 @@
+<% if query.present? && results.empty? %>
+  <p class="text-sm text-neutral-500">Nenhuma música encontrada para "<%= query %>".</p>
+<% else %>
+  <ul class="divide-y divide-neutral-900">
+    <% results.each do |track| %>
+      <li class="py-3">
+        <%= render "tracks/track", track: track %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>
