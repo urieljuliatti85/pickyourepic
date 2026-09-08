@@ -1,6 +1,6 @@
 module Spotify
   # Traduz a resposta de busca do Spotify para hashes que o dominio entende.
-  # Nenhum model conhece este formato (CLAUDE.md §3).
+  # Nenhum model conhece este formato (CLAUDE.md § Architecture — The Spotify boundary).
   module Search
     extend self
 
@@ -18,7 +18,7 @@ module Spotify
       Array(payload.dig("tracks", "items")).filter_map { |item| normalize(item) }
     end
 
-    # Guarda apenas os metadados que o produto usa (CLAUDE.md §10).
+    # Guarda apenas os metadados que o produto usa (CLAUDE.md § Spotify policy constraints).
     # `preview_url` nao e lido: apps novos nao tem acesso a ele desde 27/11/2024.
     def normalize(item)
       spotify_id = item["id"]

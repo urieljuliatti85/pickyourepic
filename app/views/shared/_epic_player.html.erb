@@ -1,6 +1,6 @@
 <%# Partial: Play button para um Epic usando Spotify Web Playback SDK.
     Requer: epic (Epic), e current_user autenticado com Premium.
-    O SDK é 100% client-side (CLAUDE.md § 7). %>
+    O SDK é 100% client-side (CLAUDE.md § Architecture — Playback). %>
 
 <% if current_user&.spotify_account&.premium? %>
   <div data-controller="playback"

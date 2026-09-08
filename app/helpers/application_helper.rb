@@ -1,5 +1,6 @@
 module ApplicationHelper
-  # Tempos vivem em ms no dominio; mm:ss existe so na view (CLAUDE.md §6).
+  # Tempos vivem em ms no dominio; mm:ss existe so na view
+  # (CLAUDE.md § Domain rules and where they are enforced).
   def formatted_duration(milliseconds)
     return "--:--" if milliseconds.blank?
 

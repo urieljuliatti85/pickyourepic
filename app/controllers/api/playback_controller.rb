@@ -4,7 +4,7 @@ module Api
 
     # GET /api/playback_token
     # Retorna um fresh access_token para o Web Playback SDK.
-    # Requer Premium (CLAUDE.md § 7).
+    # Requer Premium (CLAUDE.md § Architecture — Playback).
     def token
       spotify_account = current_user.spotify_account
 

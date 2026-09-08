@@ -1,4 +1,5 @@
-# Fronteira entre a integracao Spotify e o dominio (CLAUDE.md §3).
+# Fronteira entre a integracao Spotify e o dominio
+# (CLAUDE.md § Architecture — The Spotify boundary).
 # Recebe dados ja normalizados do Spotify e devolve um User do dominio.
 class SpotifyAuthentication
   def self.call(profile:, tokens:)
@@ -11,7 +12,7 @@ class SpotifyAuthentication
   end
 
   # Cria ou atualiza User + SpotifyAccount numa transacao: os dois registros
-  # sao uma coisa so do ponto de vista de identidade (CLAUDE.md §12).
+  # sao uma coisa so do ponto de vista de identidade (CLAUDE.md § Conventions).
   def call
     SpotifyAccount.transaction do
       account = SpotifyAccount.find_by(spotify_uid: uid)

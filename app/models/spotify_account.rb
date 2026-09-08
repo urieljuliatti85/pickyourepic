@@ -1,5 +1,5 @@
 class SpotifyAccount < ApplicationRecord
-  # Tokens nunca trafegam em texto claro no banco (CLAUDE.md §11).
+  # Tokens nunca trafegam em texto claro no banco (CLAUDE.md § Spotify policy constraints).
   encrypts :access_token
   encrypts :refresh_token
 
@@ -18,7 +18,7 @@ class SpotifyAccount < ApplicationRecord
   end
 
   # Premium e requisito do Web Playback SDK; sem ele o usuario cria e descobre
-  # Epics, mas nao consegue reproduzi-los (CLAUDE.md §10).
+  # Epics, mas nao consegue reproduzi-los (CLAUDE.md § Architecture — Playback).
   def premium? = product == "premium"
 
   # Devolve um access_token utilizavel, renovando quando necessario.

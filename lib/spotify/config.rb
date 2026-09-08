@@ -6,7 +6,7 @@ module Spotify
     API_BASE_URL  = "https://api.spotify.com/v1".freeze
 
     # streaming                   -> Web Playback SDK (unica via de reproducao
-    #                                para apps novos; ver CLAUDE.md §10)
+    #                                para apps novos; ver CLAUDE.md § Architecture — Playback)
     # user-modify-playback-state  -> iniciar a faixa em position_ms (o inicio do Epic)
     # user-read-playback-state    -> saber em que device o playback esta
     # user-read-email             -> identificar a conta

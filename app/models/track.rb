@@ -1,4 +1,5 @@
-# Metadados e referencia a uma musica do Spotify. Nunca audio (CLAUDE.md §10).
+# Metadados e referencia a uma musica do Spotify. Nunca audio
+# (CLAUDE.md § Spotify policy constraints).
 class Track < ApplicationRecord
   has_many :epics, dependent: :destroy
 

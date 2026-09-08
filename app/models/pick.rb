@@ -1,5 +1,6 @@
-# Pick representa um usuário escolhendo um Epic público criado por outro usuário (docs/product.md).
-# Um user não pode fazer Pick do mesmo Epic duas vezes (CLAUDE.md § 6).
+# Pick representa um usuário escolhendo um Epic público criado por outro
+# usuário (docs/product.md). Um user não pode fazer Pick do mesmo Epic duas
+# vezes (CLAUDE.md § Domain rules and where they are enforced).
 # Pick não duplica o Epic; apenas registra a escolha do user.
 class Pick < ApplicationRecord
   belongs_to :user

@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 // Stimulus controller para o Spotify Web Playback SDK.
 // Toca um Epic (intervalo start_time → end_time de um track).
-// Requer Spotify Premium (CLAUDE.md § 7).
+// Requer Spotify Premium (CLAUDE.md § Architecture — Playback).
 export default class extends Controller {
   static values = {
     spotifyUri: String,   // "spotify:track:XXXXX"

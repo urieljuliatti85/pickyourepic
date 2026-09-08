@@ -11,7 +11,7 @@ module ActiveSupport
 end
 
 # Minitest 6 removeu minitest/mock, entao Object#stub nao existe mais.
-# Em vez de adicionar uma gem de mocking (CLAUDE.md §18), um helper minimo:
+# Em vez de adicionar uma gem de mocking (CLAUDE.md § Conventions), um helper minimo:
 # troca um metodo por outro e restaura no ensure.
 module MethodStubbing
   # `raising:` cobre o caso de simular falha da integracao, ja que o bloco
@@ -34,8 +34,9 @@ module MethodStubbing
   end
 end
 
-# Stubs da integracao Spotify. Testes nunca tocam a rede (CLAUDE.md §3: a
-# integracao e isolada, entao e substituivel nos testes).
+# Stubs da integracao Spotify. Testes nunca tocam a rede
+# (CLAUDE.md § Architecture — The Spotify boundary: a integracao e isolada,
+# entao e substituivel nos testes).
 module SpotifyStubs
   SPOTIFY_CREDENTIALS = {
     "SPOTIFY_CLIENT_ID" => "test_client_id",

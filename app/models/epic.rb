@@ -1,4 +1,4 @@
-# Um Epic representa um intervalo específico de uma Track (CLAUDE.md § 2).
+# Um Epic representa um intervalo específico de uma Track (CLAUDE.md § Product — Core concepts).
 # O Epic NÃO contém áudio.
 class Epic < ApplicationRecord
   belongs_to :user
@@ -8,7 +8,7 @@ class Epic < ApplicationRecord
 
   enum :visibility, { public: 0, private: 1 }, prefix: :visibility
 
-  # Validações conforme CLAUDE.md § 6 (Domain Rules)
+  # Validações conforme CLAUDE.md § Domain rules and where they are enforced
   validates :title, presence: true, length: { minimum: 1, maximum: 255 }
   validates :start_time, :end_time, presence: true, numericality: { only_integer: true }
   validates :start_time, numericality: { greater_than_or_equal_to: 0 }
