@@ -164,15 +164,19 @@ Green on CI at `b89c627`.
 ## UI & Controllers (Future)
 
 - [x] Pick Epic (UI/Controller)
-- [ ] Unpick Epic (if required by approved scope)
+- [x] Unpick Epic
 - [x] Display Pick count
 - [ ] Display users who Picked where appropriate
 
-**Note:** Nested route POST /epics/:epic_id/picks. PicksController with create action. Form validation via model (private epic, own epic, duplicate). View conditionals protect button visibility. Flash messages for success/error. 12 controller tests + 3 system tests covering all flows and edge cases.
+**Note:** `resource :pick, only: [:create, :destroy]` nested under Epic — singular, because a user has at most one Pick per Epic, so `DELETE /epics/:epic_id/pick` identifies it by (current_user, epic) with no id of its own. The destroy lookup starts from `current_user.picks`, so no user can remove another's Pick. Model validations cover private Epic, own Epic and duplicates. On the Epic page an existing Pick renders as "Picked ✓ — Unpick"; on Discover the badge is the same toggle.
+
+Two pre-existing bugs surfaced while building this: the Epic page offered "Pick this Epic" to a user who had already picked (the second click only raised a validation error), and the test named "Multiple users can pick same epic" called a helper that discarded the user it was passed, so both requests came from one session and it passed asserting a count of 0.
 
 ### Verification
 
-- [x] Tests pass (15 testes: 12 controller + 3 system)
+Green on CI at `dbf156f`.
+
+- [x] Tests pass — 17 controller + 5 system tests for Pick/Unpick, within 221 runs / 648 assertions and 18 system runs / 56 assertions overall
 
 ---
 
