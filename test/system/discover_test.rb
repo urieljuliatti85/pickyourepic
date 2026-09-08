@@ -3,6 +3,7 @@ require "application_system_test_case"
 class DiscoverTest < ApplicationSystemTestCase
   def setup
     @user = create_signed_in_user(username: "uriel")
+    sign_in_as(@user)
     @other_user = User.create!(username: "alice")
     @track = Track.create!(
       spotify_id: "track_sys",
@@ -35,7 +36,7 @@ class DiscoverTest < ApplicationSystemTestCase
   test "Discover page shows only public epics" do
     Epic.create!(
       user: @other_user,
-      track: @track,
+      track: create_track,
       title: "Secret Epic",
       start_time: 100_000,
       end_time: 200_000,

@@ -3,6 +3,7 @@ require "application_system_test_case"
 class CollectionsTest < ApplicationSystemTestCase
   def setup
     @user = create_signed_in_user(username: "uriel")
+    sign_in_as(@user)
     @track = Track.create!(
       spotify_id: "track_sys",
       name: "System Test Song",
@@ -42,7 +43,8 @@ class CollectionsTest < ApplicationSystemTestCase
     assert_text "Delete Me"
 
     click_link "Delete Me"
-    click_button "Delete"
+    # O botao usa data-turbo-confirm, que abre um dialog nativo do browser.
+    accept_confirm { click_button "Delete" }
 
     assert_text "Collection removida!"
   end
@@ -51,7 +53,7 @@ class CollectionsTest < ApplicationSystemTestCase
     collection = Collection.create!(user: @user, title: "My Collection")
     epic = Epic.create!(
       user: @user,
-      track: @track,
+      track: create_track,
       title: "Epic Song",
       start_time: 0,
       end_time: 100_000,

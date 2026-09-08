@@ -115,13 +115,31 @@ module DomainFactories
   end
 end
 
+# Cria os registros de um usuario com conta Spotify ligada. So toca models,
+# entao serve tanto a testes de integracao quanto a system tests.
+module UserFactory
+  # uid default unico: dois users no mesmo teste colidiriam no indice unico de
+  # spotify_uid se compartilhassem o valor fixo.
+  def create_signed_in_user(username: "uriel", uid: nil, product: "premium")
+    uid ||= "spotify_uid_#{SecureRandom.hex(6)}"
+    user = User.create!(username: username)
+    SpotifyAccount.create!(
+      user: user, spotify_uid: uid, product: product,
+      access_token: "access", refresh_token: "refresh", expires_at: 1.hour.from_now
+    )
+    user
+  end
+end
+
 class ActiveSupport::TestCase
   include MethodStubbing
   include SpotifyStubs
   include DomainFactories
+  include UserFactory
 end
 
-# Atalho para os testes que precisam de um usuario ja autenticado.
+# sign_in_as percorre o fluxo OAuth com os helpers HTTP de integracao, que o
+# Capybara nao tem: por isso fica separado do UserFactory.
 module AuthenticationHelpers
   def sign_in_as(user = create_signed_in_user)
     # O login e sempre via Spotify, entao um user criado direto (sem conta
@@ -139,18 +157,6 @@ module AuthenticationHelpers
       get auth_spotify_callback_path(code: "code", state: state)
     end
 
-    user
-  end
-
-  # uid default unico: dois users no mesmo teste colidiriam no indice unico de
-  # spotify_uid se compartilhassem o valor fixo.
-  def create_signed_in_user(username: "uriel", uid: nil, product: "premium")
-    uid ||= "spotify_uid_#{SecureRandom.hex(6)}"
-    user = User.create!(username: username)
-    SpotifyAccount.create!(
-      user: user, spotify_uid: uid, product: product,
-      access_token: "access", refresh_token: "refresh", expires_at: 1.hour.from_now
-    )
     user
   end
 end

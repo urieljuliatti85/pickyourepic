@@ -3,6 +3,7 @@ require "application_system_test_case"
 class PicksTest < ApplicationSystemTestCase
   def setup
     @user = create_signed_in_user(username: "uriel")
+    sign_in_as(@user)
     @other_user = User.create!(username: "alice")
     @track = Track.create!(
       spotify_id: "track_abc",
@@ -20,7 +21,7 @@ class PicksTest < ApplicationSystemTestCase
     )
     @private_epic = Epic.create!(
       user: @other_user,
-      track: @track,
+      track: create_track,
       title: "Private Epic",
       start_time: 100_000,
       end_time: 200_000,
@@ -40,14 +41,16 @@ class PicksTest < ApplicationSystemTestCase
   test "User cannot pick private epic" do
     visit epic_path(@private_epic)
 
-    assert_text "Private Epic"
+    # O Epic privado e de outro user, entao a pagina inteira e negada — mais
+    # forte do que apenas esconder o botao de Pick.
+    assert_text "Epic não encontrado."
     assert_no_button "Pick this Epic"
   end
 
   test "User cannot pick own epic" do
     own_epic = Epic.create!(
       user: @user,
-      track: @track,
+      track: create_track,
       title: "My Epic",
       start_time: 200_000,
       end_time: 300_000,

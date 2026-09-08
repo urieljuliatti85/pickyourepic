@@ -3,6 +3,7 @@ require "application_system_test_case"
 class EpicsTest < ApplicationSystemTestCase
   def setup
     @user = create_signed_in_user
+    sign_in_as(@user)
     @track = Track.create!(
       spotify_id: "track_abc",
       name: "Test Song",
@@ -51,9 +52,12 @@ class EpicsTest < ApplicationSystemTestCase
     fill_in "Title", with: "My Epic"
     fill_in "Start time (ms)", with: "60000"
     fill_in "End time (ms)", with: "120000"
+    choose "Public"
     click_button "Create Epic"
 
-    # Epic should be owned by current_user, not other_user
+    assert_text "Epic was successfully created"
+
+    # O dono e quem esta logado, nao quem criou a Track.
     epic = Epic.last
     assert_equal @user.id, epic.user_id
   end
