@@ -68,7 +68,7 @@ end
 # Spotify OAuth
 gem "omniauth", "~> 2.1"
 gem "omniauth-oauth2", "~> 1.8"
-gem "omniauth-rails_csrf_protection", "~> 1.0"
+gem "omniauth-rails_csrf_protection", "~> 2.0"
 
 # json 3.0 removeu o segundo argumento posicional de JSON.parse, que o
 # ActiveSupport 8.1 ainda usa ao ler o cookie de sessao criptografado.
