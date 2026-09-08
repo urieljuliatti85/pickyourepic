@@ -38,10 +38,17 @@ class CollectionEpicTest < ActiveSupport::TestCase
     assert_includes ce.errors[:epic_id], "can't be blank"
   end
 
+  # A coluna tem default 0, entao position so fica em branco se for anulada
+  # explicitamente; e esse caso que a validacao de presenca protege.
   test "requires position" do
-    ce = CollectionEpic.new(collection: @collection, epic: @epic)
+    ce = CollectionEpic.new(collection: @collection, epic: @epic, position: nil)
     assert_not ce.valid?
     assert_includes ce.errors[:position], "can't be blank"
+  end
+
+  test "position defaults to zero" do
+    ce = CollectionEpic.create!(collection: @collection, epic: @epic)
+    assert_equal 0, ce.position
   end
 
   test "belongs_to collection" do
@@ -86,7 +93,7 @@ class CollectionEpicTest < ActiveSupport::TestCase
   test "same collection can have different epics" do
     epic2 = Epic.create!(
       user: @user,
-      track: @track,
+      track: create_track,
       title: "Epic 2",
       start_time: 100_000,
       end_time: 200_000,
@@ -118,7 +125,7 @@ class CollectionEpicTest < ActiveSupport::TestCase
   test "can add own private epic" do
     private_epic = Epic.create!(
       user: @user,
-      track: @track,
+      track: create_track,
       title: "My Private Epic",
       start_time: 0,
       end_time: 100_000,

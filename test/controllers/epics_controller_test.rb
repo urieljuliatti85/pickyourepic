@@ -2,7 +2,7 @@ require "test_helper"
 
 class EpicsControllerTest < ActionDispatch::IntegrationTest
   def setup
-    @user = create_signed_in_user
+    @user = sign_in_as(create_signed_in_user)
     @track = Track.create!(
       spotify_id: "track_123",
       name: "Test Song",
@@ -48,9 +48,9 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
           description: "Great moment",
           start_time: 60_000,
           end_time: 120_000,
-          visibility: "public",
-          track_id: @track.spotify_id
-        }
+          visibility: "public"
+        },
+        track_id: @track.spotify_id
       }
     end
 
@@ -63,9 +63,9 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
         title: "My Epic",
         start_time: 60_000,
         end_time: 120_000,
-        visibility: "public",
-        track_id: @track.spotify_id
-      }
+        visibility: "public"
+      },
+      track_id: @track.spotify_id
     }
 
     epic = Epic.last
@@ -79,9 +79,9 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
           title: "My Epic",
           start_time: 100_000,
           end_time: 50_000,  # Invalid: end < start
-          visibility: "public",
-          track_id: @track.spotify_id
-        }
+          visibility: "public"
+        },
+        track_id: @track.spotify_id
       }
     end
 
@@ -96,9 +96,9 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
           title: "",
           start_time: 60_000,
           end_time: 120_000,
-          visibility: "public",
-          track_id: @track.spotify_id
-        }
+          visibility: "public"
+        },
+        track_id: @track.spotify_id
       }
     end
 
@@ -137,7 +137,7 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     get epic_path(epic)
 
     assert_response :success
-    assert_text "Other's Public Epic"
+    assert_match CGI.escapeHTML("Other's Public Epic"), response.body
   end
 
   test "GET /epics/:id redirects for private epic of other user" do
@@ -165,7 +165,7 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     get epic_path(epic)
 
     assert_response :success
-    assert_text "Public"
+    assert_match "Public", response.body
   end
 
   test "GET /epics/:id shows visibility badge" do
@@ -216,17 +216,19 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     assert_select "p", /2:00/  # duration: 3:00 - 1:00 = 2:00
   end
 
-  test "POST /epics with invalid track_id raises error" do
-    assert_raises ActiveRecord::RecordNotFound do
-      post epics_path, params: {
-        epic: {
-          title: "My Epic",
-          start_time: 60_000,
-          end_time: 120_000,
-          visibility: "public",
-          track_id: "nonexistent"
-        }
-      }
-    end
+  # show_exceptions = :rescuable no ambiente de teste converte o
+  # RecordNotFound em resposta 404 em vez de propagar a excecao.
+  test "POST /epics with invalid track_id returns not found" do
+    post epics_path, params: {
+      epic: {
+        title: "My Epic",
+        start_time: 60_000,
+        end_time: 120_000,
+        visibility: "public"
+      },
+      track_id: "nonexistent"
+    }
+
+    assert_response :not_found
   end
 end

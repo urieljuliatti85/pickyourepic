@@ -33,7 +33,7 @@ class CollectionTest < ActiveSupport::TestCase
     collection = Collection.create!(user: @user, title: "My Collection")
     epic = Epic.create!(
       user: @user,
-      track: @track,
+      track: create_track,
       title: "Epic 1",
       start_time: 0,
       end_time: 100_000,
@@ -49,7 +49,7 @@ class CollectionTest < ActiveSupport::TestCase
     collection = Collection.create!(user: @user, title: "My Collection")
     epic1 = Epic.create!(
       user: @user,
-      track: @track,
+      track: create_track,
       title: "Epic 1",
       start_time: 0,
       end_time: 100_000,
@@ -57,7 +57,7 @@ class CollectionTest < ActiveSupport::TestCase
     )
     epic2 = Epic.create!(
       user: @user,
-      track: @track,
+      track: create_track,
       title: "Epic 2",
       start_time: 100_000,
       end_time: 200_000,
@@ -89,7 +89,7 @@ class CollectionTest < ActiveSupport::TestCase
   test "title length validation" do
     collection = Collection.new(user: @user, title: "")
     assert_not collection.valid?
-    assert_includes collection.errors[:title], "is too short"
+    assert_includes collection.errors[:title], "is too short (minimum is 1 character)"
   end
 
   test "max title length 255" do
@@ -120,7 +120,7 @@ class CollectionTest < ActiveSupport::TestCase
     collection = Collection.create!(user: @user, title: "My Collection")
     epic = Epic.create!(
       user: @user,
-      track: @track,
+      track: create_track,
       title: "Epic",
       start_time: 0,
       end_time: 100_000,
@@ -136,7 +136,7 @@ class CollectionTest < ActiveSupport::TestCase
   test "collection can contain own public epic" do
     epic = Epic.create!(
       user: @user,
-      track: @track,
+      track: create_track,
       title: "My Epic",
       start_time: 0,
       end_time: 100_000,

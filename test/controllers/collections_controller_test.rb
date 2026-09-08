@@ -2,7 +2,7 @@ require "test_helper"
 
 class CollectionsControllerTest < ActionDispatch::IntegrationTest
   def setup
-    @user = create_signed_in_user(username: "uriel")
+    @user = sign_in_as(create_signed_in_user(username: "uriel"))
     @other_user = User.create!(username: "alice")
     @track = Track.create!(
       spotify_id: "track_123",
@@ -26,14 +26,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   test "GET /collections lists user collections" do
     get collections_path
     assert_response :success
-    assert_text "My Collection"
-    assert_text "Private Col"
+    assert_match "My Collection", response.body
+    assert_match "Private Col", response.body
   end
 
   test "GET /collections does not show other users collections" do
     get collections_path
     assert_response :success
-    assert_no_text "Other Col"
+    assert_no_match "Other Col", response.body
   end
 
   # NEW
@@ -71,13 +71,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   test "GET /collections/:id shows public collection" do
     get collection_path(@collection)
     assert_response :success
-    assert_text "My Collection"
+    assert_match "My Collection", response.body
   end
 
   test "GET /collections/:id shows own private collection" do
     get collection_path(@private_collection)
     assert_response :success
-    assert_text "Private Col"
+    assert_match "Private Col", response.body
   end
 
   test "GET other user private collection redirects" do
@@ -93,7 +93,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
     get collection_path(@collection)
     assert_response :success
-    assert_text "My Epic"
+    assert_match "My Epic", response.body
   end
 
   # EDIT

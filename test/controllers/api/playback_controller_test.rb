@@ -2,7 +2,7 @@ require "test_helper"
 
 class Api::PlaybackControllerTest < ActionDispatch::IntegrationTest
   def setup
-    @user = create_signed_in_user(username: "uriel")
+    @user = sign_in_as(create_signed_in_user(username: "uriel"))
   end
 
   test "GET /api/playback_token requires authentication" do
@@ -12,6 +12,10 @@ class Api::PlaybackControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "GET /api/playback_token returns error without spotify account" do
+    # O sign_in exige uma SpotifyAccount; o cenario aqui e a conta ter sido
+    # desconectada depois, com a sessao ainda ativa.
+    @user.spotify_account.destroy!
+
     get api_playback_token_path, headers: { "Accept" => "application/json" }
     assert_response :unprocessable_entity
 
@@ -20,13 +24,18 @@ class Api::PlaybackControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "GET /api/playback_token returns error for non-premium" do
-    SpotifyAccount.create!(
-      user: @user,
-      spotify_uid: "spotify_123",
+    account = @user.spotify_account
+
+    account.update!(
+
       access_token: "token",
+
       refresh_token: "refresh",
+
       product: "free",
+
       expires_at: 1.hour.from_now
+
     )
 
     get api_playback_token_path, headers: { "Accept" => "application/json" }
@@ -37,13 +46,18 @@ class Api::PlaybackControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "GET /api/playback_token returns token for premium user" do
-    SpotifyAccount.create!(
-      user: @user,
-      spotify_uid: "spotify_123",
+    account = @user.spotify_account
+
+    account.update!(
+
       access_token: "valid_token",
+
       refresh_token: "refresh",
+
       product: "premium",
+
       expires_at: 1.hour.from_now
+
     )
 
     get api_playback_token_path, headers: { "Accept" => "application/json" }
@@ -54,13 +68,18 @@ class Api::PlaybackControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "GET /api/playback_token refreshes expired token" do
-    account = SpotifyAccount.create!(
-      user: @user,
-      spotify_uid: "spotify_123",
+    account = @user.spotify_account
+
+    account.update!(
+
       access_token: "expired_token",
+
       refresh_token: "refresh_token",
+
       product: "premium",
+
       expires_at: 1.hour.ago
+
     )
 
     # Stub the refresh call
@@ -69,7 +88,7 @@ class Api::PlaybackControllerTest < ActionDispatch::IntegrationTest
       "expires_in" => 3600
     }
 
-    Spotify::Client.stub(:refresh_token, stub_refresh_response) do
+    stub_method(Spotify::Client, :refresh_token, stub_refresh_response) do
       get api_playback_token_path, headers: { "Accept" => "application/json" }
     end
 

@@ -20,7 +20,7 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     )
     @private_epic = Epic.create!(
       user: @user,
-      track: @track,
+      track: create_track,
       title: "Private Epic",
       start_time: 100_000,
       end_time: 200_000,
@@ -54,21 +54,21 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h2", /Epics/
-    assert_text "Public Epic"
+    assert_match "Public Epic", response.body
   end
 
   test "GET public profile hides private epics" do
     get profile_path(@user)
 
     assert_response :success
-    assert_no_text "Private Epic"
+    assert_no_match "Private Epic", response.body
   end
 
   test "GET private profile without auth shows notice" do
     get profile_path(@private_user)
 
     assert_response :success
-    assert_text "This profile is private"
+    assert_match "This profile is private", response.body
   end
 
   test "GET private profile as owner shows full content" do
@@ -77,7 +77,7 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     get profile_path(@private_user)
 
     assert_response :success
-    assert_no_text "This profile is private"
+    assert_no_match "This profile is private", response.body
   end
 
   test "GET profile shows picked epics" do
@@ -96,20 +96,19 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h2", /Picked Epics/
-    assert_text "Other's Epic"
+    assert_match CGI.escapeHTML("Other's Epic"), response.body
   end
 
-  test "GET profile returns 404 if user not found" do
-    assert_raises ActiveRecord::RecordNotFound do
-      get profile_path("nonexistent")
-    end
+  test "GET profile returns not found for unknown user" do
+    get profile_path("nonexistent")
+    assert_response :not_found
   end
 
   test "GET profile uses username in URL" do
     get "/profiles/uriel"
 
     assert_response :success
-    assert_text "uriel"
+    assert_match "uriel", response.body
   end
 
   test "GET profile shows pick count on epic" do
@@ -120,7 +119,7 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     get profile_path(@user)
 
     assert_response :success
-    assert_text "2 Picks"
+    assert_match "2 Picks", response.body
   end
 
   test "GET profile has back link" do
@@ -137,7 +136,7 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h2", /Collections/
-    assert_text "My Playlist"
+    assert_match "My Playlist", response.body
   end
 
   test "GET profile hides private collections" do
@@ -146,7 +145,7 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     get profile_path(@user)
 
     assert_response :success
-    assert_no_text "Secret Playlist"
+    assert_no_match "Secret Playlist", response.body
   end
 
   test "GET profile shows collection epic count" do
@@ -156,6 +155,6 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     get profile_path(@user)
 
     assert_response :success
-    assert_text "1 Epic"
+    assert_match "1 Epic", response.body
   end
 end

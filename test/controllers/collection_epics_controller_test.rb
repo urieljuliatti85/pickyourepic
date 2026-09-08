@@ -2,7 +2,7 @@ require "test_helper"
 
 class CollectionEpicsControllerTest < ActionDispatch::IntegrationTest
   def setup
-    @user = create_signed_in_user(username: "uriel")
+    @user = sign_in_as(create_signed_in_user(username: "uriel"))
     @other_user = User.create!(username: "alice")
     @track = Track.create!(
       spotify_id: "track_123",

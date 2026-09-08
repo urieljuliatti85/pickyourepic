@@ -2,7 +2,7 @@ require "test_helper"
 
 class PicksControllerTest < ActionDispatch::IntegrationTest
   def setup
-    @user = create_signed_in_user(username: "uriel")
+    @user = sign_in_as(create_signed_in_user(username: "uriel"))
     @other_user = User.create!(username: "alice")
     @track = Track.create!(
       spotify_id: "track_123",
@@ -20,7 +20,7 @@ class PicksControllerTest < ActionDispatch::IntegrationTest
     )
     @private_epic = Epic.create!(
       user: @other_user,
-      track: @track,
+      track: create_track,
       title: "Private Epic",
       start_time: 100_000,
       end_time: 200_000,
@@ -122,14 +122,14 @@ class PicksControllerTest < ActionDispatch::IntegrationTest
 
     get epic_path(@private_epic)
 
-    assert_response :success
-    assert_select "button", { text: /Pick this Epic/, count: 0 }
+    # Epic privado de outro user nao e apenas "sem botao de Pick": a pagina
+    # inteira e negada (EpicsController#authorize_epic_visibility).
+    assert_redirected_to root_path
   end
 
-  test "POST returns 404 if epic not found" do
-    assert_raises ActiveRecord::RecordNotFound do
-      post epic_picks_path(9999)
-    end
+  test "POST returns not found for unknown epic" do
+    post epic_picks_path(9999)
+    assert_response :not_found
   end
 
   test "Multiple users can pick same epic" do

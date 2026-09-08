@@ -1,18 +1,18 @@
 require "test_helper"
 
 class EpicTest < ActiveSupport::TestCase
+  # user/track sao memoizados: dois Epics do mesmo user na mesma track violam
+  # o indice unico, entao os testes que precisam de uma duplicata pedem os
+  # mesmos atributos duas vezes de proposito.
   def valid_attributes(overrides = {})
-    user = User.create!(username: "uriel")
-    track = Track.create!(
-      spotify_id: "track_123",
-      name: "Nocturnal Will",
-      artist_name: "Dödsrit",
-      duration_ms: 300_000
+    @default_user ||= create_user(username: "uriel")
+    @default_track ||= create_track(
+      spotify_id: "track_123", name: "Nocturnal Will", artist_name: "Dödsrit"
     )
 
     {
-      user: user,
-      track: track,
+      user: @default_user,
+      track: @default_track,
       title: "My Epic",
       description: "A great moment",
       start_time: 60_000,
@@ -36,14 +36,14 @@ class EpicTest < ActiveSupport::TestCase
     epic = Epic.new(valid_attributes(title: ""))
 
     assert_not epic.valid?
-    assert_includes epic.errors[:title], "is too short"
+    assert_includes epic.errors[:title], "is too short (minimum is 1 character)"
   end
 
   test "title has a maximum length" do
     epic = Epic.new(valid_attributes(title: "x" * 256))
 
     assert_not epic.valid?
-    assert_includes epic.errors[:title], "is too long"
+    assert_includes epic.errors[:title], "is too long (maximum is 255 characters)"
   end
 
   test "requires start_time and end_time" do
@@ -115,7 +115,8 @@ class EpicTest < ActiveSupport::TestCase
   end
 
   test "visibility defaults to public" do
-    epic = Epic.create!(valid_attributes(visibility: nil))
+    # Sem a chave visibility: o default da coluna e quem decide.
+    epic = Epic.create!(valid_attributes.except(:visibility))
 
     assert epic.visibility_public?
   end

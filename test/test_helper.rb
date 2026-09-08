@@ -77,25 +77,75 @@ module SpotifyStubs
   end
 end
 
+# Fabricas minimas de dominio. Um user so pode ter um Epic por track
+# (docs/product.md), entao cada Epic de um mesmo user precisa da sua propria
+# Track: o contador garante spotify_id/username unicos sem que cada teste
+# tenha que inventar nomes.
+module DomainFactories
+  def next_sequence
+    @sequence = (@sequence || 0) + 1
+  end
+
+  def create_track(**overrides)
+    n = next_sequence
+
+    Track.create!({
+      spotify_id: "track_#{n}",
+      name: "Test Song #{n}",
+      artist_name: "Test Artist",
+      duration_ms: 300_000
+    }.merge(overrides))
+  end
+
+  def create_user(**overrides)
+    User.create!({ username: "user#{next_sequence}" }.merge(overrides))
+  end
+
+  # `track:` fica opcional de proposito: quando omitido cada Epic ganha uma
+  # Track propria, que e o que respeita a regra de um Epic por user/track.
+  def create_epic(user:, track: nil, **overrides)
+    Epic.create!({
+      user: user,
+      track: track || create_track,
+      title: "Epic #{next_sequence}",
+      start_time: 0,
+      end_time: 100_000,
+      visibility: :public
+    }.merge(overrides))
+  end
+end
+
 class ActiveSupport::TestCase
   include MethodStubbing
   include SpotifyStubs
+  include DomainFactories
 end
 
 # Atalho para os testes que precisam de um usuario ja autenticado.
 module AuthenticationHelpers
   def sign_in_as(user = create_signed_in_user)
+    # O login e sempre via Spotify, entao um user criado direto (sem conta
+    # ligada) ganha uma aqui em vez de quebrar o helper.
+    account = user.spotify_account || SpotifyAccount.create!(
+      user: user, spotify_uid: "spotify_uid_#{SecureRandom.hex(6)}",
+      product: "premium", access_token: "access", refresh_token: "refresh",
+      expires_at: 1.hour.from_now
+    )
+
     state = with_spotify_configured { post auth_spotify_path } &&
       Rack::Utils.parse_query(URI(response.location).query)["state"]
 
-    stub_spotify_oauth(profile: spotify_profile("id" => user.spotify_account.spotify_uid)) do
+    stub_spotify_oauth(profile: spotify_profile("id" => account.spotify_uid)) do
       get auth_spotify_callback_path(code: "code", state: state)
     end
 
     user
   end
 
-  def create_signed_in_user(username: "uriel", uid: "spotify_uid_123", product: "premium")
+  # uid default unico: dois users no mesmo teste colidiriam no indice unico de
+  # spotify_uid se compartilhassem o valor fixo.
+  def create_signed_in_user(username: "uriel", uid: nil, product: "premium")
+    uid ||= "spotify_uid_#{SecureRandom.hex(6)}"
     user = User.create!(username: username)
     SpotifyAccount.create!(
       user: user, spotify_uid: uid, product: product,

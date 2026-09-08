@@ -72,7 +72,7 @@ class PickTest < ActiveSupport::TestCase
     pick1 = Pick.create!(valid_attributes)
     epic2 = Epic.create!(
       user: @other_user,
-      track: @track,
+      track: create_track,
       title: "Another Epic",
       start_time: 100_000,
       end_time: 200_000,
@@ -165,7 +165,7 @@ class PickTest < ActiveSupport::TestCase
     )
     epic2 = Epic.create!(
       user: @other_user,
-      track: @track,
+      track: create_track,
       title: "Epic 2",
       start_time: 100_000,
       end_time: 200_000,
@@ -210,7 +210,7 @@ class PickTest < ActiveSupport::TestCase
   test "cannot pick own epic" do
     epic = Epic.create!(
       user: @user,
-      track: @track,
+      track: create_track,
       title: "My Epic",
       start_time: 0,
       end_time: 100_000,
