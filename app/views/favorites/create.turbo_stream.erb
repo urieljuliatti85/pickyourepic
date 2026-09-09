@@ -1,0 +1,31 @@
+<%# Turbo Stream response for Favorite creation.
+    
+    On success: append toast, update button.
+    On error: append error toast with friendly message.
+    
+    UX: All feedback happens in toasts. No page reload. %>
+
+<% if @favorite.invalid? %>
+  <%# Error case: extract the friendly error message from validation %>
+  <% error_key = @favorite.errors.messages[:base]&.first %>
+  <%= turbo_stream.append "toasts-container" do %>
+    <% title = friendly_error(error_key) %>
+    <% message = friendly_error_message(error_key) %>
+    <%= render ToastComponent.new(
+      type: :error,
+      message: "#{title}. #{message}"
+    ) %>
+  <% end %>
+<% else %>
+  <%# Success case: append success toast, then update button %>
+  <%= turbo_stream.append "toasts-container" do %>
+    <%= render ToastComponent.new(
+      type: :success,
+      message: "Added to favorites! ⭐"
+    ) %>
+  <% end %>
+
+  <%= turbo_stream.replace dom_id(@epic, :favorite_button) do %>
+    <%= render "shared/favorite_button", epic: @epic %>
+  <% end %>
+<% end %>

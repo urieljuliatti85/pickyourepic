@@ -5,6 +5,8 @@
 # to whoever favorited, and applies to your own Epic too. The one thing you
 # cannot favorite is another user's private Epic — the same limit that governs
 # Pick and CollectionEpic (CLAUDE.md § Authorization).
+#
+# Error messages are user-friendly (see app/helpers/error_messages_helper.rb).
 class Favorite < ApplicationRecord
   belongs_to :user
   belongs_to :epic
@@ -16,7 +18,7 @@ class Favorite < ApplicationRecord
 
   def cannot_favorite_private_epic_from_another_user
     if epic&.visibility_private? && epic&.user_id != user_id
-      errors.add(:epic_id, "cannot favorite private epic from another user")
+      errors.add(:base, "cannot_favorite_private_epic_from_another_user")
     end
   end
 end

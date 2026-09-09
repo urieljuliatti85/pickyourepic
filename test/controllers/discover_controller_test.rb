@@ -135,6 +135,6 @@ class DiscoverControllerTest < ActionDispatch::IntegrationTest
     Epic.destroy_all
     get discover_path
     assert_response :success
-    assert_match "No public Epics yet", response.body
+    assert_match "No Epics yet", response.body
   end
 end

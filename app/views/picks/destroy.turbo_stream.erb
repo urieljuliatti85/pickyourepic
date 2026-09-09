@@ -4,7 +4,13 @@
 
     A `replace` on a frame absent from the current page is a no-op, so one
     template serves Discover (button + count only) and the Epic page (which also
-    has the list). %>
+    has the list).
+    
+    UX: Append toast notification before updating components. %>
+<%= turbo_stream.append "toasts-container" do %>
+  <%= render ToastComponent.new(type: :success, message: "Epic unpicked. 🎵") %>
+<% end %>
+
 <%= turbo_stream.replace dom_id(@epic, :pick_button) do %>
   <%= render "shared/pick_button", epic: @epic %>
 <% end %>

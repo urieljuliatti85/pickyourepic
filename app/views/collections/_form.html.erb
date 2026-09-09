@@ -4,7 +4,7 @@
   <% if collection.errors.any? %>
     <div class="mb-6 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-red-200">
       <h3 class="text-sm font-semibold">
-        <%= pluralize(collection.errors.count, "erro") %> impediu esta Collection de ser salva:
+        <%= pluralize(collection.errors.count, "error") %> stopped this Collection from being saved:
       </h3>
       <ul class="mt-2 list-inside list-disc text-sm">
         <% collection.errors.full_messages.each do |message| %>
@@ -15,7 +15,7 @@
   <% end %>
 
   <% field = "mt-1.5 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-neutral-100 placeholder:text-neutral-500 focus:border-lime-accent focus:outline-none" %>
-  <% label = "text-xs font-semibold uppercase tracking-[0.12em]r text-neutral-400" %>
+  <% label = "text-xs font-semibold uppercase tracking-wider text-neutral-400" %>
 
   <div class="mb-5">
     <%= form.label :title, "Title", class: label %>
@@ -28,7 +28,7 @@
   </div>
 
   <div class="mb-8">
-    <span class="<%= label %>">Visibilidade</span>
+    <span class="<%= label %>">Visibility</span>
 
     <div class="mt-2 flex flex-wrap gap-2">
       <label class="flex cursor-pointer items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-neutral-300 hover:border-lime-accent/50 has-[:checked]:border-lime-accent has-[:checked]:text-neutral-50">

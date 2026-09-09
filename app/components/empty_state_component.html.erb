@@ -1,0 +1,26 @@
+<div class="rounded-3xl border border-white/10 bg-ink-soft px-6 py-12 sm:px-10 sm:py-16 text-center">
+  <% if @icon.present? %>
+    <div class="text-5xl mb-4">
+      <%= @icon %>
+    </div>
+  <% end %>
+
+  <% if @title.present? %>
+    <h3 class="text-lg font-semibold text-neutral-200">
+      <%= @title %>
+    </h3>
+  <% end %>
+
+  <% if @message.present? %>
+    <p class="mt-2 text-sm text-neutral-400">
+      <%= @message %>
+    </p>
+  <% end %>
+
+  <% if @action_text.present? && @action_path.present? %>
+    <div class="mt-6">
+      <%= link_to @action_text, @action_path,
+            class: "inline-block rounded-full bg-lime-accent px-6 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-neutral-950 hover:bg-lime-bright transition-colors" %>
+    </div>
+  <% end %>
+</div>

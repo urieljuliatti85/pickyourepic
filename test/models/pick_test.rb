@@ -190,7 +190,7 @@ class PickTest < ActiveSupport::TestCase
 
     pick = Pick.new(user: @user, epic: epic)
     assert_not pick.valid?
-    assert_includes pick.errors[:epic_id], "cannot pick private epic"
+    assert_includes pick.errors[:base], "cannot_pick_private_epic"
   end
 
   test "can pick public epic" do
@@ -219,7 +219,7 @@ class PickTest < ActiveSupport::TestCase
 
     pick = Pick.new(user: @user, epic: epic)
     assert_not pick.valid?
-    assert_includes pick.errors[:epic_id], "cannot pick your own epic"
+    assert_includes pick.errors[:base], "cannot_pick_own_epic"
   end
 
   test "can pick other user's epic" do

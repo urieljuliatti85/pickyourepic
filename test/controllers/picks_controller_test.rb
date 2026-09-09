@@ -67,7 +67,7 @@ class PicksControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to epic_path(@private_epic)
-    assert_includes flash[:alert], "cannot pick private epic"
+    assert_includes flash[:alert], "Can't pick private Epics"
   end
 
   test "POST cannot pick own epic" do
@@ -76,7 +76,7 @@ class PicksControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to epic_path(@own_epic)
-    assert_includes flash[:alert], "cannot pick your own epic"
+    assert_includes flash[:alert], "Can't pick your own Epic"
   end
 
   test "POST prevents duplicate pick" do
