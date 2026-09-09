@@ -66,4 +66,42 @@ class TrackSearchTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match "Spotify search is unavailable right now.", response.body
   end
+
+  test "a search result links to the Epic form and persists the track" do
+    sign_in_as
+
+    stub_method(Spotify::Client, :get, spotify_payload) do
+      get tracks_path(q: "dödsrit")
+    end
+
+    track = Track.find_by(spotify_id: "track_abc")
+    assert track, "the searched track should be persisted so the Epic form can find it"
+    assert_equal "Nocturnal Will", track.name
+    assert_select "a[href=?]", new_epic_path(track_id: "track_abc")
+  end
+
+  test "searching the same track twice does not duplicate it" do
+    sign_in_as
+
+    2.times do
+      stub_method(Spotify::Client, :get, spotify_payload) do
+        get tracks_path(q: "dödsrit")
+      end
+    end
+
+    assert_equal 1, Track.where(spotify_id: "track_abc").count
+  end
+
+  test "following a search result reaches the Epic form" do
+    sign_in_as
+
+    stub_method(Spotify::Client, :get, spotify_payload) do
+      get tracks_path(q: "dödsrit")
+    end
+
+    get new_epic_path(track_id: "track_abc")
+
+    assert_response :success
+    assert_match "Nocturnal Will", response.body
+  end
 end
