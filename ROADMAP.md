@@ -166,17 +166,19 @@ Green on CI at `b89c627`.
 - [x] Pick Epic (UI/Controller)
 - [x] Unpick Epic
 - [x] Display Pick count
-- [ ] Display users who Picked where appropriate
+- [x] Display users who Picked
 
 **Note:** `resource :pick, only: [:create, :destroy]` nested under Epic — singular, because a user has at most one Pick per Epic, so `DELETE /epics/:epic_id/pick` identifies it by (current_user, epic) with no id of its own. The destroy lookup starts from `current_user.picks`, so no user can remove another's Pick. Model validations cover private Epic, own Epic and duplicates. On the Epic page an existing Pick renders as "Picked ✓ — Unpick"; on Discover the badge is the same toggle.
 
 Two pre-existing bugs surfaced while building this: the Epic page offered "Pick this Epic" to a user who had already picked (the second click only raised a validation error), and the test named "Multiple users can pick same epic" called a helper that discarded the user it was passed, so both requests came from one session and it passed asserting a count of 0.
 
+The Epic page lists every user who Picked it, linked to their profile. Private profiles are included: visibility governs content, not whether a username may be listed, so the count and the list always agree. The rule is written down in docs/product.md § Privacy — it was an undefined case before, not an existing policy.
+
 ### Verification
 
-Green on CI at `dbf156f`.
+Green on CI at `0099ad3`.
 
-- [x] Tests pass — 17 controller + 5 system tests for Pick/Unpick, within 221 runs / 648 assertions and 18 system runs / 56 assertions overall
+- [x] Tests pass — 19 controller + 6 system tests for Pick/Unpick/picker list, within 223 runs / 659 assertions and 19 system runs / 59 assertions overall
 
 ---
 
