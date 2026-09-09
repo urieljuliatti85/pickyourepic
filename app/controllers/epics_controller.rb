@@ -47,6 +47,7 @@ class EpicsController < ApplicationController
   end
 
   def epic_params
-    params.require(:epic).permit(:title, :description, :start_time, :end_time, :visibility)
+    # O form envia MM:SS; Epic converte para os milissegundos das colunas.
+    params.require(:epic).permit(:title, :description, :start_time_mmss, :end_time_mmss, :visibility)
   end
 end

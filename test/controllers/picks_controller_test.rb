@@ -126,14 +126,15 @@ class PicksControllerTest < ActionDispatch::IntegrationTest
     get epic_path(@public_epic)
 
     assert_response :success
-    assert_select "button", /Pick this Epic/
+    # O botao agora vem de shared/_pick_button: o label e "Pick".
+    assert_select "button", /\APick\z/
   end
 
   test "GET epic does not show pick button for owner" do
     get epic_path(@own_epic)
 
     assert_response :success
-    assert_select "button", { text: /Pick this Epic/, count: 0 }
+    assert_select "button", { text: /\APick\z/, count: 0 }
   end
 
   test "GET epic does not show pick button for private epic" do

@@ -1,60 +1,110 @@
-<div class="max-w-2xl mx-auto p-4">
-  <h1 class="text-2xl font-bold mb-6">Create Epic</h1>
+<%# Layout inspirado na referencia do hero do Spotify: gradiente teal->indigo,
+    titulo grande, copy secundaria suave e botoes em pilula (um preenchido, um
+    apenas contornado). Os tokens (ink, lime-accent) sao os mesmos do resto do
+    app — aqui so muda a forma, nao a paleta. %>
+<div class="mx-auto max-w-2xl px-4 py-8">
 
-  <div class="mb-6">
-    <p class="text-sm text-gray-600">Track: <strong><%= @track.name %></strong> by <%= @track.artist_name %></p>
-    <p class="text-sm text-gray-600">Duration: <%= number_to_duration(@track.duration_ms) %></p>
-  </div>
+  <div class="overflow-hidden rounded-3xl border border-white/10 bg-ink-soft shadow-2xl shadow-black/30">
 
-  <%= form_with model: @epic, local: true do |form| %>
-    <%# O controller resolve a Track por spotify_id em params[:track_id]. %>
-    <%= hidden_field_tag :track_id, @track.spotify_id %>
-    <% if @epic.errors.any? %>
-      <div id="error_explanation" class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-        <h2 class="font-bold"><%= pluralize(@epic.errors.count, "error") %> prohibited this epic from being saved:</h2>
-        <ul class="list-disc list-inside">
-          <% @epic.errors.full_messages.each do |message| %>
-            <li><%= message %></li>
+    <%# Hero: o gradiente vai do ciano do tema para o indigo do fundo. %>
+    <div class="bg-gradient-to-br from-lime-accent/30 via-lime-accent/10 to-indigo-500/20 px-6 py-8 sm:px-10 sm:py-10">
+      <%# Capa ao lado do titulo. `Spotify::Search` guarda a MENOR imagem do
+          album (~64px), entao ela fica pequena de proposito. %>
+      <div class="flex items-start gap-5">
+        <% if @track.album_artwork_url.present? %>
+          <%= image_tag @track.album_artwork_url, alt: "",
+                class: "h-24 w-24 flex-none rounded-2xl object-cover shadow-lg shadow-black/40 sm:h-28 sm:w-28" %>
+        <% else %>
+          <div class="h-24 w-24 flex-none rounded-2xl bg-white/5 sm:h-28 sm:w-28"></div>
+        <% end %>
+
+        <div class="min-w-0">
+          <h1 class="text-3xl font-bold tracking-tight text-neutral-50 sm:text-4xl">
+            Create Epic
+          </h1>
+          <p class="mt-2 max-w-lg text-sm leading-relaxed text-neutral-300 sm:text-base">
+            <strong class="font-semibold text-neutral-100"><%= @track.name %></strong>
+            · <%= @track.artist_name %>
+          </p>
+          <% if @track.album_name.present? %>
+            <p class="mt-0.5 truncate text-xs text-neutral-400"><%= @track.album_name %></p>
           <% end %>
-        </ul>
+          <p class="mt-1 max-w-lg text-sm leading-relaxed text-neutral-400">
+            Duração da faixa: <%= number_to_duration(@track.duration_ms) %>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <%= form_with model: @epic, local: true, class: "px-6 py-8 sm:px-10" do |form| %>
+      <%# O controller resolve a Track por spotify_id em params[:track_id]. %>
+      <%= hidden_field_tag :track_id, @track.spotify_id %>
+
+      <% if @epic.errors.any? %>
+        <div id="error_explanation" class="mb-6 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-red-200">
+          <h2 class="text-sm font-semibold">
+            <%= pluralize(@epic.errors.count, "error") %> prohibited this epic from being saved:
+          </h2>
+          <ul class="mt-2 list-inside list-disc text-sm">
+            <% @epic.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <% field = "mt-1.5 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-neutral-100 placeholder:text-neutral-500 focus:border-lime-accent focus:outline-none" %>
+      <% label = "text-xs font-semibold uppercase tracking-wider text-neutral-400" %>
+
+      <div class="mb-5">
+        <%= form.label :title, "Title", class: label %>
+        <%= form.text_field :title, class: field %>
+      </div>
+
+      <div class="mb-5">
+        <%= form.label :description, "Description (optional)", class: label %>
+        <%= form.text_area :description, rows: 4, class: field %>
+      </div>
+
+      <div class="mb-5 grid gap-4 sm:grid-cols-2">
+        <%# MM:SS, como num player. Campo de texto (nao number_field, que nao
+            aceita ":") com pattern para o browser barrar formato invalido; o
+            model revalida de qualquer forma. %>
+        <% mmss = { pattern: "\\d+:[0-5]\\d(\\.\\d+)?", placeholder: "0:30", inputmode: "text" } %>
+
+        <div>
+          <%= form.label :start_time_mmss, "Start time (MM:SS)", class: label %>
+          <%= form.text_field :start_time_mmss, class: field, **mmss %>
+        </div>
+
+        <div>
+          <%= form.label :end_time_mmss, "End time (MM:SS)", class: label %>
+          <%= form.text_field :end_time_mmss, class: field, **mmss %>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <span class="<%= label %>">Visibility</span>
+
+        <%# Pilulas tambem aqui, para o radio nao destoar dos botoes. %>
+        <div class="mt-2 flex flex-wrap gap-2">
+          <% [ [ "public", "Public" ], [ "private", "Private" ] ].each do |value, text| %>
+            <label class="flex cursor-pointer items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-neutral-300 hover:border-lime-accent/50 has-[:checked]:border-lime-accent has-[:checked]:text-neutral-50">
+              <%= form.radio_button :visibility, value, class: "accent-lime-accent" %>
+              <%= text %>
+            </label>
+          <% end %>
+        </div>
+      </div>
+
+      <%# Botoes da referencia: primario preenchido, secundario so contornado. %>
+      <div class="flex flex-wrap items-center gap-3">
+        <%= form.submit "Create Epic",
+              class: "cursor-pointer rounded-full bg-lime-accent px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-neutral-950 hover:bg-lime-bright" %>
+
+        <%= link_to "Cancel", tracks_path,
+              class: "rounded-full border border-lime-accent/60 px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-lime-accent hover:bg-lime-accent/10" %>
       </div>
     <% end %>
-
-    <div class="mb-4">
-      <%= form.label :title, "Title" %>
-      <%= form.text_field :title, class: "w-full px-3 py-2 border border-gray-300 rounded" %>
-    </div>
-
-    <div class="mb-4">
-      <%= form.label :description, "Description (optional)" %>
-      <%= form.text_area :description, class: "w-full px-3 py-2 border border-gray-300 rounded", rows: 4 %>
-    </div>
-
-    <div class="mb-4">
-      <%= form.label :start_time, "Start time (ms)" %>
-      <%= form.number_field :start_time, min: 0, class: "w-full px-3 py-2 border border-gray-300 rounded" %>
-    </div>
-
-    <div class="mb-4">
-      <%= form.label :end_time, "End time (ms)" %>
-      <%= form.number_field :end_time, min: 0, class: "w-full px-3 py-2 border border-gray-300 rounded" %>
-    </div>
-
-    <div class="mb-6">
-      <%= form.label :visibility, "Visibility" %>
-      <div>
-        <%= form.radio_button :visibility, "public" %>
-        <%= form.label :visibility_public, "Public" %>
-      </div>
-      <div>
-        <%= form.radio_button :visibility, "private" %>
-        <%= form.label :visibility_private, "Private" %>
-      </div>
-    </div>
-
-    <div class="flex gap-2">
-      <%= form.submit "Create Epic", class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" %>
-      <%= link_to "Cancel", tracks_path, class: "px-4 py-2 border border-gray-300 rounded hover:bg-gray-100" %>
-    </div>
-  <% end %>
+  </div>
 </div>

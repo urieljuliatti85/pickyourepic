@@ -91,10 +91,16 @@ export default class extends Controller {
     return new Promise((resolve, reject) => {
       if (window.Spotify) return this.createPlayer(accessToken, resolve, reject)
 
+      // O callback TEM que existir antes do script entrar no DOM: o SDK o
+      // invoca assim que carrega, e com o script em cache isso acontece antes
+      // da linha seguinte rodar — a barra ficava presa em "Carregando…" para
+      // sempre porque ninguem chamava createPlayer.
+      window.onSpotifyWebPlaybackSDKReady = () => this.createPlayer(accessToken, resolve, reject)
+
       const script = document.createElement("script")
       script.src = "https://sdk.scdn.co/spotify-player.js"
+      script.onerror = () => reject(new Error("Spotify SDK failed to load"))
       document.head.appendChild(script)
-      window.onSpotifyWebPlaybackSDKReady = () => this.createPlayer(accessToken, resolve, reject)
     })
   }
 
@@ -114,7 +120,20 @@ export default class extends Controller {
       this.deviceId = device_id
       resolve()
     })
-    this.player.addListener("not_ready", () => reject(new Error("Device not ready")))
+
+    // `not_ready` tambem dispara depois, quando o device sai do ar. Rejeitar
+    // uma promise ja resolvida nao faz nada, mas zerar o deviceId garante que
+    // o proximo play reconecte em vez de tocar num device morto.
+    this.player.addListener("not_ready", () => {
+      this.deviceId = null
+      reject(new Error("Device not ready"))
+    })
+
+    // Sem estes listeners uma falha de auth/conta ficava silenciosa e a barra
+    // parecia apenas "travada".
+    this.player.addListener("initialization_error", ({ message }) => reject(new Error(message)))
+    this.player.addListener("authentication_error", ({ message }) => reject(new Error(message)))
+    this.player.addListener("account_error", ({ message }) => reject(new Error(message)))
     this.player.addListener("player_state_changed", (state) => {
       if (state && state.paused && this.playing) {
         this.playing = false
