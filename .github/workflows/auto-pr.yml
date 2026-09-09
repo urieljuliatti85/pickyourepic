@@ -48,14 +48,25 @@ jobs:
 
           # --fill takes the title and body from the commits, so the PR says
           # whatever the commit messages already say.
-          if ! gh pr create --base main --head "$BRANCH" --fill; then
+          if ! url=$(gh pr create --base main --head "$BRANCH" --fill); then
             echo "No PR created: the branch has nothing main does not already have."
             exit 0
           fi
 
-          number=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')
+          # The number comes off the URL that create prints. Asking `gh pr list`
+          # for it instead raced the API: the PR was not indexed yet, the number
+          # came back empty, and the two steps below were skipped even though
+          # the PR existed.
+          number="${url##*/}"
+
+          if [ -z "$number" ]; then
+            echo "::warning::PR created at $url but its number could not be read."
+            exit 0
+          fi
+
           echo "number=$number" >> "$GITHUB_OUTPUT"
           echo "created=true" >> "$GITHUB_OUTPUT"
+          echo "Opened PR #$number."
 
       # A PR opened with the default GITHUB_TOKEN does not trigger other
       # workflows, so ci.yml would never run on it and auto-merge would wait
