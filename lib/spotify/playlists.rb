@@ -106,7 +106,12 @@ module Spotify
         track_count: item.dig("tracks", "total"),
         artwork_url: largest_artwork(item["images"]),
         spotify_url: item.dig("external_urls", "spotify"),
-        owner_name: item.dig("owner", "display_name").presence
+        owner_name: item.dig("owner", "display_name").presence,
+        # The owner id decides whether the app can open this playlist at all:
+        # in development mode Spotify serves the contents of the caller's own
+        # playlists and refuses everyone else's with a 403. Carrying it here
+        # lets the list say so before the click rather than after.
+        owner_id: item.dig("owner", "id").presence
       }
     end
 

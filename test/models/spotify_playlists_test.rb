@@ -167,6 +167,16 @@ class SpotifyPlaylistsTest < ActiveSupport::TestCase
     assert_nil result[:track_count]
   end
 
+  # Development mode only opens the caller's own playlists, so the list needs the
+  # owner id to know which cards to offer.
+  test "the owner id comes through so the list can tell whose it is" do
+    result = Spotify::Playlists.normalize(
+      playlist_item("owner" => { "id" => "user_9", "display_name" => "isah.se" })
+    )
+
+    assert_equal "user_9", result[:owner_id]
+  end
+
   test "the owner name comes through when Spotify sends one" do
     result = Spotify::Playlists.normalize(
       playlist_item("owner" => { "display_name" => "isah.se" })

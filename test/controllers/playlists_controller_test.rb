@@ -9,7 +9,8 @@ class PlaylistsControllerTest < ActionDispatch::IntegrationTest
     {
       spotify_id: "pl_1", name: "Rock & Roll", description: nil,
       track_count: 20, artwork_url: nil,
-      spotify_url: "https://open.spotify.com/playlist/pl_1", owner_name: "someone"
+      spotify_url: "https://open.spotify.com/playlist/pl_1", owner_name: "someone",
+      owner_id: @user.spotify_account.spotify_uid
     }.merge(overrides)
   end
 
@@ -84,6 +85,31 @@ class PlaylistsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "a[href=?][data-turbo-frame=?]", playlist_path("pl_1"), "_top"
+  end
+
+  # Spotify refuses another user's playlist contents in development mode, so the
+  # list says which ones it can open rather than letting the click find out.
+  test "a playlist from someone else is listed but not linked" do
+    theirs = playlist(owner_id: "someone_else", name: "Not mine")
+
+    stub_method(Spotify::Playlists, :search, [ theirs ]) do
+      get playlists_path(q: "rock")
+    end
+
+    assert_response :success
+    assert_match "Not mine", response.body
+    assert_select "a[href=?]", playlist_path("pl_1"), false
+    assert_match "only opens your own playlists", response.body
+  end
+
+  test "a playlist of your own is linked" do
+    stub_method(Spotify::Playlists, :search, [ playlist ]) do
+      get playlists_path(q: "rock")
+    end
+
+    assert_response :success
+    assert_select "a[href=?]", playlist_path("pl_1")
+    assert_no_match "only opens your own playlists", response.body
   end
 
   # SHOW

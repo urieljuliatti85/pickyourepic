@@ -1,4 +1,10 @@
-<%# The result list, in its own frame so typing swaps only this block. %>
+<%# The result list, in its own frame so typing swaps only this block.
+
+    Spotify serves the contents of the signed-in user's own playlists and
+    refuses everyone else's with a 403 while the app is in development mode, and
+    leaving that mode needs 250k monthly users. So the ones that cannot be
+    opened are shown but not offered: a dead link that explains itself after the
+    click is worse than a card that says so before it. %>
 <% if query.blank? %>
   <p class="text-sm text-neutral-500">
     Type a genre, a mood, a decade — whatever you would search on Spotify.
@@ -8,7 +14,10 @@
 <% else %>
   <div class="grid gap-4 sm:grid-cols-2">
     <% playlists.each do |playlist| %>
-      <article class="card-dark flex items-center gap-4 rounded-2xl p-4">
+      <% openable = playlist[:owner_id].present? &&
+                    playlist[:owner_id] == current_user.spotify_account&.spotify_uid %>
+
+      <article class="card-dark flex items-center gap-4 rounded-2xl p-4 <%= "opacity-60" unless openable %>">
         <% if playlist[:artwork_url].present? %>
           <%= image_tag playlist[:artwork_url], alt: "", loading: "lazy",
                 class: "h-16 w-16 flex-none rounded-xl object-cover" %>
@@ -20,13 +29,17 @@
 
         <div class="min-w-0 flex-1">
           <h2 class="truncate text-sm font-semibold text-neutral-100">
-            <%# turbo_frame: "_top" because this link lives inside the results
-                frame: without it Turbo looks for a "playlist_results" frame in
-                the playlist page, finds none, and renders "Content missing"
-                instead of navigating. %>
-            <%= link_to playlist[:name], playlist_path(playlist[:spotify_id]),
-                  data: { turbo_frame: "_top" },
-                  class: "hover:text-lime-accent" %>
+            <% if openable %>
+              <%# turbo_frame: "_top" because this link lives inside the results
+                  frame: without it Turbo looks for a "playlist_results" frame in
+                  the playlist page, finds none, and renders "Content missing"
+                  instead of navigating. %>
+              <%= link_to playlist[:name], playlist_path(playlist[:spotify_id]),
+                    data: { turbo_frame: "_top" },
+                    class: "hover:text-lime-accent" %>
+            <% else %>
+              <%= playlist[:name] %>
+            <% end %>
           </h2>
 
           <p class="mt-0.5 truncate text-xs text-neutral-400">
@@ -40,6 +53,12 @@
               · <%= pluralize(playlist[:track_count], "track") %>
             <% end %>
           </p>
+
+          <% unless openable %>
+            <p class="mt-1 truncate text-xs text-neutral-500">
+              <em>Spotify only opens your own playlists to this app.</em>
+            </p>
+          <% end %>
         </div>
       </article>
     <% end %>
