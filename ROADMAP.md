@@ -345,6 +345,16 @@ serves any background, and `icon.png` is generated from the same file. The
 grooves only read above ~32px, so they sit behind a `detailed` flag: on in
 the landing page lockup, off in the nav.
 
-The wordmark is typography (Tailwind tracking), not the drawn lettering from
-the original art. Vectorizing that lettering is open if the arch and serifs
-matter.
+- [x] Wordmark from the drawn lettering
+
+**Note:** Green on CI at `f3418cf`. The lockup first set "PickYourEpic" in
+Tailwind sans as a stand-in.
+It is now the lettering from the art: a slab serif with the banner sweeping
+under the word and folding into a point on the right
+(`shared/_logo_wordmark`). The glyphs are Rockwell Bold converted to
+outlines, not set as text — the app loads no serif face, so with
+`font-family` the drawing would change from machine to machine. The banner is
+drawn to match the art.
+
+The one thing not carried over is the slight arch on the baseline of the
+original; the letters sit flat.
