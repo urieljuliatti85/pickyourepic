@@ -50,6 +50,15 @@
         <% end %>
 
         <%= render "shared/favorite_button", epic: @epic %>
+
+        <%# Apagar e irreversivel e leva junto os Picks que o Epic recebeu,
+            entao o turbo_confirm diz o que se perde, nao so "tem certeza?". %>
+        <% if current_user == @epic.user %>
+          <%= button_to "Excluir", epic_path(@epic), method: :delete,
+                form: { class: "inline-block" },
+                data: { turbo_confirm: "Excluir \"#{@epic.title}\"? Os Picks que ele recebeu se perdem." },
+                class: "rounded-full border border-red-500/40 px-4 py-2 text-sm font-semibold text-red-300 hover:bg-red-500/10" %>
+        <% end %>
       </div>
     </div>
 

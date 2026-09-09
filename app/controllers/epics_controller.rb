@@ -1,8 +1,9 @@
 class EpicsController < ApplicationController
   before_action :require_authentication, except: [ :show ]
   before_action :set_track, only: [ :new, :create ]
-  before_action :set_epic, only: [ :show ]
+  before_action :set_epic, only: [ :show, :destroy ]
   before_action :authorize_epic_visibility, only: [ :show ]
+  before_action :authorize_epic_owner, only: [ :destroy ]
 
   # GET /epics/new?track_id=:id
   def new
@@ -28,6 +29,14 @@ class EpicsController < ApplicationController
     @picks = @epic.picks.includes(:user).order(created_at: :desc)
   end
 
+  # DELETE /epics/:id
+  def destroy
+    # Picks, Favorites e CollectionEpics saem junto (dependent: :destroy no
+    # model), entao o Epic de outra pessoa some das Collections que o continham.
+    @epic.destroy
+    redirect_to profile_path(current_user), notice: "Epic removido."
+  end
+
   private
 
   def set_track
@@ -43,6 +52,14 @@ class EpicsController < ApplicationController
   def authorize_epic_visibility
     if @epic.visibility_private? && current_user != @epic.user
       redirect_to root_path, alert: "Epic não encontrado."
+    end
+  end
+
+  # Só o dono apaga. Redireciona em vez de levantar, como o resto do app
+  # (CLAUDE.md § Authorization).
+  def authorize_epic_owner
+    unless @epic.user == current_user
+      redirect_to epic_path(@epic), alert: "Acesso não autorizado."
     end
   end
 
