@@ -26,7 +26,7 @@
   %>
 
   <button type="button"
-          class="inline-flex items-center gap-2 rounded-full bg-lime-accent px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-neutral-950 hover:bg-lime-bright"
+          class="inline-flex items-center gap-2 rounded-full bg-lime-accent px-8 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-neutral-950 hover:bg-lime-bright"
           data-controller="play-request"
           data-play-request-queue-value="<%= queue.to_json %>"
           data-action="play-request#playQueue">
@@ -42,5 +42,5 @@
 <% else %>
   <%= button_to "Sign in to listen", auth_spotify_path,
         form: { data: { turbo: false } },
-        class: "inline-flex items-center gap-2 rounded-full bg-lime-accent px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-neutral-950 hover:bg-lime-bright" %>
+        class: "inline-flex items-center gap-2 rounded-full bg-lime-accent px-8 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-neutral-950 hover:bg-lime-bright" %>
 <% end %>

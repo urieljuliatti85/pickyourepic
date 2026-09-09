@@ -1,9 +1,9 @@
-<nav class="sticky top-0 z-20 border-b border-white/5 bg-ink/85 backdrop-blur">
+<nav class="top-bar sticky top-0 z-20">
   <div class="mx-auto flex max-w-7xl items-center gap-6 px-4 py-3.5 sm:px-6">
 
     <%# The mark disappears once the sidebar shows: there it already sits atop the column. %>
-    <%= link_to root_path, class: "flex shrink-0 items-center gap-2 text-sm font-bold tracking-tight lg:hidden" do %>
-      <span class="text-lime-accent"><%= render "shared/logo_mark" %></span>
+    <%= link_to root_path, class: "flex shrink-0 items-center gap-2 text-sm font-bold tracking-tight text-white lg:hidden" do %>
+      <span class="text-white"><%= render "shared/logo_mark" %></span>
       Pick Up Your Epic!
     <% end %>
 
@@ -15,7 +15,9 @@
         `whitespace-nowrap` because "Public Collections" is two words and would
         otherwise wrap into two lines inside its own tab. %>
     <div class="flex items-center gap-6 text-sm font-semibold uppercase tracking-[0.12em] sm:gap-9">
-      <% tab = ->(active) { "whitespace-nowrap pb-1.5 #{active ? "border-b-2 border-lime-accent text-neutral-50" : "text-neutral-400 hover:text-neutral-100"}" } %>
+      <%# White at two strengths rather than the app's greys: those were picked
+          against the dark ink and turn muddy on this lighter ground. %>
+      <% tab = ->(active) { "whitespace-nowrap pb-1.5 #{active ? "border-b-2 border-lime-bright text-white" : "text-white/65 hover:text-white"}" } %>
 
       <%= link_to "Discover", discover_path, class: tab.call(current_page?(discover_path)) %>
 
@@ -34,23 +36,23 @@
       <%= form_with url: tracks_path, method: :get, class: "ml-auto hidden max-w-xs flex-1 sm:block" do |form| %>
         <%= form.search_field :q, value: params[:q],
               placeholder: "Search for a song…", autocomplete: "off",
-              class: "w-full rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm placeholder:text-neutral-500 focus:border-lime-accent focus:outline-none" %>
+              class: "w-full rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-sm text-white placeholder:text-white/60 focus:border-white focus:outline-none" %>
       <% end %>
     <% end %>
 
     <div class="ml-auto flex shrink-0 items-center gap-3 text-sm sm:ml-0">
       <% if signed_in? %>
         <%= link_to "@#{current_user.username}", profile_path(current_user),
-              class: "rounded-full bg-white/5 px-3 py-1.5 font-medium text-neutral-100 hover:bg-lime-accent hover:text-neutral-950" %>
+              class: "rounded-full bg-white/15 px-3 py-1.5 font-medium text-white hover:bg-white hover:text-neutral-900" %>
 
         <%# The sign out route existed from the start, but no screen linked to
             it — whoever signed in had no way out. %>
         <%= button_to "Sign out", sign_out_path, method: :delete,
-              class: "text-neutral-500 underline underline-offset-4 hover:text-neutral-300" %>
+              class: "whitespace-nowrap text-white underline underline-offset-4 hover:text-white/80" %>
       <% else %>
         <%= button_to "Sign in", auth_spotify_path,
               form: { data: { turbo: false } },
-              class: "rounded-full bg-lime-accent px-4 py-1.5 font-semibold text-neutral-950 hover:bg-lime-bright" %>
+              class: "rounded-full bg-white px-4 py-1.5 font-semibold uppercase tracking-[0.12em] text-neutral-900 hover:bg-white/90" %>
       <% end %>
     </div>
   </div>

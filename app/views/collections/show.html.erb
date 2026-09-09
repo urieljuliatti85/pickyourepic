@@ -40,12 +40,12 @@
 
       <% if current_user == @collection.user %>
         <%= link_to "Edit", edit_collection_path(@collection),
-              class: "rounded-full border border-lime-accent/60 px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-lime-accent hover:bg-lime-accent/10" %>
+              class: "rounded-full border border-lime-accent/60 px-8 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-lime-accent hover:bg-lime-accent/10" %>
 
         <%= button_to "Delete", collection_path(@collection), method: :delete,
               form: { class: "inline-block" },
               data: { turbo_confirm: "Are you sure?" },
-              class: "rounded-full border border-red-500/40 px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-red-300 hover:bg-red-500/10" %>
+              class: "rounded-full border border-red-500/40 px-8 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-red-300 hover:bg-red-500/10" %>
       <% end %>
     </div>
   </section>
@@ -106,19 +106,19 @@
 
   <% if current_user == @collection.user %>
     <section class="mt-8 rounded-3xl border border-white/10 bg-ink-soft p-6 sm:p-8">
-      <h3 class="text-xs font-semibold uppercase tracking-wider text-neutral-400">Add Epic</h3>
+      <h3 class="text-xs font-semibold uppercase tracking-[0.12em]r text-neutral-400">Add Epic</h3>
 
       <%# This field used to ask for the Epic's numeric id; the search now
           resolves it by Epic title, song or artist. %>
       <p class="mt-3">
         <%= link_to "Search for an Epic", new_collection_collection_epic_path(@collection),
-              class: "inline-block rounded-full bg-lime-accent px-8 py-2 text-sm font-semibold uppercase tracking-wide text-neutral-950 hover:bg-lime-bright" %>
+              class: "inline-block rounded-full bg-lime-accent px-8 py-2 text-sm font-semibold uppercase tracking-[0.12em] text-neutral-950 hover:bg-lime-bright" %>
       </p>
     </section>
   <% end %>
 
   <div class="mt-8">
     <%= link_to "Back", collections_path,
-          class: "rounded-full border border-lime-accent/60 px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-lime-accent hover:bg-lime-accent/10" %>
+          class: "rounded-full border border-lime-accent/60 px-8 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-lime-accent hover:bg-lime-accent/10" %>
   </div>
 </div>
