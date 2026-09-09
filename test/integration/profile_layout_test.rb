@@ -40,7 +40,7 @@ class ProfileLayoutTest < ActionDispatch::IntegrationTest
     get profile_path(@owner)
 
     assert_response :success
-    assert_select "li", /por @someone/
+    assert_select "li", /by @someone/
   end
 
   test "the private profile page renders without the epic lists" do

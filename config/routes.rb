@@ -16,10 +16,17 @@ Rails.application.routes.draw do
   end
   resources :profiles, only: [ :show ], param: :username
   resources :favorites, only: [ :index ]
+  # Everyone's public Collections. It sits outside `resources :collections`,
+  # which is the user's own area and requires signing in — this one is public,
+  # like Discover is for Epics. It is declared first so that "discover" is not
+  # swallowed by collections#show as an :id.
+  get "collections/discover", to: "public_collections#index", as: :public_collections
+
   resources :collections do
     resources :collection_epics, only: [ :new, :create, :destroy ]
   end
   get "discover", to: "discover#index"
+
 
   namespace :api do
     get "playback_token", to: "playback#token"

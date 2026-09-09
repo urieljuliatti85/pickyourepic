@@ -5,9 +5,15 @@
     This partial used to carry its own controller with a separate device —
     leaving the page killed the sound, and two devices fought over playback. %>
 
-<% if current_user&.spotify_account&.premium? && collection.collection_epics.any? %>
+<%# Only what the viewer may see: the queue carries titles and track URIs into
+    the HTML, so an unfiltered one would leak the owner's private Epics to a
+    visitor even though no card shows them
+    (Collection#collection_epics_visible_to). %>
+<% rows = collection.collection_epics_visible_to(current_user) %>
+
+<% if current_user&.spotify_account&.premium? && rows.any? %>
   <%
-    queue = collection.collection_epics.includes(epic: :track).map do |ce|
+    queue = rows.map do |ce|
       {
         uri: "spotify:track:#{ce.epic.track.spotify_id}",
         startTime: ce.epic.start_time,

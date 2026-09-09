@@ -14,10 +14,12 @@
 
       <%= link_to "Discover", discover_path, class: tab.call(current_page?(discover_path)) %>
 
+      <%= link_to "Collections", public_collections_path, class: tab.call(current_page?(public_collections_path)) %>
+
       <% if signed_in? %>
         <%# Your own profile is already linked from the @handle on the right;
             two entries to the same page would only take up space. %>
-        <%= link_to "Collections", collections_path, class: tab.call(current_page?(collections_path)) %>
+        <%= link_to "Mine", collections_path, class: tab.call(current_page?(collections_path)) %>
       <% end %>
     </div>
 

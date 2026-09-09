@@ -30,7 +30,11 @@ class HomeTest < ApplicationSystemTestCase
 
     # The nav was only rendered by tracks/index, so the rest of the app had no
     # navigation at all.
+    # "Collections" is everyone's public ones; "Mine" is the user's own area.
     click_link "Collections"
+    assert_current_path public_collections_path
+
+    click_link "Mine"
     assert_current_path collections_path
 
     within("nav") { click_link "@#{user.username}" }
