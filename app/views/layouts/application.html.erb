@@ -19,16 +19,25 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="h-full bg-neutral-950 text-neutral-100 antialiased">
-    <%# Nav e flash no layout: cada um era renderizado por uma pagina isolada,
-        entao o resto da app ficava sem navegacao e sem mensagens. %>
-    <%= render "shared/nav" %>
+  <body class="h-full bg-ink text-neutral-100 antialiased">
+    <%# Shell do web player: sidebar fixa a esquerda (a partir de lg), conteudo
+        deslocado por lg:pl-64, e a barra de player colada no rodape. %>
+    <%= render "shared/sidebar" %>
 
-    <main class="min-h-full">
-      <div class="max-w-4xl mx-auto px-4 pt-4">
-        <%= render "shared/flash" %>
-      </div>
-      <%= yield %>
-    </main>
+    <div class="lg:pl-64">
+      <%# Nav e flash no layout: cada um era renderizado por uma pagina isolada,
+          entao o resto da app ficava sem navegacao e sem mensagens. %>
+      <%= render "shared/nav" %>
+
+      <%# pb-24 reserva o espaco da barra fixa, senao ela cobre o fim da pagina. %>
+      <main class="min-h-full pb-24">
+        <div class="max-w-4xl mx-auto px-4 pt-4">
+          <%= render "shared/flash" %>
+        </div>
+        <%= yield %>
+      </main>
+    </div>
+
+    <%= render "shared/player_bar" %>
   </body>
 </html>

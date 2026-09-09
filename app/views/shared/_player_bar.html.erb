@@ -1,0 +1,41 @@
+<%# Barra de player fixa no rodape, como na referencia.
+
+    Vive dentro de um turbo-frame `permanent`: o Turbo reaproveita este mesmo
+    elemento entre navegacoes em vez de recria-lo, entao o device do SDK
+    sobrevive e a musica nao para ao trocar de pagina.
+
+    So aparece para quem pode tocar (Premium); comeca escondida e a propria
+    barra se revela no primeiro play. %>
+<% if current_user&.spotify_account&.premium? %>
+  <%= turbo_frame_tag "player_bar", data: { turbo_permanent: true } do %>
+    <div class="hidden fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-ink-rail/95 backdrop-blur"
+         data-controller="player-bar"
+         data-player-bar-token-url-value="<%= api_playback_token_path %>">
+      <div class="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:gap-6 sm:px-6">
+
+        <div class="min-w-0 flex-1 sm:flex-none sm:w-64">
+          <p class="truncate text-sm font-semibold" data-player-bar-target="title">—</p>
+          <p class="truncate text-xs text-neutral-400" data-player-bar-target="subtitle"></p>
+        </div>
+
+        <button type="button"
+                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/20 text-lg hover:border-lime-accent hover:text-lime-accent"
+                data-player-bar-target="button"
+                data-action="player-bar#toggle">▶</button>
+
+        <div class="hidden flex-1 items-center gap-3 sm:flex">
+          <span class="w-10 text-right text-xs tabular-nums text-neutral-400"
+                data-player-bar-target="elapsed">0:00</span>
+
+          <div class="h-1 flex-1 overflow-hidden rounded-full bg-white/10">
+            <div class="h-full w-0 rounded-full bg-lime-accent transition-[width] duration-500 ease-linear"
+                 data-player-bar-target="progress"></div>
+          </div>
+
+          <span class="w-10 text-xs tabular-nums text-neutral-400"
+                data-player-bar-target="total">0:00</span>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>

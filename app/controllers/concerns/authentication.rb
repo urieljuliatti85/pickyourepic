@@ -2,10 +2,32 @@ module Authentication
   extend ActiveSupport::Concern
 
   included do
-    helper_method :current_user, :signed_in?
+    helper_method :current_user, :signed_in?, :sidebar_epics, :sidebar_collections
   end
 
   private
+
+  # A sidebar aparece em toda pagina, entao estas duas consultas rodariam a
+  # cada request. Memoizadas: so acontecem se a sidebar de fato renderizar
+  # (visitante deslogado nao dispara nenhuma), e uma unica vez por request.
+  SIDEBAR_LIMIT = 8
+
+  def sidebar_epics
+    return [] unless signed_in?
+
+    @sidebar_epics ||= current_user.epics
+                                   .includes(:track)
+                                   .order(created_at: :desc)
+                                   .limit(SIDEBAR_LIMIT)
+  end
+
+  def sidebar_collections
+    return [] unless signed_in?
+
+    @sidebar_collections ||= current_user.collections
+                                         .order(created_at: :desc)
+                                         .limit(SIDEBAR_LIMIT)
+  end
 
   def current_user
     return @current_user if defined?(@current_user)

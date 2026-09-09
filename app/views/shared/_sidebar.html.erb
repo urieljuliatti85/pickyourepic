@@ -1,0 +1,56 @@
+<%# Sidebar fixa a esquerda, como a coluna "Playlist" da referencia.
+
+    Escondida no mobile (a app e mobile-first: la a navegacao continua sendo a
+    nav do topo) e fixa a partir de lg. %>
+<aside class="hidden lg:flex lg:fixed lg:inset-y-0 lg:left-0 lg:w-64 lg:flex-col
+              border-r border-white/5 bg-ink-rail">
+
+  <div class="flex items-center gap-2 px-6 py-5">
+    <span class="text-lime-accent"><%= render "shared/logo_mark" %></span>
+    <span class="text-sm font-bold tracking-tight">Pick Up Your Epic!</span>
+  </div>
+
+  <nav class="px-3">
+    <%= link_to discover_path,
+          class: "flex items-center gap-3 rounded-lg px-3 py-2 text-sm #{current_page?(discover_path) ? "bg-white/5 font-semibold text-lime-accent" : "text-neutral-400 hover:text-neutral-100"}" do %>
+      <span aria-hidden="true">◎</span> Discover
+    <% end %>
+
+    <% if signed_in? %>
+      <%= link_to tracks_path,
+            class: "flex items-center gap-3 rounded-lg px-3 py-2 text-sm #{current_page?(tracks_path) ? "bg-white/5 font-semibold text-lime-accent" : "text-neutral-400 hover:text-neutral-100"}" do %>
+        <span aria-hidden="true">⌕</span> Buscar
+      <% end %>
+
+      <%= link_to collections_path,
+            class: "flex items-center gap-3 rounded-lg px-3 py-2 text-sm #{current_page?(collections_path) ? "bg-white/5 font-semibold text-lime-accent" : "text-neutral-400 hover:text-neutral-100"}" do %>
+        <span aria-hidden="true">☰</span> Collections
+      <% end %>
+    <% end %>
+  </nav>
+
+  <% if signed_in? && sidebar_epics.any? %>
+    <div class="mt-6 min-h-0 flex-1 overflow-y-auto px-3 pb-6">
+      <p class="px-3 pb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+        Seus Epics
+      </p>
+
+      <ol class="space-y-0.5">
+        <% sidebar_epics.each_with_index do |epic, index| %>
+          <li>
+            <%= link_to epic_path(epic),
+                  class: "flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-white/5" do %>
+              <span class="w-4 shrink-0 text-xs tabular-nums text-neutral-600">
+                <%= format("%02d", index + 1) %>
+              </span>
+              <span class="min-w-0">
+                <span class="block truncate text-sm text-neutral-200"><%= epic.title %></span>
+                <span class="block truncate text-xs text-neutral-500"><%= epic.track.artist_name %></span>
+              </span>
+            <% end %>
+          </li>
+        <% end %>
+      </ol>
+    </div>
+  <% end %>
+</aside>

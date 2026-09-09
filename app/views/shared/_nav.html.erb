@@ -1,18 +1,38 @@
-<nav class="sticky top-0 z-10 border-b border-white/5 bg-ink/85 backdrop-blur">
-  <div class="mx-auto flex max-w-5xl items-center justify-between px-6 py-3.5">
-    <%= link_to root_path, class: "flex items-center gap-2 text-sm font-bold tracking-tight" do %>
+<nav class="sticky top-0 z-20 border-b border-white/5 bg-ink/85 backdrop-blur">
+  <div class="mx-auto flex max-w-7xl items-center gap-6 px-4 py-3.5 sm:px-6">
+
+    <%# A marca some quando a sidebar aparece: la ela ja esta no topo da coluna. %>
+    <%= link_to root_path, class: "flex shrink-0 items-center gap-2 text-sm font-bold tracking-tight lg:hidden" do %>
       <span class="text-lime-accent"><%= render "shared/logo_mark" %></span>
       Pick Up Your Epic!
     <% end %>
 
-    <div class="flex items-center gap-5 text-sm">
-      <%# Discover e publico; o resto exige sessao. %>
-      <%= link_to "Discover", discover_path, class: "text-neutral-400 hover:text-neutral-100" %>
+    <%# Abas, como DISCOVER / MY LIBRARY / RADIO da referencia. A aba ativa
+        ganha o sublinhado ciano. %>
+    <div class="flex items-center gap-5 text-sm font-semibold uppercase tracking-wide">
+      <% tab = ->(active) { active ? "border-b-2 border-lime-accent pb-1 text-neutral-100" : "pb-1 text-neutral-500 hover:text-neutral-200" } %>
+
+      <%= link_to "Discover", discover_path, class: tab.call(current_page?(discover_path)) %>
 
       <% if signed_in? %>
-        <%= link_to "Search", tracks_path, class: "text-neutral-400 hover:text-neutral-100" %>
-        <%= link_to "Collections", collections_path, class: "text-neutral-400 hover:text-neutral-100" %>
-        <%# Antes apontava para root_path, entao o proprio perfil nao tinha link. %>
+        <%# O proprio perfil ja tem link no @handle a direita; duas entradas
+            para a mesma pagina so ocupariam espaco. %>
+        <%= link_to "Collections", collections_path, class: tab.call(current_page?(collections_path)) %>
+      <% end %>
+    </div>
+
+    <% if signed_in? %>
+      <%# Busca no topo, como na referencia. Continua sendo o form real de
+          /tracks: um GET simples, sem JS. %>
+      <%= form_with url: tracks_path, method: :get, class: "ml-auto hidden max-w-xs flex-1 sm:block" do |form| %>
+        <%= form.search_field :q, value: params[:q],
+              placeholder: "Buscar música…", autocomplete: "off",
+              class: "w-full rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm placeholder:text-neutral-500 focus:border-lime-accent focus:outline-none" %>
+      <% end %>
+    <% end %>
+
+    <div class="ml-auto flex shrink-0 items-center gap-3 text-sm sm:ml-0">
+      <% if signed_in? %>
         <%= link_to "@#{current_user.username}", profile_path(current_user),
               class: "rounded-full bg-white/5 px-3 py-1.5 font-medium text-neutral-100 hover:bg-lime-accent hover:text-neutral-950" %>
 

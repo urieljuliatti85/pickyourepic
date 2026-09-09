@@ -1,0 +1,14 @@
+<%# Botao de Pick/Unpick. Estava inline no Discover; virou partial porque o
+    hero e os cards da linha precisam do mesmo comportamento.
+
+    As tres condicoes espelham as regras do model (CLAUDE.md § Authorization):
+    nao se pica o proprio Epic, e um Pick por user por Epic. %>
+<% if current_user && current_user.id != epic.user_id %>
+  <% if current_user.picks.exists?(epic_id: epic.id) %>
+    <%= button_to "Picked ✓", epic_pick_path(epic), method: :delete,
+          class: "rounded-full border border-lime-accent/40 px-4 py-2 text-sm font-semibold text-lime-accent hover:bg-lime-accent/10" %>
+  <% else %>
+    <%= button_to "Pick", epic_pick_path(epic), method: :post,
+          class: "rounded-full bg-lime-accent px-4 py-2 text-sm font-semibold text-neutral-950 hover:bg-lime-bright" %>
+  <% end %>
+<% end %>

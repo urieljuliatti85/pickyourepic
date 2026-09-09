@@ -1,59 +1,82 @@
 <% content_for :title, "Discover — Pick Up Your Epic!" %>
 
-<div class="mx-auto max-w-5xl px-6 py-12">
-  <h1 class="text-4xl font-bold tracking-tight">
+<div class="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+
+  <%# O h1 e da pagina, nao do hero: o titulo do Epic em destaque muda a cada
+      visita, e a pagina precisa de um cabecalho estavel. %>
+  <h1 class="text-2xl font-bold tracking-tight">
     Discover <span class="text-lime-accent">Epics.</span>
   </h1>
-  <p class="mt-3 text-neutral-400">Os momentos mais pickados primeiro.</p>
+  <p class="mt-1 text-sm text-neutral-400">Os momentos mais pickados primeiro.</p>
 
   <% if @epics.any? %>
-    <div class="mt-10 grid gap-4">
-      <% @epics.each do |epic| %>
-        <div class="card-dark rounded-2xl p-5">
-          <div class="flex items-start justify-between gap-4">
-            <div class="min-w-0">
-              <h2 class="text-lg font-semibold">
-                <%= link_to epic.title, epic_path(epic), class: "hover:text-lime-accent" %>
-              </h2>
+    <%# Hero: o Epic mais pickado, como o bloco "Flume: Skin" da referencia. %>
+    <% featured = @epics.first %>
+    <section class="hero-glow mt-6 overflow-hidden rounded-3xl px-6 py-10 sm:px-10 sm:py-14">
+      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-lime-accent">
+        Mais pickado
+      </p>
 
-              <p class="mt-1 text-sm text-neutral-300">
-                <strong class="font-medium"><%= epic.track.name %></strong>
-                <span class="text-neutral-500">· <%= epic.track.artist_name %></span>
-              </p>
+      <h2 class="mt-3 max-w-2xl text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
+        <%= featured.title %>
+      </h2>
 
-              <p class="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-neutral-500">
-                <span class="rounded-full bg-white/5 px-2 py-0.5 font-medium text-neutral-300">
-                  <%= number_to_duration(epic.start_time) %> – <%= number_to_duration(epic.end_time) %>
-                </span>
-                <span>
-                  por <%= link_to epic.user.username, profile_path(epic.user), class: "text-neutral-300 hover:text-lime-accent" %>
-                </span>
-                <span>· <%= pluralize(epic.picks.count, "Pick") %></span>
-              </p>
+      <p class="mt-3 max-w-xl text-neutral-300">
+        <strong class="font-medium"><%= featured.track.name %></strong>
+        <span class="text-neutral-400">· <%= featured.track.artist_name %></span>
+      </p>
 
-              <div class="mt-3">
-                <%= render "shared/epic_player", epic: epic %>
-              </div>
-            </div>
+      <p class="mt-1 text-sm text-neutral-400">
+        <%= number_to_duration(featured.start_time) %> – <%= number_to_duration(featured.end_time) %>
+        · <%= pluralize(featured.picks.count, "Pick") %>
+        · por <%= link_to featured.user.username, profile_path(featured.user), class: "text-neutral-200 hover:text-lime-accent" %>
+      </p>
 
-            <div class="shrink-0">
-              <% if current_user && current_user.id != epic.user_id && !current_user.picks.exists?(epic_id: epic.id) %>
-                <%= button_to "Pick",
-                    epic_pick_path(epic),
-                    method: :post,
-                    class: "rounded-full bg-lime-accent px-4 py-2 text-sm font-semibold text-neutral-950 hover:bg-lime-bright" %>
-              <% elsif current_user && current_user.picks.exists?(epic_id: epic.id) %>
-                <%# O selo passa a ser acionavel: desfazer o Pick sem sair do Discover. %>
-                <%= button_to "Picked ✓",
-                    epic_pick_path(epic),
-                    method: :delete,
-                    class: "rounded-full border border-lime-accent/40 px-4 py-2 text-sm font-semibold text-lime-accent hover:bg-lime-accent/10" %>
+      <div class="mt-7 flex flex-wrap items-center gap-3">
+        <%= render "shared/epic_play_button", epic: featured %>
+        <%= render "shared/pick_button", epic: featured %>
+      </div>
+    </section>
+
+    <%# Linha horizontal, como "Popular Albums". %>
+    <% rest = @epics.drop(1) %>
+    <% if rest.any? %>
+      <section class="mt-12">
+        <h2 class="text-2xl font-bold tracking-tight">Epics em alta</h2>
+
+        <div class="rail mt-5 pb-2">
+          <% rest.each do |epic| %>
+            <article class="card-dark w-56 rounded-2xl p-4">
+              <% if epic.track.album_artwork_url.present? %>
+                <%= image_tag epic.track.album_artwork_url, alt: "",
+                      class: "mb-3 aspect-square w-full rounded-xl object-cover" %>
+              <% else %>
+                <div class="mb-3 aspect-square w-full rounded-xl bg-white/5"></div>
               <% end %>
-            </div>
-          </div>
+
+              <h3 class="truncate text-sm font-semibold">
+                <%= link_to epic.title, epic_path(epic), class: "hover:text-lime-accent" %>
+              </h3>
+              <p class="mt-0.5 truncate text-xs text-neutral-400">
+                <%= epic.track.artist_name %>
+              </p>
+              <p class="mt-2 text-xs text-neutral-500">
+                <%= number_to_duration(epic.start_time) %> – <%= number_to_duration(epic.end_time) %>
+                · <%= pluralize(epic.picks.count, "Pick") %>
+              </p>
+
+              <div class="mt-3 flex items-center gap-2">
+                <%= render "shared/epic_play_button", epic: epic %>
+              </div>
+
+              <div class="mt-2">
+                <%= render "shared/pick_button", epic: epic %>
+              </div>
+            </article>
+          <% end %>
         </div>
-      <% end %>
-    </div>
+      </section>
+    <% end %>
   <% else %>
     <div class="card-dark mt-10 rounded-2xl p-10 text-center">
       <p class="text-neutral-400">No public Epics yet. Be the first to create one!</p>

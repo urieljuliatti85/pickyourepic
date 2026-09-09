@@ -1,18 +1,22 @@
 @import "tailwindcss";
 
-/* Paleta do produto: fundo quase preto e verde-limao como unico acento.
+/* Paleta do produto: azul-marinho profundo com ciano como acento, seguindo a
+   referencia do web player. Os nomes dos tokens (ink, lime-accent) sao os
+   mesmos de antes de proposito — sao usados em toda a app, e trocar so os
+   valores recolore tudo sem mexer em cada view.
    Tailwind v4 le os tokens daqui, sem tailwind.config.js. */
 @theme {
-  --color-ink: #0a0a0a;
-  --color-ink-soft: #121212;
-  --color-lime-accent: #c4f042;
-  --color-lime-bright: #d8ff5e;
+  --color-ink: #0b1020;
+  --color-ink-soft: #121a30;
+  --color-ink-rail: #080d1a;
+  --color-lime-accent: #22d3ee;
+  --color-lime-bright: #67e8f9;
 }
 
-/* Gradiente dos blocos de destaque — o mesmo verde do acento, esmaecendo
-   para agua, como nos cards da referencia. */
+/* Gradiente dos blocos de destaque: o ciano do acento indo para o roxo do
+   fundo da referencia. */
 .surface-glow {
-  background-image: linear-gradient(135deg, #d8ff5e 0%, #a8ef7a 45%, #7fe3c0 100%);
+  background-image: linear-gradient(135deg, #22d3ee 0%, #3b82f6 45%, #7c3aed 100%);
 }
 
 /* Card escuro padrao: borda quase invisivel que so aparece no hover. */
@@ -24,4 +28,31 @@
 
 .card-dark:hover {
   border-color: rgb(255 255 255 / 0.16);
+}
+
+/* Hero da Discover: o degrade que na referencia vem da foto do artista. */
+.hero-glow {
+  background-image:
+    radial-gradient(ellipse at 75% 30%, rgb(34 211 238 / 0.28) 0%, transparent 55%),
+    radial-gradient(ellipse at 30% 80%, rgb(124 58 237 / 0.30) 0%, transparent 60%),
+    linear-gradient(120deg, #16203c 0%, #0d1426 100%);
+}
+
+/* Linha horizontal de cards, como "Popular Albums": rola no eixo x sem
+   estourar o body (a barra some, o gesto continua). */
+.rail {
+  display: flex;
+  gap: 1.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x proximate;
+}
+
+.rail::-webkit-scrollbar {
+  display: none;
+}
+
+.rail > * {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
 }
