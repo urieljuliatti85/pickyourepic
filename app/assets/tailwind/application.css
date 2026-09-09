@@ -28,7 +28,7 @@
    The text colours are its own: the app's greys were chosen against the dark
    ink and go muddy here. */
 .top-bar {
-  background-image: linear-gradient(100deg, #13123f 0%, #0e1449 55%, #110d43 100%);
+  background-image: linear-gradient(100deg, #385170 0%, #476B81 55%, #405D79 100%);
 }
 
 /* The highlight blocks' gradient: the reference's teal dissolving into its
