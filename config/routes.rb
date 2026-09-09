@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   delete "sign_out", to: "sessions#destroy", as: :sign_out
 
   resources :tracks, only: :index
-  resources :epics, only: [ :new, :create, :show ] do
+  resources :epics, only: [ :new, :create, :show, :destroy ] do
     # Um user tem no maximo um Pick por Epic, entao o destroy nao precisa de
     # id proprio: o Pick e identificado pelo par (current_user, epic).
     resource :pick, only: [ :create, :destroy ]

@@ -234,4 +234,86 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  # DESTROY
+
+  def own_epic(visibility: :public)
+    Epic.create!(user: @user, track: @track, title: "Meu Epic",
+                 start_time: 0, end_time: 30_000, visibility: visibility)
+  end
+
+  test "DELETE /epics/:id destroys the owner's epic" do
+    epic = own_epic
+
+    assert_difference "Epic.count", -1 do
+      delete epic_path(epic)
+    end
+
+    assert_redirected_to profile_path(@user)
+    assert_equal "Epic removido.", flash[:notice]
+  end
+
+  test "DELETE /epics/:id destroys a private epic too" do
+    epic = own_epic(visibility: :private)
+
+    assert_difference "Epic.count", -1 do
+      delete epic_path(epic)
+    end
+
+    assert_redirected_to profile_path(@user)
+  end
+
+  test "DELETE /epics/:id rejects a non-owner" do
+    other = User.create!(username: "alice")
+    epic = Epic.create!(user: other, track: @track, title: "Da Alice",
+                        start_time: 0, end_time: 30_000, visibility: :public)
+
+    assert_no_difference "Epic.count" do
+      delete epic_path(epic)
+    end
+
+    assert_redirected_to epic_path(epic)
+    assert_equal "Acesso não autorizado.", flash[:alert]
+  end
+
+  test "DELETE /epics/:id requires authentication" do
+    epic = own_epic
+    delete sign_out_path
+
+    assert_no_difference "Epic.count" do
+      delete epic_path(epic)
+    end
+
+    assert_redirected_to root_path
+  end
+
+  # O que o Epic recebeu sai junto (dependent: :destroy), senao sobrariam
+  # Picks e linhas de Collection apontando para um Epic que nao existe mais.
+  test "DELETE /epics/:id takes its picks, favorites and collection rows with it" do
+    epic = own_epic
+    picker = User.create!(username: "picker")
+    Pick.create!(user: picker, epic: epic)
+    Favorite.create!(user: @user, epic: epic)
+    collection = Collection.create!(user: picker, title: "Col", visibility: :public)
+    CollectionEpic.create!(collection: collection, epic: epic)
+
+    delete epic_path(epic)
+
+    assert_equal 0, Pick.where(epic_id: epic.id).count
+    assert_equal 0, Favorite.where(epic_id: epic.id).count
+    assert_equal 0, CollectionEpic.where(epic_id: epic.id).count
+    assert Collection.exists?(collection.id), "a Collection em si nao deve sumir"
+  end
+
+  # O botao so aparece para o dono: quem visita nao deve nem ver a opcao.
+  test "GET /epics/:id shows the delete button only to the owner" do
+    epic = own_epic
+
+    get epic_path(epic)
+    assert_select "button[type=submit]", text: "Excluir"
+
+    sign_in_as(create_signed_in_user(username: "bob"))
+    get epic_path(epic)
+    assert_select "button[type=submit]", { text: "Excluir", count: 0 }
+  end
 end

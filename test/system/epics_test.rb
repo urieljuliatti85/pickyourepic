@@ -61,4 +61,27 @@ class EpicsTest < ApplicationSystemTestCase
     epic = Epic.last
     assert_equal @user.id, epic.user_id
   end
+  # O turbo_confirm e um dialog nativo: sem aceita-lo o DELETE nao sai.
+  test "Owner deletes an Epic after confirming" do
+    epic = Epic.create!(user: @user, track: @track, title: "Para apagar",
+                        start_time: 0, end_time: 30_000, visibility: :public)
+
+    visit epic_path(epic)
+    accept_confirm { click_button "Excluir" }
+
+    assert_text "Epic removido."
+    assert_no_text "Para apagar"
+    assert_nil Epic.find_by(id: epic.id)
+  end
+
+  test "Dismissing the confirmation keeps the Epic" do
+    epic = Epic.create!(user: @user, track: @track, title: "Fica",
+                        start_time: 0, end_time: 30_000, visibility: :public)
+
+    visit epic_path(epic)
+    dismiss_confirm { click_button "Excluir" }
+
+    assert_text "Fica"
+    assert Epic.exists?(epic.id)
+  end
 end
