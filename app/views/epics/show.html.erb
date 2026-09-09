@@ -1,84 +1,118 @@
-<div class="max-w-2xl mx-auto p-4">
-  <h1 class="text-2xl font-bold mb-4"><%= @epic.title %></h1>
+<%# Mesmo layout do Create Epic (referencia do hero do Spotify): gradiente
+    teal->indigo, titulo grande, copy secundaria suave e botoes em pilula.
+    Os tokens (ink, lime-accent) sao os mesmos do resto do app. %>
+<div class="mx-auto max-w-2xl px-4 py-8">
 
-  <div class="mb-6 p-4 bg-gray-100 rounded">
-    <p class="text-sm text-gray-600">
-      Track: <strong><%= @epic.track.name %></strong> by <%= @epic.track.artist_name %>
-    </p>
-    <p class="text-sm text-gray-600">
-      Duration: <%= number_to_duration(@epic.track.duration_ms) %>
-    </p>
-  </div>
+  <div class="overflow-hidden rounded-3xl border border-white/10 bg-ink-soft shadow-2xl shadow-black/30">
 
-  <% if @epic.description.present? %>
-    <p class="mb-4"><%= @epic.description %></p>
-  <% end %>
-
-  <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded">
-    <p class="text-sm">
-      <strong>Interval:</strong> <%= number_to_duration(@epic.start_time) %> - <%= number_to_duration(@epic.end_time) %>
-    </p>
-    <p class="text-sm">
-      <strong>Duration:</strong> <%= number_to_duration(@epic.end_time - @epic.start_time) %>
-    </p>
-  </div>
-
-  <!-- Player -->
-  <div class="mb-6">
-    <%= render "shared/epic_play_button", epic: @epic %>
-  </div>
-
-  <div class="mb-6 p-4 bg-gray-100 rounded">
-    <p class="text-sm">
-      <strong>Visibility:</strong>
-      <% if @epic.visibility_public? %>
-        <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Public</span>
-      <% else %>
-        <span class="px-2 py-1 bg-gray-300 text-gray-800 rounded text-xs">Private</span>
-      <% end %>
-    </p>
-    <p class="text-sm text-gray-600">
-      Created by <strong><%= @epic.user.username %></strong>
-    </p>
-  </div>
-
-  <% if current_user && !(@epic.user_id == current_user.id) && @epic.visibility_public? %>
-    <div class="mb-4">
-      <%# Ja pickado vira o botao de desfazer: antes o "Pick this Epic"
-          aparecia de novo e o segundo clique so gerava erro de validacao. %>
-      <% if current_user.picks.exists?(epic_id: @epic.id) %>
-        <%= button_to "Picked ✓ — Unpick",
-            epic_pick_path(@epic),
-            method: :delete,
-            class: "px-4 py-2 border border-green-600 text-green-700 rounded hover:bg-green-50" %>
-      <% else %>
-        <%= button_to "Pick this Epic",
-            epic_pick_path(@epic),
-            method: :post,
-            class: "px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600" %>
-      <% end %>
-    </div>
-  <% end %>
-
-  <div class="mb-6 p-4 bg-gray-100 rounded">
-    <p class="text-sm">
-      <strong><%= pluralize(@picks.size, "Pick") %></strong>
-    </p>
-
-    <% if @picks.any? %>
-      <ul class="mt-3 flex flex-wrap gap-2">
-        <% @picks.each do |pick| %>
-          <li>
-            <%= link_to "@#{pick.user.username}",
-                profile_path(pick.user),
-                class: "inline-block px-2 py-1 bg-white border border-gray-300 rounded text-xs hover:bg-gray-50" %>
-          </li>
+    <div class="bg-gradient-to-br from-lime-accent/30 via-lime-accent/10 to-indigo-500/20 px-6 py-8 sm:px-10 sm:py-10">
+      <%# Capa ao lado do titulo, nao como banner: `Spotify::Search` guarda a
+          MENOR imagem do album (~64px), que esticada ficaria borrada. %>
+      <div class="flex items-start gap-5">
+        <% if @epic.track.album_artwork_url.present? %>
+          <%= image_tag @epic.track.album_artwork_url, alt: "",
+                class: "h-24 w-24 flex-none rounded-2xl object-cover shadow-lg shadow-black/40 sm:h-28 sm:w-28" %>
+        <% else %>
+          <div class="h-24 w-24 flex-none rounded-2xl bg-white/5 sm:h-28 sm:w-28"></div>
         <% end %>
-      </ul>
-    <% end %>
-  </div>
 
-  <div class="flex gap-2">
-    <%= link_to "Back", tracks_path, class: "px-4 py-2 border border-gray-300 rounded hover:bg-gray-100" %>
+        <div class="min-w-0">
+          <h1 class="text-3xl font-bold tracking-tight text-neutral-50 sm:text-4xl">
+            <%= @epic.title %>
+          </h1>
+
+          <p class="mt-2 max-w-lg text-sm leading-relaxed text-neutral-300 sm:text-base">
+            <strong class="font-semibold text-neutral-100"><%= @epic.track.name %></strong>
+            · <%= @epic.track.artist_name %>
+          </p>
+
+          <% if @epic.track.album_name.present? %>
+            <p class="mt-0.5 truncate text-xs text-neutral-400"><%= @epic.track.album_name %></p>
+          <% end %>
+
+          <% if @epic.description.present? %>
+            <p class="mt-1 max-w-lg text-sm leading-relaxed text-neutral-400">
+              <%= @epic.description %>
+            </p>
+          <% end %>
+        </div>
+      </div>
+
+      <%# Play e Pick lado a lado, como PLAY / FOLLOW da referencia. %>
+      <div class="mt-6 flex flex-wrap items-center gap-3">
+        <%= render "shared/epic_play_button", epic: @epic %>
+
+        <%# O partial ja cobre "nao e meu Epic" e "um Pick por user"; o
+            visibility_public? e a regra extra desta pagina, que mostra Epic
+            privado para o dono. %>
+        <% if @epic.visibility_public? %>
+          <%= render "shared/pick_button", epic: @epic %>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="px-6 py-8 sm:px-10">
+
+      <%# O trecho: e a informacao central de um Epic. %>
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
+        <p class="text-xs font-semibold uppercase tracking-wider text-neutral-400">Trecho</p>
+
+        <p class="mt-2 text-2xl font-semibold tabular-nums text-neutral-50">
+          <%= number_to_duration(@epic.start_time) %>
+          <span class="text-neutral-500">–</span>
+          <%= number_to_duration(@epic.end_time) %>
+        </p>
+
+        <p class="mt-1 text-sm text-neutral-400">
+          <%= number_to_duration(@epic.end_time - @epic.start_time) %> de
+          <%= number_to_duration(@epic.track.duration_ms) %>
+        </p>
+      </div>
+
+      <dl class="mt-4 grid gap-3 sm:grid-cols-2">
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <dt class="text-xs font-semibold uppercase tracking-wider text-neutral-400">Criado por</dt>
+          <dd class="mt-1">
+            <%= link_to "@#{@epic.user.username}", profile_path(@epic.user),
+                  class: "text-sm font-medium text-neutral-100 hover:text-lime-accent" %>
+          </dd>
+        </div>
+
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <dt class="text-xs font-semibold uppercase tracking-wider text-neutral-400">Visibilidade</dt>
+          <dd class="mt-1">
+            <% if @epic.visibility_public? %>
+              <span class="rounded-full bg-lime-accent/15 px-3 py-1 text-xs font-semibold text-lime-accent">Public</span>
+            <% else %>
+              <span class="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-neutral-300">Private</span>
+            <% end %>
+          </dd>
+        </div>
+      </dl>
+
+      <div class="mt-4 rounded-2xl border border-white/10 bg-white/5 p-5">
+        <p class="text-xs font-semibold uppercase tracking-wider text-neutral-400">
+          <%= pluralize(@picks.size, "Pick") %>
+        </p>
+
+        <% if @picks.any? %>
+          <ul class="mt-3 flex flex-wrap gap-2">
+            <% @picks.each do |pick| %>
+              <li>
+                <%= link_to "@#{pick.user.username}", profile_path(pick.user),
+                      class: "inline-block rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-neutral-300 hover:border-lime-accent/50 hover:text-neutral-100" %>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="mt-2 text-sm text-neutral-500">Ninguém pickou este Epic ainda.</p>
+        <% end %>
+      </div>
+
+      <div class="mt-8 flex flex-wrap items-center gap-3">
+        <%= link_to "Voltar", tracks_path,
+              class: "rounded-full border border-lime-accent/60 px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-lime-accent hover:bg-lime-accent/10" %>
+      </div>
+    </div>
   </div>
 </div>

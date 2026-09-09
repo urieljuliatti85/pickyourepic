@@ -32,7 +32,7 @@ class PicksTest < ApplicationSystemTestCase
   test "User can pick an epic from epic page" do
     visit epic_path(@public_epic)
 
-    click_button "Pick this Epic"
+    click_button "Pick"
 
     assert_text "Epic foi pickado!"
     assert_text "1 Pick"
@@ -40,20 +40,20 @@ class PicksTest < ApplicationSystemTestCase
 
   test "User can unpick an epic from epic page" do
     visit epic_path(@public_epic)
-    click_button "Pick this Epic"
+    click_button "Pick"
     assert_text "1 Pick"
 
-    click_button "Picked ✓ — Unpick"
+    click_button "Picked ✓"
 
     assert_text "Pick desfeito."
     assert_text "0 Picks"
     # Volta a oferecer o Pick, entao o usuario pode refazer.
-    assert_button "Pick this Epic"
+    assert_button "Pick"
   end
 
   test "Epic page lists who picked and links to their profiles" do
     visit epic_path(@public_epic)
-    click_button "Pick this Epic"
+    click_button "Pick"
 
     assert_text "1 Pick"
     # O nav tambem tem um link "@uriel", entao a busca e feita dentro da
@@ -65,7 +65,7 @@ class PicksTest < ApplicationSystemTestCase
 
   test "Unpicking from discover keeps the user on discover" do
     visit epic_path(@public_epic)
-    click_button "Pick this Epic"
+    click_button "Pick"
 
     visit discover_path
     click_button "Picked ✓"
@@ -79,7 +79,7 @@ class PicksTest < ApplicationSystemTestCase
     # O Epic privado e de outro user, entao a pagina inteira e negada — mais
     # forte do que apenas esconder o botao de Pick.
     assert_text "Epic não encontrado."
-    assert_no_button "Pick this Epic"
+    assert_no_button "Pick"
   end
 
   test "User cannot pick own epic" do
@@ -95,6 +95,6 @@ class PicksTest < ApplicationSystemTestCase
     visit epic_path(own_epic)
 
     assert_text "My Epic"
-    assert_no_button "Pick this Epic"
+    assert_no_button "Pick"
   end
 end
