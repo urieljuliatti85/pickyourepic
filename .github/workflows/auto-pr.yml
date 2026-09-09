@@ -1,0 +1,88 @@
+name: Auto PR
+
+# Opens a pull request for any branch pushed here, and queues it to merge once
+# CI is green. It never merges on its own: `--auto` hands the decision to
+# GitHub, which waits for the required checks. That is the point — CLAUDE.md §8
+# treats work as done only when CI passes on the pushed commit, so an
+# automation that merged straight away would defeat the rule it is meant to
+# serve.
+on:
+  push:
+    branches-ignore:
+      - main
+
+# Opening a PR needs more than the default read-only token.
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  open_and_queue:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          # gh reads the commit messages to fill the PR body, so it needs more
+          # than the single commit a shallow clone brings.
+          fetch-depth: 0
+
+      - name: Open the pull request, or reuse the open one
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+
+          # A second push to the same branch must not open a second PR.
+          existing=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number // empty')
+
+          if [ -n "$existing" ]; then
+            echo "number=$existing" >> "$GITHUB_OUTPUT"
+            echo "created=false" >> "$GITHUB_OUTPUT"
+            echo "Reusing open PR #$existing."
+            exit 0
+          fi
+
+          # --fill takes the title and body from the commits, so the PR says
+          # whatever the commit messages already say.
+          if ! gh pr create --base main --head "$BRANCH" --fill; then
+            echo "No PR created: the branch has nothing main does not already have."
+            exit 0
+          fi
+
+          number=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')
+          echo "number=$number" >> "$GITHUB_OUTPUT"
+          echo "created=true" >> "$GITHUB_OUTPUT"
+
+      # A PR opened with the default GITHUB_TOKEN does not trigger other
+      # workflows, so ci.yml would never run on it and auto-merge would wait
+      # for checks that never arrive. Closing and reopening the PR is the
+      # documented way out: the reopen comes from the API rather than from the
+      # token that created it, and CI picks it up.
+      - name: Wake CI up on the new PR
+        if: steps.pr.outputs.created == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh pr close "${{ steps.pr.outputs.number }}"
+          gh pr reopen "${{ steps.pr.outputs.number }}"
+
+      - name: Queue it to merge when the checks pass
+        if: steps.pr.outputs.number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          # --auto merges only after every required check is green. If the
+          # repository has auto-merge switched off, say so plainly rather than
+          # failing the run: the PR is open either way, and a red X here would
+          # read as a broken build.
+          if ! gh pr merge "${{ steps.pr.outputs.number }}" --merge --auto --delete-branch; then
+            echo "::warning::Could not queue auto-merge. Enable it with:"
+            echo "::warning::gh api -X PATCH repos/${{ github.repository }} -f allow_auto_merge=true"
+          fi
