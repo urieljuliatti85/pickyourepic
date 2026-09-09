@@ -7,10 +7,15 @@
       Pick Up Your Epic!
     <% end %>
 
-    <%# Tabs, like the reference's DISCOVER / MY LIBRARY / RADIO. The active tab
-        gets the cyan underline. %>
-    <div class="flex items-center gap-5 text-sm font-semibold uppercase tracking-wide">
-      <% tab = ->(active) { active ? "border-b-2 border-lime-accent pb-1 text-neutral-100" : "pb-1 text-neutral-500 hover:text-neutral-200" } %>
+    <%# Tabs, like the reference's DISCOVER / MY LIBRARY / RADIO: wide letter
+        spacing, generous gaps, and the active one in white over a cyan rule
+        that sits clear of the text. The inactive ones stay legible rather than
+        receding — in the reference they read as available, not disabled.
+
+        `whitespace-nowrap` because "Public Collections" is two words and would
+        otherwise wrap into two lines inside its own tab. %>
+    <div class="flex items-center gap-6 text-sm font-semibold uppercase tracking-[0.12em] sm:gap-9">
+      <% tab = ->(active) { "whitespace-nowrap pb-1.5 #{active ? "border-b-2 border-lime-accent text-neutral-50" : "text-neutral-400 hover:text-neutral-100"}" } %>
 
       <%= link_to "Discover", discover_path, class: tab.call(current_page?(discover_path)) %>
 

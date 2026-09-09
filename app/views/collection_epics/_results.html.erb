@@ -19,7 +19,7 @@
             </p>
             <p class="truncate text-xs text-neutral-500">
               <%= number_to_duration(epic.start_time) %>–<%= number_to_duration(epic.end_time) %>
-              · por @<%= epic.user.username %>
+              · by @<%= epic.user.username %>
               <% if epic.visibility_private? %>
                 · <span class="text-neutral-600">privado</span>
               <% end %>
