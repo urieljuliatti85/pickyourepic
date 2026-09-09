@@ -1,0 +1,21 @@
+<%# Marca da app: o disco de vinil do logo, redesenhado em SVG.
+    O PNG original e raster e so existe em branco; aqui a cor vem de
+    currentColor, entao o mesmo arquivo serve no nav, em fundo claro ou escuro.
+    `size` e uma classe Tailwind de dimensao; `detailed` liga os sulcos, que
+    viram uma mancha solida abaixo de ~32px e por isso ficam fora do nav. %>
+<svg viewBox="0 0 48 48" fill="none" aria-hidden="true"
+     class="<%= local_assigns.fetch(:size, "h-6 w-6") %>">
+  <circle cx="24" cy="24" r="23" fill="currentColor"/>
+
+  <% if local_assigns.fetch(:detailed, false) %>
+    <g stroke="var(--color-ink)" stroke-opacity="0.28" fill="none">
+      <circle cx="24" cy="24" r="19" stroke-width="1.1"/>
+      <circle cx="24" cy="24" r="16" stroke-width="1.1"/>
+      <circle cx="24" cy="24" r="13" stroke-width="1.1"/>
+    </g>
+  <% end %>
+
+  <%# Label central e furo. %>
+  <circle cx="24" cy="24" r="8.5" fill="var(--color-ink)" fill-opacity="0.92"/>
+  <circle cx="24" cy="24" r="1.9" fill="currentColor"/>
+</svg>
