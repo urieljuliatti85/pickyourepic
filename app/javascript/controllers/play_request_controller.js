@@ -10,7 +10,9 @@ export default class extends Controller {
     startTime: Number,
     endTime: Number,
     title: String,
-    subtitle: String
+    subtitle: String,
+    artwork: String,
+    queue: Array
   }
 
   play() {
@@ -20,8 +22,16 @@ export default class extends Controller {
         startTime: this.startTimeValue,
         endTime: this.endTimeValue,
         title: this.titleValue,
-        subtitle: this.subtitleValue
+        subtitle: this.subtitleValue,
+        artwork: this.artworkValue
       }
+    }))
+  }
+
+  // Uma Collection inteira: a barra toca em sequencia e avanca sozinha.
+  playQueue() {
+    document.dispatchEvent(new CustomEvent("epic:play-queue", {
+      detail: { epics: this.queueValue, startIndex: 0 }
     }))
   }
 }

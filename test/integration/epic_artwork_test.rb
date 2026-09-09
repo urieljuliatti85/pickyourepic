@@ -34,6 +34,9 @@ class EpicArtworkTest < ActionDispatch::IntegrationTest
     get epic_path(epic)
 
     assert_response :success
-    assert_select "img", false
+    # A barra de player tem um <img> proprio, escondido ate haver capa, entao
+    # a assercao e sobre imagem visivel: nenhuma, e nenhuma com src vazio.
+    assert_select "img:not([hidden])", false
+    assert_select "img[src='']", false
   end
 end

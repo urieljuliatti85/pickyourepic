@@ -61,6 +61,21 @@ bin/importmap audit       # JS dependency CVEs
 
 Note: `bin/ci` runs `bin/setup --skip-server`, which touches the development database. `bin/rails test` alone is the fast loop.
 
+### Pre-commit hook
+
+`bin/setup` points `core.hooksPath` at `.githooks/` (versioned, unlike
+`.git/hooks/`). The `pre-commit` hook runs RuboCop on the commit's Ruby files
+and then `bin/rails test`, and refuses the commit if either fails.
+
+It checks the **staged** content: unstaged work is stashed for the duration and
+restored afterwards, so a dirty working tree neither leaks into the check nor
+gets lost. System tests stay out of it — they need Chrome and take ~16s against
+~6s for the rest; CI enforces them (`config/ci.rb`).
+
+Tests run serially, because the parallel workers hang against the Docker
+Postgres on some machines. To use parallelism: `git config hooks.parallelWorkers
+auto` (or a number). To skip the hook for one commit: `git commit --no-verify`.
+
 ### Environment
 
 Secrets come from `.env` via dotenv (development/test only) — see `.env.example`. `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET` are required for any Spotify flow; without them `Spotify::Config.configured?` is false and sign-in short-circuits with a flash instead of raising.

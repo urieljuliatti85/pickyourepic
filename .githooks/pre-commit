@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+#
+# Roda rubocop e a suite de testes antes de cada commit.
+#
+# Fica versionado em .githooks/ (e nao em .git/hooks/, que nao vai para o
+# repositorio) e e ativado por `bin/setup`, que aponta core.hooksPath para ca.
+# Para ativar manualmente:
+#
+#     git config core.hooksPath .githooks
+#
+# Os system tests NAO rodam aqui: precisam de Chrome e levam ~16s contra ~6s
+# do resto, e um hook lento e um hook que todo mundo pula com --no-verify. A
+# CI continua exigindo as duas suites (config/ci.rb).
+#
+# Para pular em um commit especifico (WIP, rebase): git commit --no-verify
+
+set -uo pipefail
+
+cd "$(git rev-parse --show-toplevel)" || exit 1
+
+# Sem TTY (commit por editor/GUI) o output ganha codigos de escape crus.
+if [ -t 1 ]; then
+  red=$(printf '\033[31m'); green=$(printf '\033[32m')
+  yellow=$(printf '\033[33m'); reset=$(printf '\033[0m')
+else
+  red=""; green=""; yellow=""; reset=""
+fi
+
+fail() {
+  echo ""
+  echo "${red}pre-commit: $1 falhou.${reset}"
+  echo "Corrija e refaca o commit, ou use ${yellow}git commit --no-verify${reset} para pular."
+  exit 1
+}
+
+# O hook valida o que sera commitado, nao o working tree. Sem isso uma
+# alteracao ainda nao adicionada (ou um `git add -p` parcial) entraria na
+# verificacao e o commit passaria por codigo que nao e o do commit.
+stash_created=""
+if ! git diff --quiet; then
+  if git stash push --keep-index --include-untracked --quiet \
+       --message "pre-commit: unstaged"; then
+    stash_created="yes"
+  fi
+fi
+
+restore() {
+  [ -n "$stash_created" ] && git stash pop --quiet
+}
+trap restore EXIT
+
+# Só os arquivos Ruby do commit. `bin/rubocop` sem argumentos varre o projeto
+# inteiro e reprovaria o commit por uma ofensa em arquivo que nao esta nele.
+# -z/-d lidam com nomes com espaco e ignoram arquivos deletados.
+# Sem mapfile/readarray: o macOS ainda traz bash 3.2. A lista vai por NUL ate
+# o xargs, entao nome com espaco nao quebra. --force-exclusion respeita o
+# Exclude do .rubocop.yml mesmo com os arquivos passados explicitamente.
+ruby_count=$(git diff --cached --name-only --diff-filter=d -z |
+  tr '\0' '\n' | grep -cE '\.(rb|rake)$|^(Gemfile|Rakefile)$|^bin/' || true)
+
+if [ "${ruby_count:-0}" -gt 0 ]; then
+  echo "pre-commit: rubocop (${ruby_count} arquivo(s))…"
+  git diff --cached --name-only --diff-filter=d -z |
+    tr '\0' '\n' |
+    grep -E '\.(rb|rake)$|^(Gemfile|Rakefile)$|^bin/' |
+    tr '\n' '\0' |
+    xargs -0 bin/rubocop --format quiet --force-exclusion || fail "rubocop"
+else
+  echo "pre-commit: rubocop (nenhum arquivo Ruby no commit, pulando)"
+fi
+
+# Serial por padrao. A suite e paralela por default (test_helper.rb abre um
+# worker por core), mas os workers travam indefinidamente ao conectar no
+# Postgres do Docker em algumas maquinas — e um hook que trava e pior que um
+# hook lento: bloqueia o commit sem dizer por que. Serial leva ~6s.
+#
+# Quem tiver paralelismo funcionando ganha alguns segundos com:
+#     git config hooks.parallelWorkers <n>   (ou "auto" para o default do Rails)
+workers=$(git config --get hooks.parallelWorkers || echo "1")
+
+echo "pre-commit: testes…"
+if [ "$workers" = "auto" ]; then
+  bin/rails test || fail "a suite de testes"
+else
+  PARALLEL_WORKERS="$workers" bin/rails test || fail "a suite de testes"
+fi
+
+echo "${green}pre-commit: tudo verde.${reset}"
