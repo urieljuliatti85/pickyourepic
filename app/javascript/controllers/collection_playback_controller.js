@@ -164,13 +164,17 @@ export default class extends Controller {
   async initializePlayer(accessToken) {
     return new Promise((resolve, reject) => {
       if (!window.Spotify) {
-        const script = document.createElement("script")
-        script.src = "https://sdk.scdn.co/spotify-player.js"
-        document.head.appendChild(script)
-
+        // O callback antes do appendChild: com o script em cache o SDK dispara
+        // onSpotifyWebPlaybackSDKReady antes da atribuicao acontecer, e a
+        // promise nunca resolvia.
         window.onSpotifyWebPlaybackSDKReady = () => {
           this.createPlayer(accessToken, resolve, reject)
         }
+
+        const script = document.createElement("script")
+        script.src = "https://sdk.scdn.co/spotify-player.js"
+        script.onerror = () => reject(new Error("Spotify SDK failed to load"))
+        document.head.appendChild(script)
       } else {
         this.createPlayer(accessToken, resolve, reject)
       }
