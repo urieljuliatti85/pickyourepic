@@ -14,10 +14,10 @@ class CollectionsTest < ApplicationSystemTestCase
 
   test "User can create a collection" do
     visit collections_path
-    click_link "New Collection"
+    click_link "Nova Collection"
 
-    fill_in "Title", with: "My Playlist"
-    fill_in "Description", with: "Best moments"
+    fill_in "Título", with: "My Playlist"
+    fill_in "Descrição (opcional)", with: "Best moments"
     choose "Public"
     click_button "Create Collection"
 
@@ -29,7 +29,7 @@ class CollectionsTest < ApplicationSystemTestCase
     collection = Collection.create!(user: @user, title: "Old Name")
 
     visit edit_collection_path(collection)
-    fill_in "Title", with: "New Name"
+    fill_in "Título", with: "New Name"
     click_button "Update Collection"
 
     assert_text "Collection atualizada!"
@@ -44,7 +44,7 @@ class CollectionsTest < ApplicationSystemTestCase
 
     click_link "Delete Me"
     # O botao usa data-turbo-confirm, que abre um dialog nativo do browser.
-    accept_confirm { click_button "Delete" }
+    accept_confirm { click_button "Excluir" }
 
     assert_text "Collection removida!"
   end
@@ -62,12 +62,12 @@ class CollectionsTest < ApplicationSystemTestCase
 
     visit collection_path(collection)
     fill_in "epic_id", with: epic.id
-    click_button "Add"
+    click_button "Adicionar"
 
     assert_text "Epic adicionado à Collection!"
     assert_text "Epic Song"
 
-    click_button "Remove"
+    click_button "Remover"
     assert_text "Epic removido da Collection!"
   end
 end
