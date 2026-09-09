@@ -1,0 +1,107 @@
+<% content_for :title, "Public Collections — Pick Up Your Epic!" %>
+
+<%# The same shell as Discover: a page-level h1, a hero for the first entry and
+    a rail for the rest. A Collection is how someone else's Epics reach you, so
+    this screen is the Discover of Collections. %>
+<div class="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+
+  <h1 class="text-2xl font-bold tracking-tight">
+    Public <span class="text-lime-accent">Collections.</span>
+  </h1>
+  <p class="mt-1 text-sm text-neutral-400">Sets other people made. Open one and pick what you like.</p>
+
+  <% if @collections.any? %>
+    <% featured = @collections.first %>
+    <% featured_epics = featured.epics_visible_to(current_user) %>
+
+    <section class="hero-glow mt-6 overflow-hidden rounded-3xl px-6 py-10 sm:px-10 sm:py-14">
+      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-lime-accent">
+        Biggest Collection
+      </p>
+
+      <h2 class="mt-3 max-w-2xl text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
+        <%= featured.title %>
+      </h2>
+
+      <% if featured.description.present? %>
+        <p class="mt-3 max-w-xl text-neutral-300"><%= featured.description %></p>
+      <% end %>
+
+      <p class="mt-1 text-sm text-neutral-400">
+        <%= pluralize(featured_epics.size, "Epic") %>
+        · by <%= link_to "@#{featured.user.username}", profile_path(featured.user),
+                       class: "text-neutral-200 hover:text-lime-accent" %>
+      </p>
+
+      <div class="mt-7 flex flex-wrap items-center gap-3">
+        <%= link_to "Open Collection", collection_path(featured),
+              class: "rounded-full bg-lime-accent px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-neutral-950 hover:bg-lime-bright" %>
+      </div>
+    </section>
+
+    <%# The Epics of the featured Collection, so the first Pick is one click from
+        here rather than behind an extra page. %>
+    <% if featured_epics.any? %>
+      <section class="mt-10">
+        <h2 class="text-2xl font-bold tracking-tight">Inside <%= featured.title %></h2>
+
+        <ol class="mt-4 space-y-0.5">
+          <% featured_epics.each_with_index do |epic, index| %>
+            <%= render "shared/epic_row", epic: epic, index: index, byline: true %>
+          <% end %>
+        </ol>
+      </section>
+    <% end %>
+
+    <% rest = @collections.drop(1) %>
+    <% if rest.any? %>
+      <section class="mt-12">
+        <h2 class="text-2xl font-bold tracking-tight">More Collections</h2>
+
+        <div class="rail mt-5 pb-2">
+          <% rest.each do |collection| %>
+            <% visible = collection.epics_visible_to(current_user) %>
+
+            <article class="card-dark w-56 rounded-2xl p-4">
+              <%= link_to collection_path(collection), class: "block" do %>
+                <%# A Collection has no image of its own; its cover is its first
+                    visible Epic's artwork. %>
+                <% cover = visible.first&.track&.album_artwork_url %>
+
+                <% if cover.present? %>
+                  <%= image_tag cover, alt: "", loading: "lazy",
+                        class: "mb-3 aspect-square w-full rounded-xl object-cover" %>
+                <% else %>
+                  <div class="mb-3 flex aspect-square w-full items-center justify-center rounded-xl bg-white/5 text-2xl text-neutral-700">
+                    ♪
+                  </div>
+                <% end %>
+
+                <h3 class="truncate text-sm font-semibold text-neutral-100 hover:text-lime-accent">
+                  <%= collection.title %>
+                </h3>
+              <% end %>
+
+              <p class="mt-0.5 truncate text-xs text-neutral-400">
+                by @<%= collection.user.username %>
+              </p>
+
+              <p class="mt-2 text-xs text-neutral-500">
+                <%= pluralize(visible.size, "Epic") %>
+              </p>
+            </article>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+  <% else %>
+    <div class="card-dark mt-10 rounded-2xl p-10 text-center">
+      <p class="text-neutral-400">No public Collections yet.</p>
+
+      <% if signed_in? %>
+        <%= link_to "Create the first one", new_collection_path,
+              class: "mt-5 inline-block rounded-full bg-lime-accent px-5 py-2.5 text-sm font-semibold text-neutral-950 hover:bg-lime-bright" %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

@@ -30,7 +30,7 @@ class FavoritesTest < ApplicationSystemTestCase
     visit favorites_path
 
     assert_text "Public Epic"
-    assert_text "por @alice"
+    assert_text "by @alice"
   end
 
   test "The favorites page explains itself when empty" do

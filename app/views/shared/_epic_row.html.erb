@@ -26,7 +26,7 @@
           button and the artwork stays clean. %>
       <% if current_user&.spotify_account&.premium? %>
         <button type="button"
-                aria-label="Tocar <%= epic.title %>"
+                aria-label="Play <%= epic.title %>"
                 class="absolute inset-0 z-10 flex items-center justify-center rounded bg-black/50 text-lime-accent opacity-0 transition group-hover:opacity-100 focus:opacity-100"
                 data-controller="play-request"
                 data-play-request-uri-value="spotify:track:<%= epic.track.spotify_id %>"
@@ -52,20 +52,24 @@
       <p class="truncate text-xs text-neutral-400">
         <%= epic.track.artist_name %>
         <% if byline %>
-          · <span class="text-neutral-500">por @<%= epic.user.username %></span>
+          · <span class="text-neutral-500">by @<%= epic.user.username %></span>
         <% end %>
       </p>
     </div>
 
+    <%# Duration and count are the first things to drop on a narrow screen; the
+        Pick is not. It used to sit in this hidden block, which left the row
+        unpickable on a phone — on a mobile-first app, and on a screen whose
+        whole purpose is picking someone else's Epics. %>
     <div class="hidden flex-none items-center gap-4 text-xs tabular-nums text-neutral-500 sm:flex">
       <span><%= number_to_duration(epic.end_time - epic.start_time) %></span>
       <span class="w-14 text-right"><%= render "shared/pick_count", epic: epic %></span>
+    </div>
 
-      <%# z-10: the title link covers the whole row (before:inset-0), so
-          without this a click on Pick would land on the link and open the Epic. %>
-      <span class="relative z-10">
-        <%= render "shared/pick_button", epic: epic, compact: true %>
-      </span>
+    <%# z-10: the title link covers the whole row (before:inset-0), so without
+        this a click on Pick would land on the link and open the Epic. %>
+    <div class="relative z-10 ml-4 flex-none">
+      <%= render "shared/pick_button", epic: epic, compact: true %>
     </div>
   </div>
 </li>
