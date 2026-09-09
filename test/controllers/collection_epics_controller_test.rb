@@ -51,7 +51,7 @@ class CollectionEpicsControllerTest < ActionDispatch::IntegrationTest
       post collection_collection_epics_path(@collection), params: { epic_id: @epic.id }
     end
     assert_redirected_to collection_path(@collection)
-    assert_includes flash[:alert], "can only add the same epic once per collection"
+    assert_includes flash[:alert], "Already in collection"
   end
 
   test "POST rejects private epic from another user" do

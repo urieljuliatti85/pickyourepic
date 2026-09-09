@@ -79,21 +79,21 @@ class EpicTest < ActiveSupport::TestCase
     epic = Epic.new(valid_attributes(start_time: 100_000, end_time: 100_000))
 
     assert_not epic.valid?
-    assert_includes epic.errors[:end_time], "must be greater than start_time"
+    assert_includes epic.errors[:end_time], "end_time_before_start"
   end
 
   test "end_time must be > start_time (end_time < start_time)" do
     epic = Epic.new(valid_attributes(start_time: 200_000, end_time: 100_000))
 
     assert_not epic.valid?
-    assert_includes epic.errors[:end_time], "must be greater than start_time"
+    assert_includes epic.errors[:end_time], "end_time_before_start"
   end
 
   test "end_time cannot exceed track duration" do
     epic = Epic.new(valid_attributes(end_time: 400_000))
 
     assert_not epic.valid?
-    assert_includes epic.errors[:end_time], "exceeds track duration"
+    assert_includes epic.errors[:end_time], "end_time_exceeds_duration"
   end
 
   test "end_time can equal track duration" do

@@ -35,7 +35,8 @@ class EpicsTest < ApplicationSystemTestCase
     fill_in "End time (MM:SS)", with: "0:50"  # Invalid
     click_button "Create Epic"
 
-    assert_text "must be greater than start_time"
+    # The form now shows the friendly title rather than the raw key.
+    assert_text "End time must be after start"
   end
 
   test "User cannot create epic for other's track without permission" do

@@ -9,7 +9,7 @@ class Pick < ApplicationRecord
   belongs_to :epic
 
   validates :user_id, :epic_id, presence: true
-  validates :user_id, uniqueness: { scope: :epic_id, message: "can only pick the same epic once" }
+  validates :user_id, uniqueness: { scope: :epic_id, message: "pick_already_exists" }
   validate :cannot_pick_private_epic
   validate :cannot_pick_own_epic
 

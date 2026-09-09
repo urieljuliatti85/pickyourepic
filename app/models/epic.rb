@@ -66,7 +66,12 @@ class Epic < ApplicationRecord
 
   # Accepted format: MM:SS or M:SS, seconds < 60. A fractional second
   # ("1:30.5") passes, so a pasted timestamp does not lose precision.
-  MMSS_MESSAGE = "must be in MM:SS format (e.g. 1:30)".freeze
+  # Validation messages are keys, not sentences: ErrorMessagesHelper turns each
+  # into a title and an explanation, so the wording lives in one place and the
+  # model stays out of the business of phrasing. The attribute is kept — the
+  # form needs to know which field failed — so these are not on :base like the
+  # Pick and Favorite rules, which belong to no single field.
+  MMSS_MESSAGE = "invalid_mmss_format".freeze
   MMSS = /\A(\d+):([0-5]?\d(?:\.\d+)?)\z/
 
   def ms_to_mmss(ms)
@@ -105,14 +110,14 @@ class Epic < ApplicationRecord
   # end_time > start_time (per Domain Rules)
   def end_time_greater_than_start_time
     if start_time.present? && end_time.present? && end_time <= start_time
-      errors.add(:end_time, "must be greater than start_time")
+      errors.add(:end_time, "end_time_before_start")
     end
   end
 
   # end_time <= track duration when known (per Domain Rules)
   def end_time_within_track_duration
     if end_time.present? && track && track.duration_ms && end_time > track.duration_ms
-      errors.add(:end_time, "exceeds track duration")
+      errors.add(:end_time, "end_time_exceeds_duration")
     end
   end
 end

@@ -30,7 +30,7 @@
             <p class="mt-0.5 truncate text-xs text-neutral-400"><%= @track.album_name %></p>
           <% end %>
           <p class="mt-1 max-w-lg text-sm leading-relaxed text-neutral-400">
-            Duração da faixa: <%= number_to_duration(@track.duration_ms) %>
+            Track length: <%= number_to_duration(@track.duration_ms) %>
           </p>
         </div>
       </div>
@@ -45,9 +45,18 @@
           <h2 class="text-sm font-semibold">
             <%= pluralize(@epic.errors.count, "error") %> prohibited this epic from being saved:
           </h2>
+          <%# The model reports keys, not sentences; friendly_error turns each
+              into something a person can act on. A key with no entry falls
+              through as itself, so an unmapped validation is still readable. %>
           <ul class="mt-2 list-inside list-disc text-sm">
-            <% @epic.errors.full_messages.each do |message| %>
-              <li><%= message %></li>
+            <% @epic.errors.each do |error| %>
+              <li>
+                <%= friendly_error(error.message) %><%
+                   %><% explanation = friendly_error_message(error.message) %>
+                <% if explanation.present? %>
+                  <span class="text-red-300/80">— <%= explanation %></span>
+                <% end %>
+              </li>
             <% end %>
           </ul>
         </div>

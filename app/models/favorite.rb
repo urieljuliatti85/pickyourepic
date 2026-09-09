@@ -11,7 +11,7 @@ class Favorite < ApplicationRecord
   belongs_to :user
   belongs_to :epic
 
-  validates :user_id, uniqueness: { scope: :epic_id, message: "can only favorite the same epic once" }
+  validates :user_id, uniqueness: { scope: :epic_id, message: "favorite_already_exists" }
   validate :cannot_favorite_private_epic_from_another_user
 
   private
