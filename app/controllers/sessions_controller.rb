@@ -50,5 +50,13 @@ class SessionsController < ApplicationController
 
   private
 
-  def callback_url = auth_spotify_callback_url
+  # O Spotify valida o redirect_uri por igualdade exata contra o que esta
+  # cadastrado no dashboard, e rejeita `localhost` (so aceita 127.0.0.1).
+  # Derivar do host da requisicao quebra o login de quem abre o app por
+  # localhost, entao em development fixamos o host cadastrado.
+  def callback_url
+    return auth_spotify_callback_url unless Rails.env.development?
+
+    auth_spotify_callback_url(host: "127.0.0.1", port: request.port, protocol: "http")
+  end
 end
