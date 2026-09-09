@@ -39,7 +39,8 @@ module Spotify
       }
     end
 
-    # A menor imagem que sirva: a UI e mobile-first e a lista mostra thumbnails.
+    # The smallest image that will do: the UI is mobile-first and the list shows
+    # thumbnails.
     def smallest_artwork(images)
       Array(images).filter_map { |image| image["url"] if image["url"].present? }.last
     end
