@@ -31,7 +31,9 @@
 
       <%# pb-24 reserva o espaco da barra fixa, senao ela cobre o fim da pagina. %>
       <main class="min-h-full pb-24">
-        <div class="max-w-4xl mx-auto px-4 pt-4">
+        <%# id="flash" e o alvo do turbo_stream: uma acao via Turbo troca so
+            este bloco, sem recarregar a pagina. %>
+        <div id="flash" class="max-w-4xl mx-auto px-4 pt-4">
           <%= render "shared/flash" %>
         </div>
         <%= yield %>

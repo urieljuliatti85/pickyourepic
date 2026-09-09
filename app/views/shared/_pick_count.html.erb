@@ -1,0 +1,5 @@
+<%# Contagem de Picks de um Epic, num frame proprio para o turbo_stream do
+    PicksController atualiza-la junto com o botao. %>
+<%= turbo_frame_tag dom_id(epic, :pick_count), target: "_top" do %>
+  <%= pluralize(epic.picks.size, "Pick") %>
+<% end %>

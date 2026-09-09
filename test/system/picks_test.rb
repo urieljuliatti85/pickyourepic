@@ -29,6 +29,20 @@ class PicksTest < ApplicationSystemTestCase
     )
   end
 
+  # O ponto do turbo_stream: o botao troca sem a pagina recarregar. Marcamos o
+  # documento antes do clique; se a marca sobrevive, nao houve navegacao.
+  test "Picking swaps the button without reloading the page" do
+    visit epic_path(@public_epic)
+    page.execute_script("window.__notReloaded = true")
+
+    click_button "Pick"
+
+    assert_button "Picked ✓"
+    assert_text(/1 Pick/i)
+    assert page.evaluate_script("window.__notReloaded === true"),
+      "a pagina recarregou: o Pick nao passou pelo turbo_stream"
+  end
+
   test "User can pick an epic from epic page" do
     visit epic_path(@public_epic)
 

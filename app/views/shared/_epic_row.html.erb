@@ -59,7 +59,7 @@
 
     <div class="hidden flex-none items-center gap-4 text-xs tabular-nums text-neutral-500 sm:flex">
       <span><%= number_to_duration(epic.end_time - epic.start_time) %></span>
-      <span class="w-14 text-right"><%= pluralize(epic.picks.size, "Pick") %></span>
+      <span class="w-14 text-right"><%= render "shared/pick_count", epic: epic %></span>
     </div>
   </div>
 </li>
