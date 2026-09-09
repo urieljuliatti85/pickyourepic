@@ -4,7 +4,11 @@ module Spotify
   module Search
     extend self
 
-    MAX_LIMIT = 20
+    # O /search recusa qualquer limit acima de 10 com 400 "Invalid limit" —
+    # a mensagem fala do parametro, mas o teto e da conta: 11 ja falha, 10
+    # devolve 200 com resultados reais. A doc ainda diz 50; nao siga a doc
+    # (CLAUDE.md § Spotify policy constraints: verificar a API antes).
+    MAX_LIMIT = 10
 
     def tracks(query:, access_token:, limit: MAX_LIMIT)
       return [] if query.blank?
