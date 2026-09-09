@@ -16,25 +16,33 @@
     against the rows that do have one.
 
     Locals: epic. Optional: compact (true in lists and cards, where the hero's
-    full pill does not fit, and where the note is left out). %>
+    full pill does not fit, and where the note is left out). 
+    
+    UX: Added data-disable-with for loading state feedback during Turbo request. %>
 <% compact = local_assigns[:compact] %>
 <% size = compact ? "px-3 py-1 text-xs" : "px-4 py-2 text-sm" %>
 
 <%= turbo_frame_tag dom_id(epic, :pick_button), target: "_top" do %>
   <% if current_user && current_user.id != epic.user_id %>
     <% if picked_epic_ids.include?(epic.id) %>
-      <%= button_to "Picked ✓", epic_pick_path(epic), method: :delete,
+      <%= button_to epic_pick_path(epic), method: :delete,
             form: { class: "inline-block" },
-            class: "rounded-full border border-lime-accent/40 #{size} font-semibold uppercase tracking-[0.12em] text-lime-accent hover:bg-lime-accent/10" %>
+            class: "rounded-full border border-lime-accent/40 #{size} font-semibold uppercase tracking-[0.12em] text-lime-accent hover:bg-lime-accent/10 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity",
+            data: { disable_with: "Unpicking..." } do %>
+        Picked ✓
+      <% end %>
     <% else %>
-      <%= button_to "Pick", epic_pick_path(epic), method: :post,
+      <%= button_to epic_pick_path(epic), method: :post,
             form: { class: "inline-block" },
-            class: "rounded-full bg-lime-accent #{size} font-semibold uppercase tracking-[0.12em] text-neutral-950 hover:bg-lime-bright" %>
+            class: "rounded-full bg-lime-accent #{size} font-semibold uppercase tracking-[0.12em] text-neutral-950 hover:bg-lime-bright disabled:opacity-50 disabled:cursor-not-allowed transition-opacity",
+            data: { disable_with: "Picking..." } do %>
+        Pick
+      <% end %>
     <% end %>
   <% elsif !compact %>
     <p class="text-xs text-neutral-500">
       <% if current_user %>
-        <em>This Epic is yours — Pick is for other people’s Epics.</em>
+        <em>This Epic is yours — Pick is for other people's Epics.</em>
       <% else %>
         <em>Sign in to pick this Epic.</em>
       <% end %>

@@ -22,6 +22,14 @@
   <body class="h-full bg-ink text-neutral-100 antialiased">
     <%# The web player shell: a sidebar fixed to the left (from lg up), content
         offset by lg:pl-64, and the player bar pinned to the bottom. %>
+
+    <%# Toast notifications container. Used by Turbo Streams to append
+        notifications without a page reload. %>
+    <%# Where every toast is appended. The escaped quotes it was written with
+        made the id literally `\"toasts-container\"`, so turbo_stream.append
+        never found its target and no toast ever appeared. %>
+    <div id="toasts-container" class="fixed top-4 right-4 z-50 space-y-2 max-w-sm"></div>
+
     <%= render "shared/sidebar" %>
 
     <div class="lg:pl-64">

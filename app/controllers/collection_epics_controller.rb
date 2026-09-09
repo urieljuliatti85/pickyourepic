@@ -32,7 +32,7 @@ class CollectionEpicsController < ApplicationController
     if @collection_epic.save
       redirect_to @collection, notice: "Epic added to the Collection!"
     else
-      redirect_to @collection, alert: @collection_epic.errors.full_messages.first
+      redirect_to @collection, alert: helpers.friendly_error(@collection_epic.errors.first.message)
     end
     # The CollectionEpic validation has the last word: even if the search
     # offered something it should not, the save refuses (CLAUDE.md § Authorization).

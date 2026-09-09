@@ -17,7 +17,7 @@
       <%= link_to "New Collection", new_collection_path,
             class: "rounded-full bg-lime-accent px-8 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-neutral-950 hover:bg-lime-bright" %>
 
-      <%= link_to "Discover", discover_path,
+      <%= link_to "Discover",discover_path,
             class: "rounded-full border border-lime-accent/60 px-8 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-lime-accent hover:bg-lime-accent/10" %>
     </div>
   </section>
@@ -63,10 +63,15 @@
       </div>
     </section>
   <% else %>
-    <section class="mt-12 rounded-3xl border border-white/10 bg-ink-soft p-10 text-center">
-      <p class="text-sm text-neutral-400">
-        You have no Collections yet. Create the first one and group your Epics.
-      </p>
+    <%# Empty state: encourage collection creation %>
+    <section class="mt-12">
+      <%= render EmptyStateComponent.new(
+        icon: "📚",
+        title: "No Collections yet",
+        message: "Create your first Collection to organize and group your favorite Epics.",
+        action_text: "New Collection",
+        action_path: new_collection_path
+      ) %>
     </section>
   <% end %>
 </div>

@@ -12,12 +12,14 @@ class FavoritesController < ApplicationController
 
   # POST /epics/:epic_id/favorite
   def create
-    favorite = current_user.favorites.build(epic: @epic)
+    # An instance variable, not a local: the turbo_stream template reads
+    # @favorite to tell a rejected save from a successful one.
+    @favorite = current_user.favorites.build(epic: @epic)
 
-    if favorite.save
-      redirect_back_to_epic notice: "Epic favorited!"
+    if @favorite.save
+      respond_to_favorite notice: "Epic favorited!"
     else
-      redirect_back_to_epic alert: favorite.errors.full_messages.first
+      respond_to_favorite alert: helpers.friendly_error(@favorite.errors.first.message)
     end
   end
 
@@ -28,9 +30,9 @@ class FavoritesController < ApplicationController
 
     if favorite
       favorite.destroy
-      redirect_back_to_epic notice: "Removed from favorites."
+      respond_to_favorite notice: "Removed from favorites."
     else
-      redirect_back_to_epic alert: "This Epic is not in your favorites."
+      respond_to_favorite alert: "This Epic is not in your favorites."
     end
   end
 
@@ -46,9 +48,17 @@ class FavoritesController < ApplicationController
     end
   end
 
-  # The button lives on the Epic page, on Discover and on the profile; going back
-  # to where it was clicked avoids throwing the user out of where they were.
-  def redirect_back_to_epic(**flash_options)
-    redirect_back fallback_location: epic_path(@epic), **flash_options
+  # Turbo Stream responses swap only the favorite button without a full page
+  # reload. The HTML fallback redirects back for requests without Turbo support.
+  #
+  # UX: Toast notification is appended in the turbo_stream template.
+  def respond_to_favorite(**flash_options)
+    respond_to do |format|
+      format.turbo_stream do
+        flash.now[:notice] = flash_options[:notice] if flash_options[:notice]
+        flash.now[:alert] = flash_options[:alert] if flash_options[:alert]
+      end
+      format.html { redirect_back fallback_location: epic_path(@epic), **flash_options }
+    end
   end
 end

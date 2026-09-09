@@ -1,0 +1,16 @@
+<div id="<%= toast_id %>"
+     class="toast-notification animate-toast-in flex items-start gap-3 rounded-lg border px-4 py-3 text-sm <%= color_classes %>"
+     data-controller="toast"
+     data-toast-auto-dismiss-value="true"
+     data-toast-duration-value="4000"
+     role="alert"
+     aria-live="polite">
+  <span class="mt-0.5 flex-shrink-0 font-bold" aria-hidden="true"><%= icon %></span>
+  <span class="flex-grow"><%= @message %></span>
+  <button type="button"
+          class="flex-shrink-0 ml-2 text-current opacity-50 hover:opacity-100 transition-opacity"
+          aria-label="Dismiss"
+          data-action="toast#dismiss">
+    ✕
+  </button>
+</div>

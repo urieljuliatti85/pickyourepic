@@ -9,7 +9,7 @@ class PicksController < ApplicationController
     if @pick.save
       respond_to_pick notice: "Epic picked!"
     else
-      respond_to_pick alert: @pick.errors.full_messages.first
+      respond_to_pick alert: helpers.friendly_error(@pick.errors.first.message)
     end
   end
 

@@ -1,5 +1,7 @@
 # CollectionEpic is the join table between Collection and Epic.
 # It keeps Epics ordered inside a Collection through position.
+#
+# Error messages are user-friendly (see app/helpers/error_messages_helper.rb).
 class CollectionEpic < ApplicationRecord
   belongs_to :collection
   belongs_to :epic
@@ -17,7 +19,7 @@ class CollectionEpic < ApplicationRecord
   # It must NOT hold another user's private Epic.
   def cannot_add_private_epic_from_another_user
     if epic&.visibility_private? && epic&.user_id != collection&.user_id
-      errors.add(:epic_id, "cannot add private Epic from another user")
+      errors.add(:base, "cannot_add_private_epic_from_another_user")
     end
   end
 end

@@ -1,0 +1,6 @@
+<% @count.times do |i| %>
+  <div class="<%= skeleton_classes %>"
+       aria-hidden="true"
+       data-testid="skeleton-<%= @type %>-<%= i %>">
+  </div>
+<% end %>

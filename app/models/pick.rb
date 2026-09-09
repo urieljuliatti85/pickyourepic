@@ -2,6 +2,8 @@
 # (docs/product.md). A user cannot Pick the same Epic twice
 # (CLAUDE.md § Domain rules and where they are enforced).
 # A Pick does not duplicate the Epic; it only records the choice.
+#
+# Error messages are user-friendly and include context (see app/helpers/error_messages_helper.rb).
 class Pick < ApplicationRecord
   belongs_to :user
   belongs_to :epic
@@ -16,14 +18,14 @@ class Pick < ApplicationRecord
   # Pick only public Epics (docs/product.md: Privacy)
   def cannot_pick_private_epic
     if epic&.visibility_private?
-      errors.add(:epic_id, "cannot pick private epic")
+      errors.add(:base, "cannot_pick_private_epic")
     end
   end
 
   # A user does not Pick their own Epic
   def cannot_pick_own_epic
     if epic&.user_id == user_id
-      errors.add(:epic_id, "cannot pick your own epic")
+      errors.add(:base, "cannot_pick_own_epic")
     end
   end
 end

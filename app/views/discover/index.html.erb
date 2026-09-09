@@ -78,12 +78,25 @@
       </section>
     <% end %>
   <% else %>
-    <div class="card-dark mt-10 rounded-2xl p-10 text-center">
-      <p class="text-neutral-400">No public Epics yet. Be the first to create one!</p>
+    <%# Empty state with context-aware message and CTA %>
+    <section class="mt-10">
       <% if signed_in? %>
-        <%= link_to "Search for a song", tracks_path,
-              class: "mt-5 inline-block rounded-full bg-lime-accent px-5 py-2.5 text-sm font-semibold text-neutral-950 hover:bg-lime-bright" %>
+        <%= render EmptyStateComponent.new(
+          icon: "🎵",
+          title: "No Epics yet",
+          message: "Be the first to create and share your favorite moments!",
+          action_text: "Create Epic",
+          action_path: tracks_path
+        ) %>
+      <% else %>
+        <%= render EmptyStateComponent.new(
+          icon: "🔐",
+          title: "Sign in to discover",
+          message: "Connect your Spotify and explore curated moments from the community.",
+          action_text: "Sign in",
+          action_path: root_path
+        ) %>
       <% end %>
-    </div>
+    </section>
   <% end %>
 </div>

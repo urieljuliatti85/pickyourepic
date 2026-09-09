@@ -19,15 +19,14 @@
         <% end %>
       </ol>
     <% else %>
-      <div class="rounded-3xl border border-white/10 bg-ink-soft p-10 text-center">
-        <p class="text-sm text-neutral-400">
-          You have not favorited any Epic yet.
-        </p>
-        <p class="mt-4">
-          <%= link_to "Descobrir Epics", discover_path,
-                class: "rounded-full bg-lime-accent px-8 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-neutral-950 hover:bg-lime-bright" %>
-        </p>
-      </div>
+      <%# Empty state: encourage discovering and saving Epics %>
+      <%= render EmptyStateComponent.new(
+        icon: "⭐",
+        title: "No favorites yet",
+        message: "Save your favorite Epics here. Explore Discover to find moments you love.",
+        action_text: "Discover Epics",
+        action_path: discover_path
+      ) %>
     <% end %>
   </section>
 </div>

@@ -35,7 +35,7 @@ class FavoriteTest < ActiveSupport::TestCase
     favorite = Favorite.new(user: @other, epic: epic_for(@owner, visibility: :private))
 
     assert_not favorite.valid?
-    assert_includes favorite.errors[:epic_id], "cannot favorite private epic from another user"
+    assert_includes favorite.errors[:base], "cannot_favorite_private_epic_from_another_user"
   end
 
   test "the same epic cannot be favorited twice by the same user" do

@@ -1,22 +1,43 @@
-<%# Swaps button, count and the list of who picked — every appearance of this
-    Epic on the page. The same content serves create and destroy: the two only
-    toggle the state.
+<%# Turbo Stream response for Pick creation.
+    
+    On success: append toast, update button/count/pickers.
+    On error: append error toast with friendly message.
+    
+    UX: All feedback happens in toasts. No page reload. %>
 
-    A `replace` on a frame absent from the current page is a no-op, so one
-    template serves Discover (button + count only) and the Epic page (which also
-    has the list). %>
-<%= turbo_stream.replace dom_id(@epic, :pick_button) do %>
-  <%= render "shared/pick_button", epic: @epic %>
-<% end %>
+<% if @pick.invalid? %>
+  <%# Error case: extract the friendly error message from validation %>
+  <% error_key = @pick.errors.messages[:base]&.first %>
+  <%= turbo_stream.append "toasts-container" do %>
+    <% title = friendly_error(error_key) %>
+    <% message = friendly_error_message(error_key) %>
+    <%= render ToastComponent.new(
+      type: :error,
+      message: "#{title}. #{message}"
+    ) %>
+  <% end %>
+<% else %>
+  <%# Success case: append success toast, then update UI %>
+  <%= turbo_stream.append "toasts-container" do %>
+    <%= render ToastComponent.new(
+      type: :success,
+      message: "#{@epic.title} picked! 🎵"
+    ) %>
+  <% end %>
 
-<%= turbo_stream.replace dom_id(@epic, :pick_count) do %>
-  <%= render "shared/pick_count", epic: @epic %>
-<% end %>
+  <%= turbo_stream.replace dom_id(@epic, :pick_button) do %>
+    <%= render "shared/pick_button", epic: @epic %>
+  <% end %>
 
-<%= turbo_stream.replace dom_id(@epic, :pickers) do %>
-  <%= render "shared/pickers", epic: @epic, picks: @picks %>
-<% end %>
+  <%= turbo_stream.replace dom_id(@epic, :pick_count) do %>
+    <%= render "shared/pick_count", epic: @epic %>
+  <% end %>
 
-<%= turbo_stream.update "flash" do %>
-  <%= render "shared/flash" %>
+  <%= turbo_stream.replace dom_id(@epic, :pickers) do %>
+    <%= render "shared/pickers", epic: @epic, picks: @picks %>
+  <% end %>
+
+  <%= turbo_stream.update "flash" do %>
+    <%= render "shared/flash" %>
+  <% end %>
 <% end %>

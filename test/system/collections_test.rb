@@ -14,7 +14,8 @@ class CollectionsTest < ApplicationSystemTestCase
 
   test "User can create a collection" do
     visit collections_path
-    click_link "New Collection"
+    # The empty state offers the same link, so this one is scoped to the hero.
+    within("section.hero-glow") { click_link "New Collection" }
 
     fill_in "Title", with: "My Playlist"
     fill_in "Description (optional)", with: "Best moments"

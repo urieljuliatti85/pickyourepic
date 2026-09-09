@@ -15,7 +15,8 @@ class FavoritesTest < ApplicationSystemTestCase
     visit epic_path(@epic)
 
     click_button "Favorite"
-    assert_text "Epic favorited!"
+    # Feedback now arrives as a toast rather than a flash.
+    assert_text "Added to favorites!"
     assert_button "Favorited"
 
     click_button "Favorited"
@@ -36,6 +37,6 @@ class FavoritesTest < ApplicationSystemTestCase
   test "The favorites page explains itself when empty" do
     visit favorites_path
 
-    assert_text "You have not favorited any Epic yet"
+    assert_text "No favorites yet"
   end
 end

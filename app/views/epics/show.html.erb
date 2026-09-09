@@ -67,7 +67,7 @@
 
       <%# The excerpt: an Epic's central piece of information. %>
       <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
-        <p class="text-xs font-semibold uppercase tracking-[0.12em]r text-neutral-400">Excerpt</p>
+        <p class="text-xs font-semibold uppercase tracking-wider text-neutral-400">Excerpt</p>
 
         <p class="mt-2 text-2xl font-semibold tabular-nums text-neutral-50">
           <%= number_to_duration(@epic.start_time) %>
@@ -76,14 +76,14 @@
         </p>
 
         <p class="mt-1 text-sm text-neutral-400">
-          <%= number_to_duration(@epic.end_time - @epic.start_time) %> de
+          <%= number_to_duration(@epic.end_time - @epic.start_time) %> of
           <%= number_to_duration(@epic.track.duration_ms) %>
         </p>
       </div>
 
       <dl class="mt-4 grid gap-3 sm:grid-cols-2">
         <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-          <dt class="text-xs font-semibold uppercase tracking-[0.12em]r text-neutral-400">Criado por</dt>
+          <dt class="text-xs font-semibold uppercase tracking-wider text-neutral-400">Created by</dt>
           <dd class="mt-1">
             <%= link_to "@#{@epic.user.username}", profile_path(@epic.user),
                   class: "text-sm font-medium text-neutral-100 hover:text-lime-accent" %>
@@ -91,7 +91,7 @@
         </div>
 
         <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-          <dt class="text-xs font-semibold uppercase tracking-[0.12em]r text-neutral-400">Visibilidade</dt>
+          <dt class="text-xs font-semibold uppercase tracking-wider text-neutral-400">Visibility</dt>
           <dd class="mt-1">
             <% if @epic.visibility_public? %>
               <span class="rounded-full bg-lime-accent/15 px-3 py-1 text-xs font-semibold text-lime-accent">Public</span>

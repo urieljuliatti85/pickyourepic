@@ -119,7 +119,7 @@ class CollectionEpicTest < ActiveSupport::TestCase
 
     ce = CollectionEpic.new(collection: @collection, epic: private_epic, position: 0)
     assert_not ce.valid?
-    assert_includes ce.errors[:epic_id], "cannot add private Epic from another user"
+    assert_includes ce.errors[:base], "cannot_add_private_epic_from_another_user"
   end
 
   test "can add own private epic" do

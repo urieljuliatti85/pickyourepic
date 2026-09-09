@@ -46,7 +46,7 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     get profile_path(@private_user)
 
     assert_response :success
-    assert_select "span", /Private Profile/
+    assert_select "span", /Private/
   end
 
   test "GET public profile shows public epics" do

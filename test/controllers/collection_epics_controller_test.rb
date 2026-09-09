@@ -67,7 +67,7 @@ class CollectionEpicsControllerTest < ActionDispatch::IntegrationTest
       post collection_collection_epics_path(@collection), params: { epic_id: private_epic.id }
     end
     assert_redirected_to collection_path(@collection)
-    assert_includes flash[:alert], "cannot add private Epic from another user"
+    assert_includes flash[:alert], "Can't add to collection"
   end
 
   test "POST can add public epic from other user" do

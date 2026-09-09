@@ -1,0 +1,13 @@
+<%# Turbo Stream response for Favorite removal.
+    UX: Toast + button update. %>
+
+<%= turbo_stream.append "toasts-container" do %>
+  <%= render ToastComponent.new(
+    type: :success,
+    message: "Removed from favorites."
+  ) %>
+<% end %>
+
+<%= turbo_stream.replace dom_id(@epic, :favorite_button) do %>
+  <%= render "shared/favorite_button", epic: @epic %>
+<% end %>

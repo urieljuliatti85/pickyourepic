@@ -3,24 +3,32 @@
     Unlike Pick (shared/_pick_button), which only appears for someone else's
     public Epic: favoriting is private, so it applies to your own Epic too. The
     one case with no button is another user's private Epic, which is never
-    visible in the first place. %>
+    visible in the first place. 
+    
+    UX: Added data-disable-with for loading state feedback during Turbo request. %>
 
-<% if current_user %>
-  <% favorited = current_user.favorites.exists?(epic_id: epic.id) %>
+<%# The frame is what favorites/create.turbo_stream replaces. Without it the
+    stream had no target: the toast appeared but the button never flipped. %>
+<%= turbo_frame_tag dom_id(epic, :favorite_button), target: "_top" do %>
+  <% if current_user %>
+    <% favorited = current_user.favorites.exists?(epic_id: epic.id) %>
 
-  <% if favorited %>
-    <%= button_to epic_favorite_path(epic), method: :delete,
-          class: "inline-flex items-center gap-2 rounded-full border border-lime-accent/40 px-4 py-2 text-sm font-semibold text-lime-accent hover:bg-lime-accent/10",
+    <% if favorited %>
+      <%= button_to epic_favorite_path(epic), method: :delete,
+          class: "inline-flex items-center gap-2 rounded-full border border-lime-accent/40 px-4 py-2 text-sm font-semibold text-lime-accent hover:bg-lime-accent/10 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity",
           form: { class: "inline-block" },
-          aria: { label: "Remove from favorites" } do %>
-      <span aria-hidden="true">★</span> Favorited
-    <% end %>
-  <% else %>
-    <%= button_to epic_favorite_path(epic), method: :post,
-          class: "inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-neutral-300 hover:border-lime-accent/50 hover:text-lime-accent",
+          aria: { label: "Remove from favorites" },
+          data: { disable_with: "Removing..." } do %>
+        <span aria-hidden="true">★</span> Favorited
+      <% end %>
+    <% else %>
+      <%= button_to epic_favorite_path(epic), method: :post,
+          class: "inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-neutral-300 hover:border-lime-accent/50 hover:text-lime-accent disabled:opacity-50 disabled:cursor-not-allowed transition-opacity",
           form: { class: "inline-block" },
-          aria: { label: "Add to favorites" } do %>
-      <span aria-hidden="true">☆</span> Favorite
+          aria: { label: "Add to favorites" },
+          data: { disable_with: "Adding..." } do %>
+        <span aria-hidden="true">☆</span> Favorite
+      <% end %>
     <% end %>
   <% end %>
 <% end %>

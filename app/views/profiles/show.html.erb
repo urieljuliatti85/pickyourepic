@@ -1,6 +1,6 @@
-<%# Perfil no formato da referencia: cabecalho com o avatar e, abaixo, listas
-    numeradas de faixas (indice, capa, titulo sobre artista) em vez de cards.
-    A linha e shared/_epic_row, reaproveitada pelas tres secoes. %>
+<%# The profile in the reference's shape: a header with the avatar and, below
+    it, numbered track rows (index, artwork, title over artist) rather than
+    cards. The row is shared/_epic_row, reused by all three sections. %>
 <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6">
 
   <section class="hero-glow overflow-hidden rounded-3xl border border-white/10 px-6 py-10 sm:px-10">
@@ -26,7 +26,7 @@
             </span>
           <% else %>
             <span class="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-neutral-300">
-              Private Profile
+              🔒 Private
             </span>
           <% end %>
         </p>
@@ -40,10 +40,15 @@
 
   <% if @is_private_profile %>
     <section class="mt-8 rounded-3xl border border-white/10 bg-ink-soft p-10 text-center">
-      <p class="text-sm text-neutral-400">
-        <strong class="text-neutral-200">This profile is private.</strong>
-        Only the owner can see full details.
-      </p>
+      <div class="space-y-2">
+        <p class="text-3xl">🔐</p>
+        <p class="text-sm text-neutral-300">
+          <strong>This profile is private.</strong>
+        </p>
+        <p class="text-xs text-neutral-500">
+          Only @<%= @user.username %> can see Epics and Collections.
+        </p>
+      </div>
     </section>
   <% else %>
     <section class="mt-10">
@@ -56,7 +61,11 @@
           <% end %>
         </ol>
       <% else %>
-        <p class="mt-4 text-sm text-neutral-500">No public Epics yet.</p>
+        <%= render EmptyStateComponent.new(
+          icon: "🎵",
+          title: "No public Epics yet",
+          message: "@#{@user.username} hasn't shared any Epics."
+        ) %>
       <% end %>
     </section>
 
@@ -71,7 +80,11 @@
           <% end %>
         </ol>
       <% else %>
-        <p class="mt-4 text-sm text-neutral-500">No picked Epics yet.</p>
+        <%= render EmptyStateComponent.new(
+          icon: "❤️",
+          title: "No picked Epics yet",
+          message: "@#{@user.username} hasn't picked any Epics yet."
+        ) %>
       <% end %>
     </section>
 
@@ -106,7 +119,11 @@
           <% end %>
         </div>
       <% else %>
-        <p class="mt-4 text-sm text-neutral-500">No public Collections yet.</p>
+        <%= render EmptyStateComponent.new(
+          icon: "📚",
+          title: "No public Collections yet",
+          message: "@#{@user.username} hasn't created any Collections."
+        ) %>
       <% end %>
     </section>
   <% end %>

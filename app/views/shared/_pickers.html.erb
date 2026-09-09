@@ -9,7 +9,7 @@
     without it, clicking a picker's name would load the profile INSIDE the frame
     instead of navigating. %>
 <%= turbo_frame_tag dom_id(epic, :pickers), target: "_top" do %>
-  <p class="text-xs font-semibold uppercase tracking-[0.12em]r text-neutral-400">
+  <p class="text-xs font-semibold uppercase tracking-wider text-neutral-400">
     <%= pluralize(picks.size, "Pick") %>
   </p>
 
