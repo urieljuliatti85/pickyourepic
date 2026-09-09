@@ -13,10 +13,13 @@ class TracksController < ApplicationController
 
   private
 
+  # Persiste cada resultado: a tela seguinte (EpicsController#new) resolve o
+  # track por `spotify_id` no banco, entao um resultado so e clicavel se o
+  # Track ja existir localmente.
   def search_tracks
     Spotify::Search.tracks(
       query: @query,
       access_token: current_user.spotify_account.fresh_access_token!
-    )
+    ).map { |attributes| Track.upsert_from_spotify!(attributes) }
   end
 end
