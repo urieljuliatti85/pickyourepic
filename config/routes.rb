@@ -6,6 +6,11 @@ Rails.application.routes.draw do
   delete "sign_out", to: "sessions#destroy", as: :sign_out
 
   resources :tracks, only: :index
+
+  # Playlist search. A search rather than a genre browse because Spotify
+  # deprecated /browse/categories and friends on 2024-11-27 — they answer 403,
+  # so there is no catalogue left to shelve by genre.
+  resources :playlists, only: [ :index, :show ]
   resources :epics, only: [ :new, :create, :show, :destroy ] do
     # Um user tem no maximo um Pick por Epic, entao o destroy nao precisa de
     # id proprio: o Pick e identificado pelo par (current_user, epic).

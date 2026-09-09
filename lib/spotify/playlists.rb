@@ -53,6 +53,34 @@ module Spotify
       Array(payload["items"]).filter_map { |item| Search.normalize(item["track"] || {}) }
     end
 
+    # Public playlists matching a free-text term.
+    #
+    # This is deliberately a search and not a genre browse. /browse/categories,
+    # /browse/categories/{id}/playlists and /browse/featured-playlists — the
+    # endpoints that would give real genre shelves — all answer 403 since
+    # Spotify deprecated them on 2024-11-27, the same day preview_url went
+    # (CLAUDE.md § Spotify policy constraints; checked against a live token, not
+    # the docs). /search is what is left, so the app offers a search rather than
+    # pretending to a catalogue it cannot read.
+    def search(query:, access_token:, limit: SEARCH_LIMIT)
+      return [] if query.blank?
+
+      payload = Client.get(
+        "/search",
+        access_token: access_token,
+        params: { q: query, type: "playlist", limit: limit.clamp(1, SEARCH_LIMIT) }
+      )
+
+      # Spotify puts literal nulls among the results — a third of the first page
+      # in practice — so compact before anything touches an item.
+      Array(payload.dig("playlists", "items"))
+        .compact
+        .filter_map { |item| normalize(item) }
+    end
+
+    # /search answers with the same ceiling as the track search.
+    SEARCH_LIMIT = Search::MAX_LIMIT
+
     def normalize(item)
       id = item["id"]
       return nil if id.blank?
@@ -61,9 +89,12 @@ module Spotify
         spotify_id: id,
         name: item["name"].to_s,
         description: item["description"].presence,
-        track_count: item.dig("tracks", "total").to_i,
+        # /search omits the track total that /users/{id}/playlists carries, so
+        # this is nil there rather than a made-up zero.
+        track_count: item.dig("tracks", "total"),
         artwork_url: largest_artwork(item["images"]),
-        spotify_url: item.dig("external_urls", "spotify")
+        spotify_url: item.dig("external_urls", "spotify"),
+        owner_name: item.dig("owner", "display_name").presence
       }
     end
 

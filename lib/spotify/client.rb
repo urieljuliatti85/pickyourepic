@@ -80,7 +80,7 @@ module Spotify
       end
 
       unless response.is_a?(Net::HTTPSuccess)
-        raise error_class, "Spotify request failed: #{response.code}"
+        raise error_class.new("Spotify request failed: #{response.code}", status: response.code.to_i)
       end
 
       JSON.parse(response.body)

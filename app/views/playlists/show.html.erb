@@ -1,0 +1,30 @@
+<% content_for :title, "Playlist — Pick Up Your Epic!" %>
+
+<div class="mx-auto max-w-2xl px-5 py-8">
+
+  <h1 class="text-2xl font-bold tracking-tight">Pick a song</h1>
+  <p class="mt-2 text-sm text-neutral-400">
+    Choose the track holding the moment, then mark where it starts and ends.
+  </p>
+
+  <%# Same row as the track search: both screens end at the same place, the
+      Epic form, so they should not look like two different things. %>
+  <% if @tracks.any? %>
+    <ul class="mt-8 divide-y divide-neutral-900">
+      <% @tracks.each do |track| %>
+        <li class="py-3">
+          <%= render "tracks/track", track: track %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="mt-8 text-sm text-neutral-500">
+      This playlist has no songs we can use.
+    </p>
+  <% end %>
+
+  <div class="mt-8">
+    <%= link_to "Back", playlists_path,
+          class: "rounded-full border border-lime-accent/60 px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-lime-accent hover:bg-lime-accent/10" %>
+  </div>
+</div>

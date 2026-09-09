@@ -1,0 +1,42 @@
+<%# The result list, in its own frame so typing swaps only this block. %>
+<% if query.blank? %>
+  <p class="text-sm text-neutral-500">
+    Type a genre, a mood, a decade — whatever you would search on Spotify.
+  </p>
+<% elsif playlists.empty? %>
+  <p class="text-sm text-neutral-500">No playlists found for "<%= query %>".</p>
+<% else %>
+  <div class="grid gap-4 sm:grid-cols-2">
+    <% playlists.each do |playlist| %>
+      <article class="card-dark flex items-center gap-4 rounded-2xl p-4">
+        <% if playlist[:artwork_url].present? %>
+          <%= image_tag playlist[:artwork_url], alt: "", loading: "lazy",
+                class: "h-16 w-16 flex-none rounded-xl object-cover" %>
+        <% else %>
+          <div class="flex h-16 w-16 flex-none items-center justify-center rounded-xl bg-white/5 text-xl text-neutral-700">
+            ♪
+          </div>
+        <% end %>
+
+        <div class="min-w-0 flex-1">
+          <h2 class="truncate text-sm font-semibold text-neutral-100">
+            <%= link_to playlist[:name], playlist_path(playlist[:spotify_id]),
+                  class: "hover:text-lime-accent" %>
+          </h2>
+
+          <p class="mt-0.5 truncate text-xs text-neutral-400">
+            <% if playlist[:owner_name].present? %>
+              by <%= playlist[:owner_name] %>
+            <% end %>
+
+            <%# /search omits the track total that the profile endpoint carries,
+                so this line is often just the owner. %>
+            <% if playlist[:track_count] %>
+              · <%= pluralize(playlist[:track_count], "track") %>
+            <% end %>
+          </p>
+        </div>
+      </article>
+    <% end %>
+  </div>
+<% end %>

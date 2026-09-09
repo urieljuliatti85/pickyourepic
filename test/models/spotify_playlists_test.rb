@@ -117,6 +117,64 @@ class SpotifyPlaylistsTest < ActiveSupport::TestCase
     assert_equal Spotify::Playlists::MAX_LIMIT, calls.first.last[:params][:limit]
   end
 
+  # SEARCH
+  #
+  # The genre browse this replaces: /browse/categories and friends have answered
+  # 403 since 2024-11-27, so a free-text search is what the API still allows.
+
+  test "search returns public playlists matching a term" do
+    payload = { "playlists" => { "items" => [ playlist_item ] } }
+
+    results = stub_method(Spotify::Client, :get, payload) do
+      Spotify::Playlists.search(query: "rock", access_token: "token")
+    end
+
+    assert_equal [ "pl_abc" ], results.map { |p| p[:spotify_id] }
+  end
+
+  # Spotify puts literal nulls among the results — roughly a third of a page in
+  # practice — and normalize would raise on them.
+  test "search survives the nulls Spotify mixes into the results" do
+    payload = { "playlists" => { "items" => [ nil, playlist_item, nil ] } }
+
+    results = stub_method(Spotify::Client, :get, payload) do
+      Spotify::Playlists.search(query: "rock", access_token: "token")
+    end
+
+    assert_equal [ "pl_abc" ], results.map { |p| p[:spotify_id] }
+  end
+
+  test "search asks Spotify for playlists, not tracks" do
+    calls = recording_client_get({ "playlists" => { "items" => [] } }) do
+      Spotify::Playlists.search(query: "rock", access_token: "token")
+    end
+
+    path, kwargs = calls.first
+    assert_equal "/search", path
+    assert_equal "playlist", kwargs[:params][:type]
+    assert_equal "rock", kwargs[:params][:q]
+  end
+
+  test "search returns nothing for a blank term" do
+    assert_empty Spotify::Playlists.search(query: "", access_token: "token")
+    assert_empty Spotify::Playlists.search(query: nil, access_token: "token")
+  end
+
+  # /search omits the track total that /users/{id}/playlists carries.
+  test "a search result with no track total keeps it nil rather than zero" do
+    result = Spotify::Playlists.normalize(playlist_item("tracks" => nil))
+
+    assert_nil result[:track_count]
+  end
+
+  test "the owner name comes through when Spotify sends one" do
+    result = Spotify::Playlists.normalize(
+      playlist_item("owner" => { "display_name" => "isah.se" })
+    )
+
+    assert_equal "isah.se", result[:owner_name]
+  end
+
   # TRACKS
 
   def track_row(overrides = {})
