@@ -27,8 +27,9 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     assert_select "form" do
       assert_select "input[name='epic[title]']"
       assert_select "textarea[name='epic[description]']"
-      assert_select "input[name='epic[start_time]']"
-      assert_select "input[name='epic[end_time]']"
+      # O form fala em MM:SS; o Epic converte para os ms das colunas.
+      assert_select "input[name='epic[start_time_mmss]']"
+      assert_select "input[name='epic[end_time_mmss]']"
     end
   end
 
@@ -36,6 +37,7 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     get new_epic_path(track_id: @track.spotify_id)
 
     assert_response :success
+    assert_select "h1", "Create Epic"
     assert_select "strong", @track.name
     assert_select "p", /Test Artist/
   end
@@ -46,8 +48,8 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
         epic: {
           title: "My Epic",
           description: "Great moment",
-          start_time: 60_000,
-          end_time: 120_000,
+          start_time_mmss: "1:00",
+          end_time_mmss: "2:00",
           visibility: "public"
         },
         track_id: @track.spotify_id
@@ -61,8 +63,8 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     post epics_path, params: {
       epic: {
         title: "My Epic",
-        start_time: 60_000,
-        end_time: 120_000,
+        start_time_mmss: "1:00",
+        end_time_mmss: "2:00",
         visibility: "public"
       },
       track_id: @track.spotify_id
@@ -77,8 +79,8 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
       post epics_path, params: {
         epic: {
           title: "My Epic",
-          start_time: 100_000,
-          end_time: 50_000,  # Invalid: end < start
+          start_time_mmss: "1:40",
+          end_time_mmss: "0:50",  # Invalid: end < start
           visibility: "public"
         },
         track_id: @track.spotify_id
@@ -94,8 +96,8 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
       post epics_path, params: {
         epic: {
           title: "",
-          start_time: 60_000,
-          end_time: 120_000,
+          start_time_mmss: "1:00",
+          end_time_mmss: "2:00",
           visibility: "public"
         },
         track_id: @track.spotify_id
@@ -212,7 +214,8 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     get epic_path(epic)
 
     assert_response :success
-    assert_select "p", /1:00 - 3:00/
+    # O trecho e um bloco so: "1:00 – 3:00" (en-dash) e, abaixo, a duracao.
+    assert_select "p", /1:00.*3:00/m
     assert_select "p", /2:00/  # duration: 3:00 - 1:00 = 2:00
   end
 
@@ -222,8 +225,8 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     post epics_path, params: {
       epic: {
         title: "My Epic",
-        start_time: 60_000,
-        end_time: 120_000,
+        start_time_mmss: "1:00",
+        end_time_mmss: "2:00",
         visibility: "public"
       },
       track_id: "nonexistent"
