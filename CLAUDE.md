@@ -44,6 +44,13 @@ bin/rails test -n /pick/                        # by name pattern
 bin/rails test:system                           # Capybara + Selenium, run separately
 ```
 
+The parallel workers hang against the Docker Postgres on some machines: the
+run sits at zero output until it is killed. When that happens, force the suite
+serial with `PARALLEL_WORKERS=1 bin/rails test` — the whole suite takes about
+ten seconds that way, so this is a cheap default when in doubt. The pre-commit
+hook has its own knob for the same problem (`git config hooks.parallelWorkers`,
+see below).
+
 Full local CI — the same steps GitHub Actions runs:
 
 ```bash
@@ -217,8 +224,10 @@ The rest of the checklist:
 
 - implementation complete;
 - tests exist and pass — **both** `bin/rails test` and `bin/rails test:system`,
-  since the first excludes the second and `bin/ci` does not run system tests
-  either (the step is commented out in `config/ci.rb`);
+  since the first excludes the second. Both `bin/ci` and GitHub Actions do run
+  the system suite (`config/ci.rb` has a "Tests: System" step; the workflow has
+  a `system-test` job alongside `test`), so a green CI covers them — but
+  `bin/rails test` alone, the fast local loop, does not;
 - migrations applied and `db/schema.rb` committed;
 - security considerations addressed;
 - no unrelated features introduced.
