@@ -156,4 +156,44 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "a", { text: /Edit/, count: 0 }
   end
+
+  # PICK NOS CARDS
+  #
+  # Uma Collection pode conter Epic de outra pessoa, entao o card oferece o
+  # Pick; no Epic do proprio dono o partial nao renderiza nada
+  # (CLAUDE.md § Authorization).
+
+  test "GET /collections/:id offers Pick on another user's epic" do
+    epic = Epic.create!(user: @other_user, track: @track, title: "Alheio",
+                        start_time: 0, end_time: 30_000, visibility: :public)
+    CollectionEpic.create!(collection: @collection, epic: epic)
+
+    get collection_path(@collection)
+
+    assert_response :success
+    assert_select "button[type=submit]", text: "Pick"
+  end
+
+  test "GET /collections/:id does not offer Pick on your own epic" do
+    epic = Epic.create!(user: @user, track: @track, title: "Meu",
+                        start_time: 0, end_time: 30_000, visibility: :public)
+    CollectionEpic.create!(collection: @collection, epic: epic)
+
+    get collection_path(@collection)
+
+    assert_response :success
+    assert_select "button[type=submit]", { text: "Pick", count: 0 }
+  end
+
+  test "GET /collections/:id shows the undo state for an already picked epic" do
+    epic = Epic.create!(user: @other_user, track: @track, title: "Ja pickado",
+                        start_time: 0, end_time: 30_000, visibility: :public)
+    CollectionEpic.create!(collection: @collection, epic: epic)
+    Pick.create!(user: @user, epic: epic)
+
+    get collection_path(@collection)
+
+    assert_response :success
+    assert_select "button[type=submit]", text: "Picked ✓"
+  end
 end
