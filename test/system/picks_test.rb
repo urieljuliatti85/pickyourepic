@@ -56,7 +56,9 @@ class PicksTest < ApplicationSystemTestCase
     click_button "Pick this Epic"
 
     assert_text "1 Pick"
-    click_link "@#{@user.username}"
+    # O nav tambem tem um link "@uriel", entao a busca e feita dentro da
+    # lista de pickers.
+    within("ul") { click_link "@#{@user.username}" }
 
     assert_current_path profile_path(@user)
   end

@@ -13,14 +13,27 @@
 
   <div class="mt-10">
     <% if signed_in? %>
-      <p class="text-sm text-neutral-400">
+      <%# Logado, a home so dizia "Signed in as" e oferecia sair: nenhuma acao
+          levava as paginas do produto. %>
+      <%= link_to "Search a track", tracks_path,
+            class: "block w-full rounded-full bg-emerald-500 px-6 py-4 text-center text-base font-semibold text-neutral-950 hover:bg-emerald-400" %>
+
+      <%= link_to "Discover Epics", discover_path,
+            class: "mt-3 block w-full rounded-full border border-neutral-700 px-6 py-4 text-center text-base font-semibold hover:border-neutral-500" %>
+
+      <p class="mt-8 text-sm text-neutral-400">
         Signed in as <span class="font-semibold text-neutral-100">@<%= current_user.username %></span>
       </p>
 
       <%= button_to "Sign out", sign_out_path, method: :delete,
-            class: "mt-4 text-sm text-neutral-500 underline underline-offset-4 hover:text-neutral-300" %>
+            class: "mt-2 text-sm text-neutral-500 underline underline-offset-4 hover:text-neutral-300" %>
     <% else %>
+      <%# O create redireciona para accounts.spotify.com. O Turbo intercepta o
+          submit e tenta seguir esse redirect por fetch, que o Spotify recusa
+          por CORS — o clique nao fazia nada. data-turbo="false" no form devolve
+          o submit ao browser, que navega para fora da app normalmente. %>
       <%= button_to "Sign in with Spotify", auth_spotify_path,
+            form: { data: { turbo: false } },
             class: "w-full rounded-full bg-emerald-500 px-6 py-4 text-center text-base font-semibold text-neutral-950 hover:bg-emerald-400" %>
     <% end %>
   </div>

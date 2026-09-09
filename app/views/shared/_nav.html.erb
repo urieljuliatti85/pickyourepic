@@ -4,11 +4,17 @@
       Pick Up Your Epic!
     <% end %>
 
-    <% if signed_in? %>
-      <div class="flex items-center gap-4 text-sm">
+    <div class="flex items-center gap-4 text-sm">
+      <%# Discover e publico; o resto exige sessao. %>
+      <%= link_to "Discover", discover_path, class: "text-neutral-400 hover:text-neutral-100" %>
+
+      <% if signed_in? %>
         <%= link_to "Search", tracks_path, class: "text-neutral-400 hover:text-neutral-100" %>
-        <%= link_to "@#{current_user.username}", root_path, class: "text-neutral-400 hover:text-neutral-100" %>
-      </div>
-    <% end %>
+        <%= link_to "Collections", collections_path, class: "text-neutral-400 hover:text-neutral-100" %>
+        <%# Antes apontava para root_path, entao o proprio perfil nao tinha link. %>
+        <%= link_to "@#{current_user.username}", profile_path(current_user),
+              class: "text-neutral-100 hover:text-emerald-400" %>
+      <% end %>
+    </div>
   </div>
 </nav>

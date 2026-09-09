@@ -20,9 +20,11 @@
   </head>
 
   <body class="h-full bg-neutral-950 text-neutral-100 antialiased">
+    <%# Nav e flash no layout: cada um era renderizado por uma pagina isolada,
+        entao o resto da app ficava sem navegacao e sem mensagens. %>
+    <%= render "shared/nav" %>
+
     <main class="min-h-full">
-      <%# No layout para que toda pagina mostre suas mensagens, nao so as
-          duas que renderizavam o partial por conta propria. %>
       <div class="max-w-4xl mx-auto px-4 pt-4">
         <%= render "shared/flash" %>
       </div>
