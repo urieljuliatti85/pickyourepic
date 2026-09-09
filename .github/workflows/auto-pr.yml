@@ -48,8 +48,22 @@ jobs:
 
           # --fill takes the title and body from the commits, so the PR says
           # whatever the commit messages already say.
-          if ! url=$(gh pr create --base main --head "$BRANCH" --fill); then
-            echo "No PR created: the branch has nothing main does not already have."
+          #
+          # gh's failure is kept and printed rather than swallowed: the first
+          # version reported "nothing to open a PR for" whatever went wrong,
+          # which hid a permission error behind a plausible-sounding excuse.
+          if ! url=$(gh pr create --base main --head "$BRANCH" --fill 2>&1); then
+            case "$url" in
+              *"not permitted to create or approve pull requests"*)
+                echo "::warning::Actions may not open PRs. Allow it in Settings → Actions → General → Workflow permissions."
+                ;;
+              *"No commits between"*)
+                echo "Nothing to open: main already has everything on this branch."
+                ;;
+              *)
+                echo "::warning::Could not open a PR: $url"
+                ;;
+            esac
             exit 0
           fi
 
