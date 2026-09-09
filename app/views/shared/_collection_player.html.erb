@@ -1,40 +1,40 @@
-<%# Partial: Play Collection button (reprodução sequencial de Epics).
-    Requer: collection (Collection), e current_user autenticado com Premium.
-    Dados: JSON array de epics com spotifyUri, startTime, endTime, title. %>
+<%# Botao de play de uma Collection. Como o de um Epic, nao instancia o SDK:
+    despacha a fila para a barra global (shared/_player_bar), que e quem detem
+    o device e sobrevive a navegacao.
+
+    Antes esta partial tinha o proprio controller com um device separado — sair
+    da pagina matava o som, e dois devices disputavam a reproducao. %>
 
 <% if current_user&.spotify_account&.premium? && collection.collection_epics.any? %>
   <%
-    epics_data = collection.collection_epics.includes(epic: :track).map do |ce|
+    queue = collection.collection_epics.includes(epic: :track).map do |ce|
       {
-        spotifyUri: "spotify:track:#{ce.epic.track.spotify_id}",
+        uri: "spotify:track:#{ce.epic.track.spotify_id}",
         startTime: ce.epic.start_time,
         endTime: ce.epic.end_time,
-        title: ce.epic.title
+        title: ce.epic.title,
+        subtitle: "#{ce.epic.track.artist_name} · #{ce.epic.track.name}",
+        artwork: ce.epic.track.album_artwork_url
       }
     end
   %>
-  <div data-controller="collection-playback"
-       data-collection-playback-epics-value="<%= epics_data.to_json %>"
-       data-collection-playback-token-url-value="<%= api_playback_token_path %>"
-       class="p-4 bg-purple-50 border border-purple-200 rounded">
-    <div class="flex items-center gap-3">
-      <button data-action="click->collection-playback#play"
-              data-collection-playback-target="button"
-              class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 text-sm font-medium">
-        ▶ Play Collection
-      </button>
-      <button data-action="click->collection-playback#next"
-              class="px-3 py-2 bg-purple-300 text-purple-800 rounded hover:bg-purple-400 text-sm">
-        ⏭ Next
-      </button>
-      <span data-collection-playback-target="status"
-            class="text-xs text-gray-500"></span>
-    </div>
-    <p data-collection-playback-target="current"
-       class="text-sm text-purple-700 mt-2 font-medium"></p>
-  </div>
+
+  <button type="button"
+          class="inline-flex items-center gap-2 rounded-full bg-lime-accent px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-neutral-950 hover:bg-lime-bright"
+          data-controller="play-request"
+          data-play-request-queue-value="<%= queue.to_json %>"
+          data-action="play-request#playQueue">
+    <span aria-hidden="true">▶</span> Tocar Collection
+  </button>
+
+<% elsif current_user&.spotify_account&.premium? %>
+  <%# Sem Epics nao ha o que tocar; um botao morto so confundiria. %>
 <% elsif current_user %>
-  <p class="text-xs text-gray-500">
-    <em>Spotify Premium required for playback.</em>
+  <p class="text-xs text-neutral-500">
+    <em>Spotify Premium é necessário para tocar.</em>
   </p>
+<% else %>
+  <%= button_to "Entrar para ouvir", auth_spotify_path,
+        form: { data: { turbo: false } },
+        class: "inline-flex items-center gap-2 rounded-full bg-lime-accent px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-neutral-950 hover:bg-lime-bright" %>
 <% end %>
