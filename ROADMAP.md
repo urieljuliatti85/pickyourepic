@@ -82,12 +82,29 @@ justified the `[x]`.
 - [x] Handle logout
 - [x] Secure token storage
 
+**Note:** The sign in button shipped as a plain `button_to`, so Turbo
+intercepted the submit and tried to follow the redirect to
+accounts.spotify.com by fetch. The Spotify response carries no CORS headers,
+so the fetch failed silently: clicking the button did nothing, with no error
+anywhere. `data-turbo="false"` on the form hands the submit back to the
+browser. The controller was always correct — a POST to `/auth/spotify` did
+return 302 — which is why the integration tests never caught it. Turbo only
+exists in the browser, so the regression test is a system test
+(`sessions_test`), and it has to redirect cross-origin: a same-origin target
+passes even with the bug present.
+
 ### Verification
+
+Green on CI at `5516331`.
 
 - [x] User can authenticate with Spotify
 - [x] Existing user can log in
 - [x] New user is created
 - [x] Tokens are not exposed
+- [x] Sign in leaves the app — `sessions_test` (system) "signing in navigates
+      the browser away from the app"; verified to fail without the fix
+- [x] Unconfigured Spotify reports itself — `sessions_test` (system) asserts
+      the flash instead of a dead button
 - [x] Tests pass
 
 ---
@@ -279,6 +296,7 @@ An earlier version of this note claimed "226 tests across 25 test files" while t
 - The new-Epic form never submitted `track_id`, which `EpicsController#set_track` reads, so creating an Epic through the UI always 404'd.
 - `shared/_flash` was rendered only by `home` and `tracks`; every other page dropped its flash silently. It now renders in the layout.
 - `Spotify::Error`/`AuthError` lived inside `client.rb`, so Zeitwerk could not resolve them unless the client had already been loaded — `SpotifyAccount#fresh_access_token!` raises `AuthError` without touching it.
+- The sign in button did nothing: Turbo intercepted the form submit and could not follow the cross-origin redirect to Spotify. Fixed with `data-turbo="false"`; see the Phase 2 note.
 
 Security audit: all write controllers require authentication, all owner-only actions have authorization, all params use strong params or model validation. Database indexes verified on all foreign keys, unique constraints, and case-insensitive username.
 
@@ -308,3 +326,25 @@ Spotify
 → Pick
 → Collection
 → Play
+
+---
+
+# Post-MVP
+
+Work that does not belong to an MVP phase.
+
+## Branding
+
+- [x] Vinyl logo as the app mark
+
+**Note:** Green on CI at `3b4bb1b`. The nav used a `◉` character as a
+placeholder and `public/icon.svg` was still the red circle Rails ships. Both
+now render the vinyl from the logo art, redrawn as SVG in
+`shared/_logo_mark` — it takes its color from `currentColor`, so one partial
+serves any background, and `icon.png` is generated from the same file. The
+grooves only read above ~32px, so they sit behind a `detailed` flag: on in
+the landing page lockup, off in the nav.
+
+The wordmark is typography (Tailwind tracking), not the drawn lettering from
+the original art. Vectorizing that lettering is open if the arch and serifs
+matter.
