@@ -75,6 +75,18 @@ class PlaylistsControllerTest < ActionDispatch::IntegrationTest
     assert_no_match "Sign out and in again", response.body
   end
 
+  # A result link lives inside the results turbo-frame, so it has to break out
+  # of it: without target="_top" Turbo looks for a "playlist_results" frame in
+  # the playlist page, finds none, and renders "Content missing".
+  test "a result link navigates out of the results frame" do
+    stub_method(Spotify::Playlists, :search, [ playlist ]) do
+      get playlists_path(q: "rock")
+    end
+
+    assert_response :success
+    assert_select "a[href=?][data-turbo-frame=?]", playlist_path("pl_1"), "_top"
+  end
+
   # SHOW
 
   test "GET /playlists/:id persists the tracks so they can become Epics" do

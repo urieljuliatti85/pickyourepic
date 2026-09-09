@@ -20,7 +20,12 @@
 
         <div class="min-w-0 flex-1">
           <h2 class="truncate text-sm font-semibold text-neutral-100">
+            <%# turbo_frame: "_top" because this link lives inside the results
+                frame: without it Turbo looks for a "playlist_results" frame in
+                the playlist page, finds none, and renders "Content missing"
+                instead of navigating. %>
             <%= link_to playlist[:name], playlist_path(playlist[:spotify_id]),
+                  data: { turbo_frame: "_top" },
                   class: "hover:text-lime-accent" %>
           </h2>
 
