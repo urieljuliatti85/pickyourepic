@@ -6,7 +6,7 @@
     requires Premium (CLAUDE.md § Architecture — Playback). %>
 <% if current_user&.spotify_account&.premium? %>
   <button type="button"
-          class="inline-flex items-center gap-2 rounded-full bg-lime-accent px-4 py-2 text-sm font-semibold text-neutral-950 hover:bg-lime-bright"
+          class="inline-flex items-center gap-2 rounded-full bg-lime-accent px-4 py-2 text-sm font-semibold uppercase tracking-[0.12em] text-neutral-950 hover:bg-lime-bright"
           data-controller="play-request"
           data-play-request-uri-value="spotify:track:<%= epic.track.spotify_id %>"
           data-play-request-start-time-value="<%= epic.start_time %>"

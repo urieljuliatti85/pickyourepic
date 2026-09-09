@@ -25,11 +25,11 @@
     <% if picked_epic_ids.include?(epic.id) %>
       <%= button_to "Picked ✓", epic_pick_path(epic), method: :delete,
             form: { class: "inline-block" },
-            class: "rounded-full border border-lime-accent/40 #{size} font-semibold text-lime-accent hover:bg-lime-accent/10" %>
+            class: "rounded-full border border-lime-accent/40 #{size} font-semibold uppercase tracking-[0.12em] text-lime-accent hover:bg-lime-accent/10" %>
     <% else %>
       <%= button_to "Pick", epic_pick_path(epic), method: :post,
             form: { class: "inline-block" },
-            class: "rounded-full bg-lime-accent #{size} font-semibold text-neutral-950 hover:bg-lime-bright" %>
+            class: "rounded-full bg-lime-accent #{size} font-semibold uppercase tracking-[0.12em] text-neutral-950 hover:bg-lime-bright" %>
     <% end %>
   <% elsif !compact %>
     <p class="text-xs text-neutral-500">

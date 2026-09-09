@@ -13,8 +13,21 @@
   --color-lime-bright: #67e8f9;
 }
 
-/* Gradiente dos blocos de destaque: o ciano do acento indo para o roxo do
-   fundo da referencia. */
+/* The top bar carries the same gradient as the home card (.surface-glow):
+   cyan into blue into purple, so the two read as one surface. It is stated
+   here rather than reusing that class because the bar runs wide and shallow —
+   at 135deg the purple would land off-screen, so the angle is flattened and
+   the stops pulled in.
+
+   The text colours are its own: the app's greys were chosen against the dark
+   ink and go muddy on this lighter ground. */
+.top-bar {
+  background-image: linear-gradient(100deg, #38dcf4 0%, #5b9cf8 45%, #9b6bf0 100%);
+  border-bottom: 1px solid rgb(255 255 255 / 0.14);
+}
+
+/* The highlight blocks' gradient: the accent cyan running into the
+   reference's purple background. */
 .surface-glow {
   background-image: linear-gradient(135deg, #22d3ee 0%, #3b82f6 45%, #7c3aed 100%);
 }

@@ -58,7 +58,7 @@
           <%= button_to "Delete", epic_path(@epic), method: :delete,
                 form: { class: "inline-block" },
                 data: { turbo_confirm: "Delete \"#{@epic.title}\"? The Picks it received are lost with it." },
-                class: "rounded-full border border-red-500/40 px-4 py-2 text-sm font-semibold text-red-300 hover:bg-red-500/10" %>
+                class: "rounded-full border border-red-500/40 px-4 py-2 text-sm font-semibold uppercase tracking-[0.12em] text-red-300 hover:bg-red-500/10" %>
         <% end %>
       </div>
     </div>
@@ -67,7 +67,7 @@
 
       <%# The excerpt: an Epic's central piece of information. %>
       <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
-        <p class="text-xs font-semibold uppercase tracking-wider text-neutral-400">Excerpt</p>
+        <p class="text-xs font-semibold uppercase tracking-[0.12em]r text-neutral-400">Excerpt</p>
 
         <p class="mt-2 text-2xl font-semibold tabular-nums text-neutral-50">
           <%= number_to_duration(@epic.start_time) %>
@@ -83,7 +83,7 @@
 
       <dl class="mt-4 grid gap-3 sm:grid-cols-2">
         <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-          <dt class="text-xs font-semibold uppercase tracking-wider text-neutral-400">Criado por</dt>
+          <dt class="text-xs font-semibold uppercase tracking-[0.12em]r text-neutral-400">Criado por</dt>
           <dd class="mt-1">
             <%= link_to "@#{@epic.user.username}", profile_path(@epic.user),
                   class: "text-sm font-medium text-neutral-100 hover:text-lime-accent" %>
@@ -91,7 +91,7 @@
         </div>
 
         <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-          <dt class="text-xs font-semibold uppercase tracking-wider text-neutral-400">Visibilidade</dt>
+          <dt class="text-xs font-semibold uppercase tracking-[0.12em]r text-neutral-400">Visibilidade</dt>
           <dd class="mt-1">
             <% if @epic.visibility_public? %>
               <span class="rounded-full bg-lime-accent/15 px-3 py-1 text-xs font-semibold text-lime-accent">Public</span>
@@ -108,7 +108,7 @@
 
       <div class="mt-8 flex flex-wrap items-center gap-3">
         <%= link_to "Back", tracks_path,
-              class: "rounded-full border border-lime-accent/60 px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-lime-accent hover:bg-lime-accent/10" %>
+              class: "rounded-full border border-lime-accent/60 px-8 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-lime-accent hover:bg-lime-accent/10" %>
       </div>
     </div>
   </div>

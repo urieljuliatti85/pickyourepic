@@ -15,7 +15,7 @@
   <% end %>
 
   <% field = "mt-1.5 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-neutral-100 placeholder:text-neutral-500 focus:border-lime-accent focus:outline-none" %>
-  <% label = "text-xs font-semibold uppercase tracking-wider text-neutral-400" %>
+  <% label = "text-xs font-semibold uppercase tracking-[0.12em]r text-neutral-400" %>
 
   <div class="mb-5">
     <%= form.label :title, "Title", class: label %>
@@ -45,5 +45,5 @@
     </div>
   </div>
 
-  <%= form.submit class: "cursor-pointer rounded-full bg-lime-accent px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-neutral-950 hover:bg-lime-bright" %>
+  <%= form.submit class: "cursor-pointer rounded-full bg-lime-accent px-8 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-neutral-950 hover:bg-lime-bright" %>
 <% end %>
