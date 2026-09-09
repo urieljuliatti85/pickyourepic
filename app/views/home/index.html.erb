@@ -6,11 +6,9 @@
 
     <div>
       <%# Lockup da marca: disco + wordmark, a composicao do logo original. %>
-      <div class="mb-8 flex items-center gap-3">
-        <span class="text-lime-accent"><%= render "shared/logo_mark", size: "h-11 w-11", detailed: true %></span>
-        <span class="text-lg font-extrabold uppercase tracking-[0.18em]">
-          Pick<span class="text-lime-accent">Your</span>Epic
-        </span>
+      <div class="mb-8 flex items-center gap-4">
+        <span class="text-lime-accent"><%= render "shared/logo_mark", size: "h-14 w-14", detailed: true %></span>
+        <%= render "shared/logo_wordmark", size: "h-11" %>
       </div>
 
       <h1 class="text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
