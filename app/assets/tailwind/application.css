@@ -13,17 +13,18 @@
   --color-lime-bright: #67e8f9;
 }
 
-/* The top bar carries the same gradient as the home card (.surface-glow):
-   cyan into blue into purple, so the two read as one surface. It is stated
-   here rather than reusing that class because the bar runs wide and shallow —
-   at 135deg the purple would land off-screen, so the angle is flattened and
-   the stops pulled in.
+/* The top bar, from the reference: a deep desaturated teal, drifting a shade
+   lighter across its width rather than running through other hues. Bright
+   enough to read as its own surface against the dark page, dark enough that
+   white sits on it without glare.
+
+   No bottom border. In the reference the bar and what is under it are one
+   continuous ground, and a rule there would cut the band away from the page.
 
    The text colours are its own: the app's greys were chosen against the dark
-   ink and go muddy on this lighter ground. */
+   ink and go muddy here. */
 .top-bar {
-  background-image: linear-gradient(100deg, #38dcf4 0%, #5b9cf8 45%, #9b6bf0 100%);
-  border-bottom: 1px solid rgb(255 255 255 / 0.14);
+  background-image: linear-gradient(100deg, #2b6b68 0%, #367f79 55%, #3e8d84 100%);
 }
 
 /* The highlight blocks' gradient: the accent cyan running into the
