@@ -3,6 +3,25 @@ class CollectionEpicsController < ApplicationController
   before_action :set_collection
   before_action :authorize_collection_owner
 
+  # GET /collections/:collection_id/collection_epics/new
+  # Busca de Epics para adicionar. Responde tambem em turbo_stream: digitar no
+  # campo troca so a lista de resultados, sem recarregar a pagina.
+  def new
+    @term = params[:q].to_s
+
+    @results = Epic.addable_by(current_user)
+      .matching(@term)
+      .where.not(id: @collection.epic_ids)
+      .includes(:track, :user)
+      .order(created_at: :desc)
+      .limit(20)
+
+    respond_to do |format|
+      format.turbo_stream
+      format.html
+    end
+  end
+
   # POST /collections/:collection_id/collection_epics
   def create
     @collection_epic = @collection.collection_epics.build(
@@ -15,6 +34,8 @@ class CollectionEpicsController < ApplicationController
     else
       redirect_to @collection, alert: @collection_epic.errors.full_messages.first
     end
+    # A validacao de CollectionEpic e a ultima palavra: mesmo que a busca
+    # ofereça algo indevido, o save recusa (CLAUDE.md § Authorization).
   end
 
   # DELETE /collections/:collection_id/collection_epics/:id

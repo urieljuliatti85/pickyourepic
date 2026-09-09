@@ -7,9 +7,9 @@ class PicksController < ApplicationController
     @pick = @epic.picks.build(user: current_user)
 
     if @pick.save
-      redirect_to @epic, notice: "Epic foi pickado!"
+      respond_to_pick notice: "Epic foi pickado!"
     else
-      redirect_to @epic, alert: @pick.errors.full_messages.first
+      respond_to_pick alert: @pick.errors.full_messages.first
     end
   end
 
@@ -21,9 +21,9 @@ class PicksController < ApplicationController
 
     if pick
       pick.destroy
-      redirect_to @epic, notice: "Pick desfeito."
+      respond_to_pick notice: "Pick desfeito."
     else
-      redirect_to @epic, alert: "Você ainda não pickou este Epic."
+      respond_to_pick alert: "Você ainda não pickou este Epic."
     end
   end
 
@@ -31,5 +31,23 @@ class PicksController < ApplicationController
 
   def set_epic
     @epic = Epic.find(params[:epic_id])
+  end
+
+  # Turbo troca so o botao e a contagem; sem isso a pagina inteira recarregava
+  # e quem estava no meio de uma lista perdia a posicao. O redirect continua
+  # existindo para requisicao sem Turbo (e para os testes que o seguem).
+  def respond_to_pick(**flash_options)
+    # A associacao foi carregada antes da mudanca; recarrega para a contagem e
+    # a lista refletirem o Pick que acabou de entrar ou sair.
+    @epic.picks.reset
+    @picks = @epic.picks.includes(:user).order(created_at: :desc)
+
+    respond_to do |format|
+      format.turbo_stream do
+        flash.now[:notice] = flash_options[:notice] if flash_options[:notice]
+        flash.now[:alert] = flash_options[:alert] if flash_options[:alert]
+      end
+      format.html { redirect_back fallback_location: epic_path(@epic), **flash_options }
+    end
   end
 end

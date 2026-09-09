@@ -2,13 +2,28 @@
     hero e os cards da linha precisam do mesmo comportamento.
 
     As tres condicoes espelham as regras do model (CLAUDE.md § Authorization):
-    nao se pica o proprio Epic, e um Pick por user por Epic. %>
-<% if current_user && current_user.id != epic.user_id %>
-  <% if current_user.picks.exists?(epic_id: epic.id) %>
-    <%= button_to "Picked ✓", epic_pick_path(epic), method: :delete,
-          class: "rounded-full border border-lime-accent/40 px-4 py-2 text-sm font-semibold text-lime-accent hover:bg-lime-accent/10" %>
-  <% else %>
-    <%= button_to "Pick", epic_pick_path(epic), method: :post,
-          class: "rounded-full bg-lime-accent px-4 py-2 text-sm font-semibold text-neutral-950 hover:bg-lime-bright" %>
+    nao se pica o proprio Epic, e um Pick por user por Epic.
+
+    O turbo_frame_tag e o alvo do turbo_stream no PicksController: sem ele o
+    clique recarregaria a pagina inteira e o usuario perderia a posicao na
+    lista. O id inclui o epic porque o mesmo Epic pode aparecer mais de uma
+    vez na pagina (hero + rail do Discover).
+
+    Locais: epic. Opcional: compact (true nas listas e cards, onde a pilula
+    cheia do hero nao cabe). %>
+<% compact = local_assigns[:compact] %>
+<% size = compact ? "px-3 py-1 text-xs" : "px-4 py-2 text-sm" %>
+
+<%= turbo_frame_tag dom_id(epic, :pick_button), target: "_top" do %>
+  <% if current_user && current_user.id != epic.user_id %>
+    <% if current_user.picks.exists?(epic_id: epic.id) %>
+      <%= button_to "Picked ✓", epic_pick_path(epic), method: :delete,
+            form: { class: "inline-block" },
+            class: "rounded-full border border-lime-accent/40 #{size} font-semibold text-lime-accent hover:bg-lime-accent/10" %>
+    <% else %>
+      <%= button_to "Pick", epic_pick_path(epic), method: :post,
+            form: { class: "inline-block" },
+            class: "rounded-full bg-lime-accent #{size} font-semibold text-neutral-950 hover:bg-lime-bright" %>
+    <% end %>
   <% end %>
 <% end %>

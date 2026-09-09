@@ -1,0 +1,48 @@
+<%# Resultados da busca de Epics. Em frame proprio para o turbo_stream do
+    `new` trocar so esta lista enquanto a pessoa digita. %>
+<%= turbo_frame_tag "epic_search_results", target: "_top" do %>
+  <% if results.any? %>
+    <ol class="mt-4 space-y-0.5">
+      <% results.each do |epic| %>
+        <li class="flex items-center gap-4 rounded-xl px-3 py-2 hover:bg-white/5">
+          <% if epic.track.album_artwork_url.present? %>
+            <%= image_tag epic.track.album_artwork_url, alt: "", loading: "lazy",
+                  class: "h-12 w-12 flex-none rounded object-cover" %>
+          <% else %>
+            <div class="flex h-12 w-12 flex-none items-center justify-center rounded bg-white/5 text-neutral-700">♪</div>
+          <% end %>
+
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-sm font-semibold text-neutral-100"><%= epic.title %></p>
+            <p class="truncate text-xs text-neutral-400">
+              <%= epic.track.name %> · <%= epic.track.artist_name %>
+            </p>
+            <p class="truncate text-xs text-neutral-500">
+              <%= number_to_duration(epic.start_time) %>–<%= number_to_duration(epic.end_time) %>
+              · por @<%= epic.user.username %>
+              <% if epic.visibility_private? %>
+                · <span class="text-neutral-600">privado</span>
+              <% end %>
+            </p>
+          </div>
+
+          <%= button_to "Adicionar",
+                collection_collection_epics_path(collection, epic_id: epic.id),
+                method: :post,
+                form: { class: "flex-none" },
+                class: "rounded-full bg-lime-accent px-5 py-2 text-xs font-semibold uppercase tracking-wide text-neutral-950 hover:bg-lime-bright" %>
+        </li>
+      <% end %>
+    </ol>
+
+  <% elsif term.present? %>
+    <p class="mt-4 text-sm text-neutral-500">
+      Nenhum Epic encontrado para “<%= term %>”.
+    </p>
+
+  <% else %>
+    <p class="mt-4 text-sm text-neutral-500">
+      Busque pelo nome do Epic, da música ou da banda.
+    </p>
+  <% end %>
+<% end %>

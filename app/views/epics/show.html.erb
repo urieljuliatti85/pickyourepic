@@ -48,6 +48,8 @@
         <% if @epic.visibility_public? %>
           <%= render "shared/pick_button", epic: @epic %>
         <% end %>
+
+        <%= render "shared/favorite_button", epic: @epic %>
       </div>
     </div>
 
@@ -91,22 +93,7 @@
       </dl>
 
       <div class="mt-4 rounded-2xl border border-white/10 bg-white/5 p-5">
-        <p class="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-          <%= pluralize(@picks.size, "Pick") %>
-        </p>
-
-        <% if @picks.any? %>
-          <ul class="mt-3 flex flex-wrap gap-2">
-            <% @picks.each do |pick| %>
-              <li>
-                <%= link_to "@#{pick.user.username}", profile_path(pick.user),
-                      class: "inline-block rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-neutral-300 hover:border-lime-accent/50 hover:text-neutral-100" %>
-              </li>
-            <% end %>
-          </ul>
-        <% else %>
-          <p class="mt-2 text-sm text-neutral-500">Ninguém pickou este Epic ainda.</p>
-        <% end %>
+        <%= render "shared/pickers", epic: @epic, picks: @picks %>
       </div>
 
       <div class="mt-8 flex flex-wrap items-center gap-3">

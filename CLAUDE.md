@@ -125,6 +125,7 @@ Hand-rolled OAuth in `SessionsController`. The `omniauth*` gems are in the Gemfi
 There is no authorization gem. Visibility is enforced per-controller with `before_action` guards that redirect (never raise), plus model-level validations for the rules that must hold regardless of entry point:
 
 - `Pick` — cannot pick a private Epic; cannot pick your own Epic.
+- `Favorite` — cannot favorite another user's private Epic (your own, public or private, is allowed). The controller 404s on another user's private Epic rather than raising a validation error, which would confirm the id exists.
 - `CollectionEpic` — cannot add another user's private Epic.
 
 Private content must never appear in Discover or on another user's profile.
@@ -142,6 +143,7 @@ Rules that matter exist in **both** the model and the database.
 | `end_time <= track.duration_ms` | `Epic` validation | — (track-dependent) |
 | one Epic per user per track | — | unique index on `(user_id, track_id)` |
 | one Pick per user per Epic | `Pick` uniqueness | unique index on `(user_id, epic_id)` |
+| one Favorite per user per Epic | `Favorite` uniqueness | unique index on `(user_id, epic_id)` |
 | one Epic per Collection | `CollectionEpic` uniqueness | unique index on `(collection_id, epic_id)` |
 | username case-insensitively unique | `User` uniqueness | unique index on `lower(username)` |
 | `tracks.duration_ms > 0` | `Track` validation | check constraint `tracks_duration_positive` |

@@ -1,0 +1,28 @@
+<%# Contagem e lista de quem pickou um Epic. Num frame proprio porque um Pick
+    muda os dois de uma vez (shared/_pick_count cobre os lugares onde so a
+    contagem aparece).
+
+    Perfis privados entram na lista: visibilidade rege conteudo, nao se o
+    username pode ser listado (docs/product.md § Who Picked an Epic).
+
+    target: "_top" porque o frame existe so para ser alvo de turbo_stream —
+    sem isso, clicar no nome de um picker carregaria o perfil DENTRO do frame
+    em vez de navegar. %>
+<%= turbo_frame_tag dom_id(epic, :pickers), target: "_top" do %>
+  <p class="text-xs font-semibold uppercase tracking-wider text-neutral-400">
+    <%= pluralize(picks.size, "Pick") %>
+  </p>
+
+  <% if picks.any? %>
+    <ul class="mt-3 flex flex-wrap gap-2">
+      <% picks.each do |pick| %>
+        <li>
+          <%= link_to "@#{pick.user.username}", profile_path(pick.user),
+                class: "inline-block rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-neutral-300 hover:border-lime-accent/50 hover:text-neutral-100" %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="mt-2 text-sm text-neutral-500">Ninguém pickou este Epic ainda.</p>
+  <% end %>
+<% end %>

@@ -1,0 +1,71 @@
+<%# Linha de Epic no formato da referencia: indice zerado a esquerda, capa,
+    titulo sobre o artista. O hover revela o play sobre a capa.
+
+    Locais: epic, index. Opcional: byline (mostra de quem e o Epic, usado na
+    lista de Picks, onde o autor nao e o dono do perfil). %>
+<% byline = local_assigns[:byline] %>
+
+<li class="group relative">
+  <div class="flex items-center gap-4 rounded-xl px-3 py-2 hover:bg-white/5">
+
+    <%# O numero da faixa. Some no hover quando ha play para mostrar no lugar. %>
+    <span class="w-6 flex-none text-right text-xs tabular-nums text-neutral-600">
+      <%= format("%02d", index + 1) %>
+    </span>
+
+    <div class="relative h-12 w-12 flex-none">
+      <% if epic.track.album_artwork_url.present? %>
+        <%= image_tag epic.track.album_artwork_url, alt: "", loading: "lazy",
+              class: "h-12 w-12 rounded object-cover" %>
+      <% else %>
+        <div class="flex h-12 w-12 items-center justify-center rounded bg-white/5 text-neutral-700">♪</div>
+      <% end %>
+
+      <%# Play sobre a capa, como na referencia. So aparece para quem pode
+          tocar; para os demais o partial nao renderiza botao nenhum e a capa
+          fica limpa. %>
+      <% if current_user&.spotify_account&.premium? %>
+        <button type="button"
+                aria-label="Tocar <%= epic.title %>"
+                class="absolute inset-0 z-10 flex items-center justify-center rounded bg-black/50 text-lime-accent opacity-0 transition group-hover:opacity-100 focus:opacity-100"
+                data-controller="play-request"
+                data-play-request-uri-value="spotify:track:<%= epic.track.spotify_id %>"
+                data-play-request-start-time-value="<%= epic.start_time %>"
+                data-play-request-end-time-value="<%= epic.end_time %>"
+                data-play-request-title-value="<%= epic.title %>"
+                data-play-request-subtitle-value="<%= epic.track.artist_name %> · <%= epic.track.name %>"
+                data-play-request-artwork-value="<%= epic.track.album_artwork_url %>"
+                data-action="play-request#play">
+          <span aria-hidden="true" class="text-lg">▶</span>
+        </button>
+      <% end %>
+    </div>
+
+    <div class="min-w-0 flex-1">
+      <%# O link cobre a linha (before:absolute:inset-0) para a area de clique
+          ser a linha inteira, nao so o texto do titulo. %>
+      <p class="truncate text-sm font-semibold text-neutral-100">
+        <%= link_to epic.title, epic_path(epic),
+              class: "before:absolute before:inset-0 hover:text-lime-accent" %>
+      </p>
+
+      <p class="truncate text-xs text-neutral-400">
+        <%= epic.track.artist_name %>
+        <% if byline %>
+          · <span class="text-neutral-500">por @<%= epic.user.username %></span>
+        <% end %>
+      </p>
+    </div>
+
+    <div class="hidden flex-none items-center gap-4 text-xs tabular-nums text-neutral-500 sm:flex">
+      <span><%= number_to_duration(epic.end_time - epic.start_time) %></span>
+      <span class="w-14 text-right"><%= render "shared/pick_count", epic: epic %></span>
+
+      <%# z-10: o link do titulo cobre a linha inteira (before:inset-0), entao
+          sem isso o clique no Pick cairia no link e abriria o Epic. %>
+      <span class="relative z-10">
+        <%= render "shared/pick_button", epic: epic, compact: true %>
+      </span>
+    </div>
+  </div>
+</li>
