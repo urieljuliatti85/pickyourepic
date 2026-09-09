@@ -5,60 +5,60 @@
   <div class="grid items-center gap-12 lg:grid-cols-2">
 
     <div>
-      <%# Lockup da marca: disco + wordmark, a composicao do logo original. %>
+      <%# Brand lockup: disc + wordmark, the original logo composition. %>
       <div class="mb-8 flex items-center gap-4">
         <span class="text-lime-accent"><%= render "shared/logo_mark", size: "h-14 w-14", detailed: true %></span>
         <%= render "shared/logo_wordmark", size: "h-11" %>
       </div>
 
       <h1 class="text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
-        O momento máximo de<br>uma <span class="text-lime-accent">música.</span>
+        The peak moment of<br>a <span class="text-lime-accent">song.</span>
       </h1>
 
       <p class="mt-6 max-w-md text-lg text-neutral-400">
-        O riff, o vocal, a virada. Salve o trecho exato como um Epic
-        e descubra os Epics dos outros.
+        The riff, the vocal, the drop. Save the exact excerpt as an Epic
+        and discover other people’s Epics.
       </p>
 
       <div class="mt-10 flex flex-wrap gap-3">
         <% if signed_in? %>
           <%= link_to tracks_path,
                 class: "rounded-full bg-lime-accent px-6 py-3.5 text-base font-semibold text-neutral-950 hover:bg-lime-bright" do %>
-            Buscar música <span aria-hidden="true">→</span>
+            Search for a song <span aria-hidden="true">→</span>
           <% end %>
 
-          <%= link_to "Descobrir Epics", discover_path,
+          <%= link_to "Discover Epics", discover_path,
                 class: "rounded-full border border-neutral-700 px-6 py-3.5 text-base font-semibold hover:border-neutral-500" %>
         <% else %>
-          <%# O create redireciona para accounts.spotify.com. O Turbo intercepta o
-              submit e tenta seguir esse redirect por fetch, que o Spotify recusa
-              por CORS — o clique nao fazia nada. data-turbo="false" no form devolve
-              o submit ao browser, que navega para fora da app normalmente. %>
-          <%= button_to "Entrar com Spotify", auth_spotify_path,
+          <%# create redirects to accounts.spotify.com. Turbo intercepts the submit
+              and tries to follow that redirect by fetch, which Spotify refuses on
+              CORS — the click did nothing. data-turbo="false" on the form hands the
+              submit back to the browser, which navigates away normally. %>
+          <%= button_to "Sign in with Spotify", auth_spotify_path,
                 form: { data: { turbo: false } },
                 class: "rounded-full bg-lime-accent px-6 py-3.5 text-base font-semibold text-neutral-950 hover:bg-lime-bright" %>
 
-          <%= link_to "Ver Discover", discover_path,
+          <%= link_to "See Discover", discover_path,
                 class: "rounded-full border border-neutral-700 px-6 py-3.5 text-base font-semibold hover:border-neutral-500" %>
         <% end %>
       </div>
 
       <% if signed_in? %>
         <p class="mt-8 text-sm text-neutral-500">
-          Conectado como
+          Signed in as
           <%= link_to "@#{current_user.username}", profile_path(current_user),
                 class: "font-semibold text-neutral-200 hover:text-lime-accent" %>
         </p>
       <% end %>
     </div>
 
-    <%# Card de destaque: o gradiente carrega o acento da marca e mostra a
-        anatomia de um Epic, que e o conceito central do produto. %>
+    <%# Feature card: the gradient carries the brand accent and shows the
+        anatomy of an Epic, the product's central concept. %>
     <div class="surface-glow rounded-3xl p-5 text-neutral-950 shadow-2xl">
       <div class="flex items-start justify-between">
         <div>
           <p class="text-sm font-medium opacity-70">Epic</p>
-          <p class="mt-1 text-2xl font-bold leading-tight">O riff de abertura</p>
+          <p class="mt-1 text-2xl font-bold leading-tight">The opening riff</p>
         </div>
         <span class="rounded-full bg-white/70 px-3 py-1 text-xs font-semibold">1:12 – 1:38</span>
       </div>
@@ -67,15 +67,15 @@
         <div class="flex items-center justify-between rounded-2xl bg-white/55 px-4 py-3">
           <div>
             <p class="text-sm font-semibold">Track</p>
-            <p class="text-xs opacity-70">Uma música do seu Spotify</p>
+            <p class="text-xs opacity-70">A song from your Spotify</p>
           </div>
           <span class="text-sm font-semibold">▶</span>
         </div>
 
         <div class="flex items-center justify-between rounded-2xl bg-white/55 px-4 py-3">
           <div>
-            <p class="text-sm font-semibold">Trecho</p>
-            <p class="text-xs opacity-70">Início e fim, em milissegundos</p>
+            <p class="text-sm font-semibold">Excerpt</p>
+            <p class="text-xs opacity-70">Start and end, in milliseconds</p>
           </div>
           <span class="text-sm font-semibold">26s</span>
         </div>
@@ -83,7 +83,7 @@
         <div class="flex items-center justify-between rounded-2xl bg-white px-4 py-3">
           <div>
             <p class="text-sm font-semibold">Picks</p>
-            <p class="text-xs opacity-70">Quem também escolheu este momento</p>
+            <p class="text-xs opacity-70">Who else chose this moment</p>
           </div>
           <span class="text-sm font-bold">+12</span>
         </div>
@@ -91,19 +91,19 @@
     </div>
   </div>
 
-  <%# Os tres conceitos do produto, na mesma grade de cards da referencia. %>
+  <%# The three product concepts, in the same card grid as the reference. %>
   <div class="mt-24">
     <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
-      Três ideias, <span class="text-lime-accent">só isso.</span>
+      Three ideas, <span class="text-lime-accent">that’s all.</span>
     </h2>
-    <p class="mt-3 text-neutral-400">Sem feed infinito, sem ruído.</p>
+    <p class="mt-3 text-neutral-400">No infinite feed, no noise.</p>
 
     <div class="mt-8 grid gap-4 sm:grid-cols-3">
       <div class="card-dark rounded-2xl p-5">
         <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-lime-accent/15 text-lg">◉</div>
         <h3 class="mt-4 font-semibold">Epic</h3>
         <p class="mt-2 text-sm text-neutral-400">
-          Um trecho exato de uma música. Sem áudio guardado — só a referência e o intervalo.
+          An exact excerpt of a song. No audio stored — just the reference and the interval.
         </p>
       </div>
 
@@ -111,7 +111,7 @@
         <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-lime-accent/15 text-lg">✦</div>
         <h3 class="mt-4 font-semibold">Pick</h3>
         <p class="mt-2 text-sm text-neutral-400">
-          Escolher o Epic de outra pessoa. Não duplica nada; registra que aquele momento também é seu.
+          Choosing someone else’s Epic. It duplicates nothing; it records that the moment is yours too.
         </p>
       </div>
 
@@ -119,7 +119,7 @@
         <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-lime-accent/15 text-lg">≡</div>
         <h3 class="mt-4 font-semibold">Collection</h3>
         <p class="mt-2 text-sm text-neutral-400">
-          Seus Epics e os que você pickou, agrupados na ordem que fizer sentido.
+          Your Epics and the ones you picked, grouped in whatever order makes sense.
         </p>
       </div>
     </div>

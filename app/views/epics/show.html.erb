@@ -54,7 +54,7 @@
         <%# Apagar e irreversivel e leva junto os Picks que o Epic recebeu,
             entao o turbo_confirm diz o que se perde, nao so "tem certeza?". %>
         <% if current_user == @epic.user %>
-          <%= button_to "Excluir", epic_path(@epic), method: :delete,
+          <%= button_to "Delete", epic_path(@epic), method: :delete,
                 form: { class: "inline-block" },
                 data: { turbo_confirm: "Excluir \"#{@epic.title}\"? Os Picks que ele recebeu se perdem." },
                 class: "rounded-full border border-red-500/40 px-4 py-2 text-sm font-semibold text-red-300 hover:bg-red-500/10" %>
@@ -66,7 +66,7 @@
 
       <%# O trecho: e a informacao central de um Epic. %>
       <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
-        <p class="text-xs font-semibold uppercase tracking-wider text-neutral-400">Trecho</p>
+        <p class="text-xs font-semibold uppercase tracking-wider text-neutral-400">Excerpt</p>
 
         <p class="mt-2 text-2xl font-semibold tabular-nums text-neutral-50">
           <%= number_to_duration(@epic.start_time) %>
@@ -106,7 +106,7 @@
       </div>
 
       <div class="mt-8 flex flex-wrap items-center gap-3">
-        <%= link_to "Voltar", tracks_path,
+        <%= link_to "Back", tracks_path,
               class: "rounded-full border border-lime-accent/60 px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-lime-accent hover:bg-lime-accent/10" %>
       </div>
     </div>

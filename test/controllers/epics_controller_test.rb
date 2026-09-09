@@ -156,7 +156,7 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     get epic_path(epic)
 
     assert_redirected_to root_path
-    assert_equal "Epic não encontrado.", flash[:alert]
+    assert_equal "Epic not found.", flash[:alert]
   end
 
   test "GET /epics/:id works without authentication for public epic" do
@@ -250,7 +250,7 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to profile_path(@user)
-    assert_equal "Epic removido.", flash[:notice]
+    assert_equal "Epic deleted.", flash[:notice]
   end
 
   test "DELETE /epics/:id destroys a private epic too" do
@@ -273,7 +273,7 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to epic_path(epic)
-    assert_equal "Acesso não autorizado.", flash[:alert]
+    assert_equal "Not authorized.", flash[:alert]
   end
 
   test "DELETE /epics/:id requires authentication" do
@@ -312,7 +312,7 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     get epic_path(epic)
 
     assert_select "button[type=submit]", { text: "Pick", count: 0 }
-    assert_match "Este Epic é seu", response.body
+    assert_match "This Epic is yours", response.body
   end
 
   test "GET /epics/:id invites a signed out visitor to sign in" do
@@ -322,7 +322,7 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     get epic_path(epic)
 
     assert_select "button[type=submit]", { text: "Pick", count: 0 }
-    assert_match "Entre para pickar", response.body
+    assert_match "Sign in to pick", response.body
   end
 
   test "GET /epics/:id shows no note when the Pick button is there" do
@@ -333,7 +333,7 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     get epic_path(epic)
 
     assert_select "button[type=submit]", text: "Pick"
-    assert_no_match "Este Epic é seu", response.body
+    assert_no_match "This Epic is yours", response.body
   end
 
   # O botao so aparece para o dono: quem visita nao deve nem ver a opcao.
@@ -341,10 +341,10 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     epic = own_epic
 
     get epic_path(epic)
-    assert_select "button[type=submit]", text: "Excluir"
+    assert_select "button[type=submit]", text: "Delete"
 
     sign_in_as(create_signed_in_user(username: "bob"))
     get epic_path(epic)
-    assert_select "button[type=submit]", { text: "Excluir", count: 0 }
+    assert_select "button[type=submit]", { text: "Delete", count: 0 }
   end
 end

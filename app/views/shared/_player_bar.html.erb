@@ -37,21 +37,21 @@
         <%# Transporte. `disabled:opacity-30` porque com um Epic avulso nao ha
             para onde pular. %>
         <div class="flex flex-none items-center gap-2 sm:gap-3">
-          <button type="button" aria-label="Anterior"
+          <button type="button" aria-label="Previous"
                   data-player-bar-target="prev"
                   data-action="player-bar#previous"
                   class="flex h-8 w-8 items-center justify-center rounded-full text-neutral-400 hover:text-neutral-100 disabled:opacity-30 disabled:hover:text-neutral-400">
             ⏮
           </button>
 
-          <button type="button" aria-label="Tocar ou pausar"
+          <button type="button" aria-label="Play or pause"
                   data-player-bar-target="button"
                   data-action="player-bar#toggle"
                   class="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-lg hover:border-lime-accent hover:text-lime-accent">
             ▶
           </button>
 
-          <button type="button" aria-label="Próximo"
+          <button type="button" aria-label="Next"
                   data-player-bar-target="next"
                   data-action="player-bar#next"
                   class="flex h-8 w-8 items-center justify-center rounded-full text-neutral-400 hover:text-neutral-100 disabled:opacity-30 disabled:hover:text-neutral-400">
@@ -75,7 +75,7 @@
             </div>
 
             <input type="range" min="0" max="100" value="0" step="0.1"
-                   aria-label="Posição no trecho"
+                   aria-label="Position in the excerpt"
                    data-player-bar-target="scrubber"
                    data-action="input->player-bar#scrub change->player-bar#seek"
                    class="absolute inset-0 h-full w-full cursor-pointer appearance-none bg-transparent

@@ -26,7 +26,7 @@
             </p>
           </div>
 
-          <%= button_to "Adicionar",
+          <%= button_to "Add",
                 collection_collection_epics_path(collection, epic_id: epic.id),
                 method: :post,
                 form: { class: "flex-none" },
@@ -42,7 +42,7 @@
 
   <% else %>
     <p class="mt-4 text-sm text-neutral-500">
-      Busque pelo nome do Epic, da música ou da banda.
+      Search by Epic title, song or artist.
     </p>
   <% end %>
 <% end %>

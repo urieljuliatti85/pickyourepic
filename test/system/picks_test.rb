@@ -48,7 +48,7 @@ class PicksTest < ApplicationSystemTestCase
 
     click_button "Pick"
 
-    assert_text "Epic foi pickado!"
+    assert_text "Epic picked!"
     assert_text(/1 Pick/i)
   end
 
@@ -59,7 +59,7 @@ class PicksTest < ApplicationSystemTestCase
 
     click_button "Picked ✓"
 
-    assert_text "Pick desfeito."
+    assert_text "Pick undone."
     assert_text(/0 Picks/i)
     # Volta a oferecer o Pick, entao o usuario pode refazer.
     assert_button "Pick"
@@ -84,7 +84,7 @@ class PicksTest < ApplicationSystemTestCase
     visit discover_path
     click_button "Picked ✓"
 
-    assert_text "Pick desfeito."
+    assert_text "Pick undone."
   end
 
   test "User cannot pick private epic" do
@@ -92,7 +92,7 @@ class PicksTest < ApplicationSystemTestCase
 
     # O Epic privado e de outro user, entao a pagina inteira e negada — mais
     # forte do que apenas esconder o botao de Pick.
-    assert_text "Epic não encontrado."
+    assert_text "Epic not found."
     assert_no_button "Pick"
   end
 

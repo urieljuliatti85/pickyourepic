@@ -16,8 +16,8 @@ class LoggedOutPlaybackTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "form[action=?]", auth_spotify_path
-    assert_select "button", /Entrar para ouvir/
-    assert_select "p", { text: /Premium é necessário para tocar/, count: 0 }
+    assert_select "button", /Sign in to listen/
+    assert_select "p", { text: /Premium is required to play/, count: 0 }
   end
 
   test "a signed in non-premium user still sees the premium explanation" do
@@ -29,8 +29,8 @@ class LoggedOutPlaybackTest < ActionDispatch::IntegrationTest
     get epic_path(@epic)
 
     assert_response :success
-    assert_select "p", /Premium é necessário para tocar/
-    assert_select "button", { text: /Entrar para ouvir/, count: 0 }
+    assert_select "p", /Premium is required to play/
+    assert_select "button", { text: /Sign in to listen/, count: 0 }
   end
 
   test "the playback token is never issued to a signed out visitor" do

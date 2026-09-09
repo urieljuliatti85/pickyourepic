@@ -30,7 +30,7 @@ class DiscoverTest < ApplicationSystemTestCase
 
     click_button "Pick"
 
-    assert_text "Epic foi pickado!"
+    assert_text "Epic picked!"
   end
 
   test "Discover page shows only public epics" do

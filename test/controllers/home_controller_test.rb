@@ -7,6 +7,6 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     # A headline tem markup interno (a palavra em destaque e um span),
     # entao a comparacao e por trecho, nao por igualdade exata.
-    assert_select "h1", /momento máximo/
+    assert_select "h1", /peak moment/
   end
 end

@@ -15,7 +15,7 @@ class FavoritesController < ApplicationController
     favorite = current_user.favorites.build(epic: @epic)
 
     if favorite.save
-      redirect_back_to_epic notice: "Epic favoritado!"
+      redirect_back_to_epic notice: "Epic favorited!"
     else
       redirect_back_to_epic alert: favorite.errors.full_messages.first
     end
@@ -28,9 +28,9 @@ class FavoritesController < ApplicationController
 
     if favorite
       favorite.destroy
-      redirect_back_to_epic notice: "Removido dos favoritos."
+      redirect_back_to_epic notice: "Removed from favorites."
     else
-      redirect_back_to_epic alert: "Este Epic não está nos seus favoritos."
+      redirect_back_to_epic alert: "This Epic is not in your favorites."
     end
   end
 

@@ -15,7 +15,7 @@ class SessionsTest < ApplicationSystemTestCase
     # pagina de erro de DNS, que ja prova que ele saiu da app por conta propria.
     stub_method(Spotify::Client, :authorize_url, "https://spotify-oauth.invalid/authorize") do
       visit root_path
-      within("main") { click_button "Entrar com Spotify" }
+      within("main") { click_button "Sign in with Spotify" }
 
       assert_no_current_path(root_path, wait: 5)
     end
@@ -31,7 +31,7 @@ class SessionsTest < ApplicationSystemTestCase
     visit discover_path
     assert_text "@uriel"
 
-    click_button "Sair"
+    click_button "Sign out"
 
     assert_text "Signed out."
     assert_no_text "@uriel"
@@ -41,7 +41,7 @@ class SessionsTest < ApplicationSystemTestCase
     clear_spotify_credentials
 
     visit root_path
-    within("main") { click_button "Entrar com Spotify" }
+    within("main") { click_button "Sign in with Spotify" }
 
     assert_text "Spotify integration is not configured."
   end

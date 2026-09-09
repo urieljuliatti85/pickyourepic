@@ -34,7 +34,7 @@ class EpicsController < ApplicationController
     # Picks, Favorites e CollectionEpics saem junto (dependent: :destroy no
     # model), entao o Epic de outra pessoa some das Collections que o continham.
     @epic.destroy
-    redirect_to profile_path(current_user), notice: "Epic removido."
+    redirect_to profile_path(current_user), notice: "Epic deleted."
   end
 
   private
@@ -51,7 +51,7 @@ class EpicsController < ApplicationController
   # Private epics: visíveis apenas para o owner
   def authorize_epic_visibility
     if @epic.visibility_private? && current_user != @epic.user
-      redirect_to root_path, alert: "Epic não encontrado."
+      redirect_to root_path, alert: "Epic not found."
     end
   end
 
@@ -59,7 +59,7 @@ class EpicsController < ApplicationController
   # (CLAUDE.md § Authorization).
   def authorize_epic_owner
     unless @epic.user == current_user
-      redirect_to epic_path(@epic), alert: "Acesso não autorizado."
+      redirect_to epic_path(@epic), alert: "Not authorized."
     end
   end
 

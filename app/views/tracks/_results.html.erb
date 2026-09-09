@@ -1,5 +1,5 @@
 <% if query.present? && results.empty? %>
-  <p class="text-sm text-neutral-500">Nenhuma música encontrada para "<%= query %>".</p>
+  <p class="text-sm text-neutral-500">No songs found for "<%= query %>".</p>
 <% else %>
   <ul class="divide-y divide-neutral-900">
     <% results.each do |track| %>

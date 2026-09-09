@@ -14,14 +14,14 @@ class CollectionsTest < ApplicationSystemTestCase
 
   test "User can create a collection" do
     visit collections_path
-    click_link "Nova Collection"
+    click_link "New Collection"
 
-    fill_in "Título", with: "My Playlist"
-    fill_in "Descrição (opcional)", with: "Best moments"
+    fill_in "Title", with: "My Playlist"
+    fill_in "Description (optional)", with: "Best moments"
     choose "Public"
     click_button "Create Collection"
 
-    assert_text "Collection criada!"
+    assert_text "Collection created!"
     assert_text "My Playlist"
   end
 
@@ -29,10 +29,10 @@ class CollectionsTest < ApplicationSystemTestCase
     collection = Collection.create!(user: @user, title: "Old Name")
 
     visit edit_collection_path(collection)
-    fill_in "Título", with: "New Name"
+    fill_in "Title", with: "New Name"
     click_button "Update Collection"
 
-    assert_text "Collection atualizada!"
+    assert_text "Collection updated!"
     assert_text "New Name"
   end
 
@@ -44,9 +44,9 @@ class CollectionsTest < ApplicationSystemTestCase
 
     click_link "Delete Me"
     # O botao usa data-turbo-confirm, que abre um dialog nativo do browser.
-    accept_confirm { click_button "Excluir" }
+    accept_confirm { click_button "Delete" }
 
-    assert_text "Collection removida!"
+    assert_text "Collection deleted!"
   end
 
   test "User can add and remove epic from collection" do
@@ -61,15 +61,15 @@ class CollectionsTest < ApplicationSystemTestCase
     )
 
     visit collection_path(collection)
-    click_link "Buscar Epic"
+    click_link "Search for an Epic"
     fill_in "q", with: "Epic Song"
-    click_button "Adicionar"
+    click_button "Add"
 
-    assert_text "Epic adicionado à Collection!"
+    assert_text "Epic added to the Collection!"
     assert_text "Epic Song"
 
-    click_button "Remover"
-    assert_text "Epic removido da Collection!"
+    click_button "Remove"
+    assert_text "Epic removed from the Collection!"
   end
 
   test "User adds an epic to a collection by searching for it" do
@@ -82,7 +82,7 @@ class CollectionsTest < ApplicationSystemTestCase
     collection = Collection.create!(user: @user, title: "Busca", visibility: :public)
 
     visit collection_path(collection)
-    click_link "Buscar Epic"
+    click_link "Search for an Epic"
 
     # Busca pela banda: o Epic nao tem "queen" no titulo.
     fill_in "q", with: "queen"
@@ -90,9 +90,9 @@ class CollectionsTest < ApplicationSystemTestCase
     assert_text "O solo"
     assert_text "Bohemian Rhapsody"
 
-    click_button "Adicionar"
+    click_button "Add"
 
-    assert_text "Epic adicionado à Collection!"
+    assert_text "Epic added to the Collection!"
     assert_text "O solo"
   end
 end

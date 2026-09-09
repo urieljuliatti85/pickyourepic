@@ -51,7 +51,7 @@ class PicksControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to epic_path(@public_epic)
-    assert_equal "Epic foi pickado!", flash[:notice]
+    assert_equal "Epic picked!", flash[:notice]
   end
 
   test "POST sets current_user as pick owner" do
@@ -188,7 +188,7 @@ class PicksControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to epic_path(@public_epic)
-    assert_equal "Pick desfeito.", flash[:notice]
+    assert_equal "Pick undone.", flash[:notice]
   end
 
   test "DELETE without an existing pick says so" do
@@ -197,7 +197,7 @@ class PicksControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to epic_path(@public_epic)
-    assert_includes flash[:alert], "ainda não pickou"
+    assert_includes flash[:alert], "have not picked"
   end
 
   test "DELETE only removes the current user's pick" do

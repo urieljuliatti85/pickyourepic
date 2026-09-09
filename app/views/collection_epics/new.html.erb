@@ -19,14 +19,14 @@
           method: :get,
           data: { controller: "search", turbo_frame: "epic_search_results" } do |form| %>
       <%= form.search_field :q, value: @term, autofocus: true,
-            placeholder: "Nome do Epic, da música ou da banda…",
+            placeholder: "Epic title, song or artist…",
             autocomplete: "off",
             data: { action: "input->search#submit" },
             class: "w-full rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-neutral-100 placeholder:text-neutral-500 focus:border-lime-accent focus:outline-none" %>
 
       <%# Sem JS o botao continua submetendo a busca. %>
       <noscript>
-        <%= form.submit "Buscar",
+        <%= form.submit "Search",
               class: "mt-3 cursor-pointer rounded-full bg-lime-accent px-8 py-2 text-sm font-semibold uppercase tracking-wide text-neutral-950" %>
       </noscript>
     <% end %>
@@ -35,7 +35,7 @@
   </section>
 
   <div class="mt-10">
-    <%= link_to "Voltar", collection_path(@collection),
+    <%= link_to "Back", collection_path(@collection),
           class: "rounded-full border border-lime-accent/60 px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-lime-accent hover:bg-lime-accent/10" %>
   </div>
 </div>

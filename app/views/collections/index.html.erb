@@ -10,11 +10,11 @@
     </h1>
 
     <p class="mt-3 max-w-lg text-sm leading-relaxed text-neutral-300 sm:text-base">
-      Seus Epics agrupados do seu jeito — os que você criou e os que você pickou.
+      Your Epics grouped your way — the ones you created and the ones you picked.
     </p>
 
     <div class="mt-7 flex flex-wrap items-center gap-3">
-      <%= link_to "Nova Collection", new_collection_path,
+      <%= link_to "New Collection", new_collection_path,
             class: "rounded-full bg-lime-accent px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-neutral-950 hover:bg-lime-bright" %>
 
       <%= link_to "Discover", discover_path,
@@ -65,7 +65,7 @@
   <% else %>
     <section class="mt-12 rounded-3xl border border-white/10 bg-ink-soft p-10 text-center">
       <p class="text-sm text-neutral-400">
-        Você ainda não tem Collections. Crie a primeira e agrupe seus Epics.
+        You have no Collections yet. Create the first one and group your Epics.
       </p>
     </section>
   <% end %>

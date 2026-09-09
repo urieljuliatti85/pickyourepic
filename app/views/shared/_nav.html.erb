@@ -26,7 +26,7 @@
           /tracks: um GET simples, sem JS. %>
       <%= form_with url: tracks_path, method: :get, class: "ml-auto hidden max-w-xs flex-1 sm:block" do |form| %>
         <%= form.search_field :q, value: params[:q],
-              placeholder: "Buscar música…", autocomplete: "off",
+              placeholder: "Search for a song…", autocomplete: "off",
               class: "w-full rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm placeholder:text-neutral-500 focus:border-lime-accent focus:outline-none" %>
       <% end %>
     <% end %>
@@ -38,10 +38,10 @@
 
         <%# A rota de sign out existia desde o inicio, mas nenhuma tela linkava
             para ela — quem entrava nao tinha como sair. %>
-        <%= button_to "Sair", sign_out_path, method: :delete,
+        <%= button_to "Sign out", sign_out_path, method: :delete,
               class: "text-neutral-500 underline underline-offset-4 hover:text-neutral-300" %>
       <% else %>
-        <%= button_to "Entrar", auth_spotify_path,
+        <%= button_to "Sign in", auth_spotify_path,
               form: { data: { turbo: false } },
               class: "rounded-full bg-lime-accent px-4 py-1.5 font-semibold text-neutral-950 hover:bg-lime-bright" %>
       <% end %>

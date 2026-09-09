@@ -7,7 +7,7 @@ class PicksController < ApplicationController
     @pick = @epic.picks.build(user: current_user)
 
     if @pick.save
-      respond_to_pick notice: "Epic foi pickado!"
+      respond_to_pick notice: "Epic picked!"
     else
       respond_to_pick alert: @pick.errors.full_messages.first
     end
@@ -21,9 +21,9 @@ class PicksController < ApplicationController
 
     if pick
       pick.destroy
-      respond_to_pick notice: "Pick desfeito."
+      respond_to_pick notice: "Pick undone."
     else
-      respond_to_pick alert: "Você ainda não pickou este Epic."
+      respond_to_pick alert: "You have not picked this Epic yet."
     end
   end
 

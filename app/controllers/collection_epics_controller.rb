@@ -30,7 +30,7 @@ class CollectionEpicsController < ApplicationController
     )
 
     if @collection_epic.save
-      redirect_to @collection, notice: "Epic adicionado à Collection!"
+      redirect_to @collection, notice: "Epic added to the Collection!"
     else
       redirect_to @collection, alert: @collection_epic.errors.full_messages.first
     end
@@ -42,7 +42,7 @@ class CollectionEpicsController < ApplicationController
   def destroy
     @collection_epic = @collection.collection_epics.find(params[:id])
     @collection_epic.destroy
-    redirect_to @collection, notice: "Epic removido da Collection!"
+    redirect_to @collection, notice: "Epic removed from the Collection!"
   end
 
   private
@@ -53,7 +53,7 @@ class CollectionEpicsController < ApplicationController
 
   def authorize_collection_owner
     unless @collection.user == current_user
-      redirect_to collections_path, alert: "Acesso não autorizado."
+      redirect_to collections_path, alert: "Not authorized."
     end
   end
 end

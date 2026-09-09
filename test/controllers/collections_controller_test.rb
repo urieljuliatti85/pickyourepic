@@ -51,7 +51,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
       post collections_path, params: { collection: { title: "New Col", visibility: "public" } }
     end
     assert_redirected_to collection_path(Collection.last)
-    assert_equal "Collection criada!", flash[:notice]
+    assert_equal "Collection created!", flash[:notice]
   end
 
   test "POST /collections sets current_user as owner" do
@@ -84,7 +84,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     other_private = Collection.create!(user: @other_user, title: "Secret", visibility: :private)
     get collection_path(other_private)
     assert_redirected_to collections_path
-    assert_equal "Collection não encontrada.", flash[:alert]
+    assert_equal "Collection not found.", flash[:alert]
   end
 
   test "GET /collections/:id shows epics in collection" do

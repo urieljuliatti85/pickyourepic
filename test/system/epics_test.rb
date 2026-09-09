@@ -67,9 +67,9 @@ class EpicsTest < ApplicationSystemTestCase
                         start_time: 0, end_time: 30_000, visibility: :public)
 
     visit epic_path(epic)
-    accept_confirm { click_button "Excluir" }
+    accept_confirm { click_button "Delete" }
 
-    assert_text "Epic removido."
+    assert_text "Epic deleted."
     assert_no_text "Para apagar"
     assert_nil Epic.find_by(id: epic.id)
   end
@@ -79,7 +79,7 @@ class EpicsTest < ApplicationSystemTestCase
                         start_time: 0, end_time: 30_000, visibility: :public)
 
     visit epic_path(epic)
-    dismiss_confirm { click_button "Excluir" }
+    dismiss_confirm { click_button "Delete" }
 
     assert_text "Fica"
     assert Epic.exists?(epic.id)

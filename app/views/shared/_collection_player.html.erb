@@ -24,17 +24,17 @@
           data-controller="play-request"
           data-play-request-queue-value="<%= queue.to_json %>"
           data-action="play-request#playQueue">
-    <span aria-hidden="true">▶</span> Tocar Collection
+    <span aria-hidden="true">▶</span> Play Collection
   </button>
 
 <% elsif current_user&.spotify_account&.premium? %>
   <%# Sem Epics nao ha o que tocar; um botao morto so confundiria. %>
 <% elsif current_user %>
   <p class="text-xs text-neutral-500">
-    <em>Spotify Premium é necessário para tocar.</em>
+    <em>Spotify Premium is required to play.</em>
   </p>
 <% else %>
-  <%= button_to "Entrar para ouvir", auth_spotify_path,
+  <%= button_to "Sign in to listen", auth_spotify_path,
         form: { data: { turbo: false } },
         class: "inline-flex items-center gap-2 rounded-full bg-lime-accent px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-neutral-950 hover:bg-lime-bright" %>
 <% end %>

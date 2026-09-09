@@ -15,22 +15,22 @@
           data-play-request-subtitle-value="<%= epic.track.artist_name %> · <%= epic.track.name %>"
           data-play-request-artwork-value="<%= epic.track.album_artwork_url %>"
           data-action="play-request#play">
-    <span aria-hidden="true">▶</span> Tocar
+    <span aria-hidden="true">▶</span> Play
   </button>
 <% elsif current_user %>
   <p class="text-xs text-neutral-500">
-    <em>Spotify Premium é necessário para tocar.</em>
+    <em>Spotify Premium is required to play.</em>
   </p>
 <% else %>
   <%# Deslogado nao e o mesmo caso que "sem Premium": a mensagem antiga
       culpava a assinatura de quem nem tinha entrado, e a pagina ficava sem
       saida. O SDK toca pela conta do proprio ouvinte, entao entrar e mesmo
       um pre-requisito — mas agora ha o botao para isso. %>
-  <%= button_to "Entrar para ouvir", auth_spotify_path,
+  <%= button_to "Sign in to listen", auth_spotify_path,
         form: { data: { turbo: false } },
         class: "inline-flex items-center gap-2 rounded-full bg-lime-accent px-4 py-2 text-sm font-semibold text-neutral-950 hover:bg-lime-bright" %>
 
   <p class="mt-2 text-xs text-neutral-500">
-    <em>A reprodução usa sua própria conta Spotify e requer Premium.</em>
+    <em>Playback uses your own Spotify account and requires Premium.</em>
   </p>
 <% end %>
