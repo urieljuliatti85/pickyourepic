@@ -86,7 +86,7 @@ class PicksControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to epic_path(@public_epic)
-    assert_includes flash[:alert], "can only pick the same epic once"
+    assert_includes flash[:alert], "Already picked!"
   end
 
   test "GET epic lists who picked" do

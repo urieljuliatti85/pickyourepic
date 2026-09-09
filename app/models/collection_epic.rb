@@ -8,7 +8,7 @@ class CollectionEpic < ApplicationRecord
 
   validates :collection_id, :epic_id, presence: true
   validates :position, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
-  validates :collection_id, uniqueness: { scope: :epic_id, message: "can only add the same epic once per collection" }
+  validates :collection_id, uniqueness: { scope: :epic_id, message: "collection_epic_already_exists" }
   validate :cannot_add_private_epic_from_another_user
 
   private

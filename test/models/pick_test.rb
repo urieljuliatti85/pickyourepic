@@ -134,7 +134,7 @@ class PickTest < ActiveSupport::TestCase
 
     duplicate = Pick.new(user: @user, epic: epic)
     assert_not duplicate.valid?
-    assert_includes duplicate.errors[:user_id], "can only pick the same epic once"
+    assert_includes duplicate.errors[:user_id], "pick_already_exists"
   end
 
   test "different users can pick same epic" do

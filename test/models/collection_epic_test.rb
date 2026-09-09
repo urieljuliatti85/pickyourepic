@@ -77,7 +77,7 @@ class CollectionEpicTest < ActiveSupport::TestCase
 
     duplicate = CollectionEpic.new(collection: @collection, epic: @epic, position: 1)
     assert_not duplicate.valid?
-    assert_includes duplicate.errors[:collection_id], "can only add the same epic once per collection"
+    assert_includes duplicate.errors[:collection_id], "collection_epic_already_exists"
   end
 
   test "different collections can have same epic" do
