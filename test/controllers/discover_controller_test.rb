@@ -35,7 +35,7 @@ class DiscoverControllerTest < ActionDispatch::IntegrationTest
   test "GET /discover shows page" do
     get discover_path
     assert_response :success
-    assert_match "Discover Epics", response.body
+    assert_select "h1", /Discover/
   end
 
   test "GET /discover shows public epics" do

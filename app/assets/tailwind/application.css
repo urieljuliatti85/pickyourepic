@@ -1,1 +1,27 @@
 @import "tailwindcss";
+
+/* Paleta do produto: fundo quase preto e verde-limao como unico acento.
+   Tailwind v4 le os tokens daqui, sem tailwind.config.js. */
+@theme {
+  --color-ink: #0a0a0a;
+  --color-ink-soft: #121212;
+  --color-lime-accent: #c4f042;
+  --color-lime-bright: #d8ff5e;
+}
+
+/* Gradiente dos blocos de destaque — o mesmo verde do acento, esmaecendo
+   para agua, como nos cards da referencia. */
+.surface-glow {
+  background-image: linear-gradient(135deg, #d8ff5e 0%, #a8ef7a 45%, #7fe3c0 100%);
+}
+
+/* Card escuro padrao: borda quase invisivel que so aparece no hover. */
+.card-dark {
+  background-color: var(--color-ink-soft);
+  border: 1px solid rgb(255 255 255 / 0.07);
+  transition: border-color 150ms ease;
+}
+
+.card-dark:hover {
+  border-color: rgb(255 255 255 / 0.16);
+}

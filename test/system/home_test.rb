@@ -4,8 +4,8 @@ class HomeTest < ApplicationSystemTestCase
   test "visiting the landing page shows the product name and the main action" do
     visit root_path
 
-    assert_selector "h1", text: "Pick Up Your Epic!"
-    assert_text "PICK YOUR EPIC"
+    assert_selector "h1", text: "momento máximo"
+    assert_text "Três ideias"
   end
 
   # A home logada era um beco sem saida: dizia "Signed in as" e oferecia
@@ -14,13 +14,13 @@ class HomeTest < ApplicationSystemTestCase
     user = sign_in_as(create_signed_in_user(username: "uriel"))
     visit root_path
 
-    assert_text "Signed in as"
+    assert_text "Conectado como"
 
-    click_link "Search a track"
+    click_link "Buscar música"
     assert_current_path tracks_path
 
     visit root_path
-    click_link "Discover Epics"
+    click_link "Descobrir Epics"
     assert_current_path discover_path
   end
 

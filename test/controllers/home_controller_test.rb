@@ -5,6 +5,8 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     get root_url
 
     assert_response :success
-    assert_select "h1", "Pick Up Your Epic!"
+    # A headline tem markup interno (a palavra em destaque e um span),
+    # entao a comparacao e por trecho, nao por igualdade exata.
+    assert_select "h1", /momento máximo/
   end
 end
