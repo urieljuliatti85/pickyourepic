@@ -21,7 +21,7 @@
         account — signing in is what Picking needs. %>
     <%= link_to public_collections_path,
           class: "flex items-center gap-3 rounded-lg px-3 py-2 text-sm #{current_page?(public_collections_path) ? "bg-white/5 font-semibold text-lime-accent" : "text-neutral-400 hover:text-neutral-100"}" do %>
-      <span aria-hidden="true">◫</span> Collections
+      <span aria-hidden="true">◫</span> Public Collections
     <% end %>
 
     <% if signed_in? %>
