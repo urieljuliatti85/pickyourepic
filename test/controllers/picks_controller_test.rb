@@ -89,15 +89,37 @@ class PicksControllerTest < ActionDispatch::IntegrationTest
     assert_includes flash[:alert], "can only pick the same epic once"
   end
 
-  test "GET epic shows pick count" do
+  test "GET epic lists who picked" do
     Pick.create!(user: @user, epic: @public_epic)
-    user2 = User.create!(username: "bob")
-    Pick.create!(user: user2, epic: @public_epic)
+    bob = User.create!(username: "bob")
+    Pick.create!(user: bob, epic: @public_epic)
 
     get epic_path(@public_epic)
 
     assert_response :success
     assert_select "p", /2 Picks/
+    assert_select "a[href=?]", profile_path(@user), text: "@#{@user.username}"
+    assert_select "a[href=?]", profile_path(bob), text: "@bob"
+  end
+
+  test "GET epic shows no picker list when nobody picked" do
+    get epic_path(@public_epic)
+
+    assert_response :success
+    assert_select "p", /0 Picks/
+    assert_select "ul li a", count: 0
+  end
+
+  # A escolha de produto e listar todo mundo, inclusive perfis privados: a
+  # contagem e a lista sempre batem.
+  test "GET epic lists pickers with private profiles too" do
+    hidden = User.create!(username: "hidden", visibility: :private_profile)
+    Pick.create!(user: hidden, epic: @public_epic)
+
+    get epic_path(@public_epic)
+
+    assert_response :success
+    assert_select "a[href=?]", profile_path(hidden), text: "@hidden"
   end
 
   test "GET epic shows pick button only for eligible user" do

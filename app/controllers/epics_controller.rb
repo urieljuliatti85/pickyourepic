@@ -23,7 +23,9 @@ class EpicsController < ApplicationController
 
   # GET /epics/:id
   def show
-    # @epic já setado por before_action
+    # Quem pickou, do mais recente para o mais antigo. `includes(:user)` evita
+    # um SELECT por Pick ao renderizar a lista.
+    @picks = @epic.picks.includes(:user).order(created_at: :desc)
   end
 
   private

@@ -51,6 +51,16 @@ class PicksTest < ApplicationSystemTestCase
     assert_button "Pick this Epic"
   end
 
+  test "Epic page lists who picked and links to their profiles" do
+    visit epic_path(@public_epic)
+    click_button "Pick this Epic"
+
+    assert_text "1 Pick"
+    click_link "@#{@user.username}"
+
+    assert_current_path profile_path(@user)
+  end
+
   test "Unpicking from discover keeps the user on discover" do
     visit epic_path(@public_epic)
     click_button "Pick this Epic"

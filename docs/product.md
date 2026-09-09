@@ -117,6 +117,15 @@ A **Collection** organizes Epics into curated groups.
 - Cannot be Picked by other users
 - Only visible to the owner
 
+### Who Picked an Epic
+
+A public Epic names everyone who Picked it, including users whose profile is
+private. Visibility levels govern **content** — Epics and Collections — not
+whether a username may be listed, and Picking a public Epic is a public act.
+
+The count and the list therefore always agree. A private profile listed here
+still reveals nothing beyond the username: its page shows only basic info.
+
 ---
 
 ## MVP Scope
