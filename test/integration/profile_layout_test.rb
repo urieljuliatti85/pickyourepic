@@ -54,6 +54,56 @@ class ProfileLayoutTest < ActionDispatch::IntegrationTest
     assert_select "ol li", false
   end
 
+  # O botao de Pick passou a aparecer nas linhas do perfil, entao as regras do
+  # model (CLAUDE.md § Authorization) precisam valer tambem aqui.
+  test "the profile rows offer Pick for another user's epic" do
+    visitor = create_signed_in_user(username: "visitor")
+    epic_for(@owner, 3)
+    sign_in_as(visitor)
+
+    get profile_path(@owner)
+
+    assert_response :success
+    assert_select "button[type=submit]", text: "Pick"
+  end
+
+  test "the profile rows do not offer Pick on your own epic" do
+    epic_for(@owner, 4)
+    sign_in_as(@owner)
+
+    get profile_path(@owner)
+
+    assert_response :success
+    assert_select "button[type=submit]", { text: "Pick", count: 0 }
+  end
+
+  test "an already picked epic shows the undo state on the profile" do
+    visitor = create_signed_in_user(username: "visitor2")
+    epic = epic_for(@owner, 6)
+    Pick.create!(user: visitor, epic: epic)
+    sign_in_as(visitor)
+
+    get profile_path(@owner)
+
+    assert_response :success
+    assert_select "button[type=submit]", text: "Picked ✓"
+  end
+
+  # O botao chama picked_epic_ids em vez de um exists? por linha; sem isso cada
+  # Epic da pagina somaria uma query.
+  test "the profile loads its lists without an N+1 while signed in" do
+    visitor = create_signed_in_user(username: "visitor3")
+    5.times { |i| Pick.create!(user: visitor, epic: epic_for(@owner, i)) }
+    sign_in_as(visitor)
+
+    queries = 0
+    counter = ->(*args) { queries += 1 unless args.last[:name].to_s =~ /SCHEMA|TRANSACTION/ }
+    ActiveSupport::Notifications.subscribed(counter, "sql.active_record") { get profile_path(@owner) }
+
+    assert_response :success
+    assert queries < 20, "esperado poucas queries, foram #{queries}"
+  end
+
   test "the profile loads its lists without an N+1" do
     5.times { |i| epic_for(@owner, i) }
 

@@ -16,7 +16,7 @@
 
 <%= turbo_frame_tag dom_id(epic, :pick_button), target: "_top" do %>
   <% if current_user && current_user.id != epic.user_id %>
-    <% if current_user.picks.exists?(epic_id: epic.id) %>
+    <% if picked_epic_ids.include?(epic.id) %>
       <%= button_to "Picked ✓", epic_pick_path(epic), method: :delete,
             form: { class: "inline-block" },
             class: "rounded-full border border-lime-accent/40 #{size} font-semibold text-lime-accent hover:bg-lime-accent/10" %>
