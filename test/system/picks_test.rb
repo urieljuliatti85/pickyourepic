@@ -35,18 +35,18 @@ class PicksTest < ApplicationSystemTestCase
     click_button "Pick"
 
     assert_text "Epic foi pickado!"
-    assert_text "1 Pick"
+    assert_text(/1 Pick/i)
   end
 
   test "User can unpick an epic from epic page" do
     visit epic_path(@public_epic)
     click_button "Pick"
-    assert_text "1 Pick"
+    assert_text(/1 Pick/i)
 
     click_button "Picked ✓"
 
     assert_text "Pick desfeito."
-    assert_text "0 Picks"
+    assert_text(/0 Picks/i)
     # Volta a oferecer o Pick, entao o usuario pode refazer.
     assert_button "Pick"
   end
@@ -55,7 +55,7 @@ class PicksTest < ApplicationSystemTestCase
     visit epic_path(@public_epic)
     click_button "Pick"
 
-    assert_text "1 Pick"
+    assert_text(/1 Pick/i)
     # O nav tambem tem um link "@uriel", entao a busca e feita dentro da
     # lista de pickers.
     within("ul") { click_link "@#{@user.username}" }

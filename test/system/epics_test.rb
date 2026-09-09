@@ -17,22 +17,22 @@ class EpicsTest < ApplicationSystemTestCase
 
     fill_in "Title", with: "My Epic"
     fill_in "Description", with: "Great breakdown"
-    fill_in "Start time (ms)", with: "60000"
-    fill_in "End time (ms)", with: "120000"
+    fill_in "Start time (MM:SS)", with: "1:00"
+    fill_in "End time (MM:SS)", with: "2:00"
     choose "Public"
     click_button "Create Epic"
 
     assert_text "Epic was successfully created"
     assert_text "My Epic"
-    assert_text "1:00 - 2:00"
+    assert_text "1:00 – 2:00"
   end
 
   test "Invalid timestamps show error" do
     visit new_epic_path(track_id: @track.spotify_id)
 
     fill_in "Title", with: "Invalid Epic"
-    fill_in "Start time (ms)", with: "100000"
-    fill_in "End time (ms)", with: "50000"  # Invalid
+    fill_in "Start time (MM:SS)", with: "1:40"
+    fill_in "End time (MM:SS)", with: "0:50"  # Invalid
     click_button "Create Epic"
 
     assert_text "must be greater than start_time"
@@ -50,8 +50,8 @@ class EpicsTest < ApplicationSystemTestCase
     visit new_epic_path(track_id: other_track.spotify_id)
 
     fill_in "Title", with: "My Epic"
-    fill_in "Start time (ms)", with: "60000"
-    fill_in "End time (ms)", with: "120000"
+    fill_in "Start time (MM:SS)", with: "1:00"
+    fill_in "End time (MM:SS)", with: "2:00"
     choose "Public"
     click_button "Create Epic"
 
