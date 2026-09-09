@@ -42,16 +42,17 @@ class PlaylistsController < ApplicationController
     current_user.spotify_account.fresh_access_token!
   end
 
-  # A 403 here is its own case: playlists need a scope the app only started
-  # asking for later, so anyone who signed in before that carries a token
-  # without it. Telling them to sign in again is the fix; "unavailable" would
-  # leave them waiting for something that will never come back on its own.
+  # A 403 on a playlist's contents is not a passing failure and not something
+  # signing in again fixes: Spotify only opens the items of a playlist the user
+  # owns or that another person made. One they merely FOLLOW — every editorial
+  # playlist included — stays closed, so say that rather than send them round a
+  # loop that will not help.
   def handle_spotify_failure(error)
     Rails.logger.warn("Spotify playlists failed: #{error.message}")
 
     flash.now[:alert] =
       if error.status == 403
-        "Sign out and in again to let Pick Up Your Epic! read your playlists."
+        "Spotify does not share this playlist's songs. Try one you made yourself."
       else
         "Spotify is unavailable right now."
       end

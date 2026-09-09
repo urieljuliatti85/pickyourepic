@@ -179,7 +179,7 @@ class SpotifyPlaylistsTest < ActiveSupport::TestCase
 
   def track_row(overrides = {})
     {
-      "track" => {
+      "item" => {
         "id" => "track_1",
         "name" => "Lake Bodom",
         "duration_ms" => 241_800,
@@ -202,9 +202,32 @@ class SpotifyPlaylistsTest < ActiveSupport::TestCase
     assert_equal 241_800, results.first[:duration_ms]
   end
 
-  # A local file or a removed track arrives with a null `track`.
+  # A local file or a removed track arrives with a null item, and Spotify also
+  # mixes plain nulls into the rows.
   test "rows without a playable track are dropped" do
-    payload = { "items" => [ track_row, { "track" => nil }, { "track" => {} } ] }
+    payload = { "items" => [ track_row, { "item" => nil }, { "item" => {} }, nil ] }
+
+    results = stub_method(Spotify::Client, :get, payload) do
+      Spotify::Playlists.tracks(playlist_id: "pl_abc", access_token: "token")
+    end
+
+    assert_equal [ "track_1" ], results.map { |t| t[:spotify_id] }
+  end
+
+  # /playlists/{id}/tracks was removed in Spotify's February 2026 change and now
+  # answers 403 even on the caller's own playlist.
+  test "tracks asks for items, not the removed tracks endpoint" do
+    calls = recording_client_get({ "items" => [] }) do
+      Spotify::Playlists.tracks(playlist_id: "pl_abc", access_token: "token")
+    end
+
+    assert_equal "/playlists/pl_abc/items", calls.first.first
+  end
+
+  # The replacement renamed the row key; reading both costs nothing and keeps
+  # this working if a response ever arrives in the old shape.
+  test "a row in the old track shape is still read" do
+    payload = { "items" => [ { "track" => track_row["item"] } ] }
 
     results = stub_method(Spotify::Client, :get, payload) do
       Spotify::Playlists.tracks(playlist_id: "pl_abc", access_token: "token")

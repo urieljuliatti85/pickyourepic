@@ -49,10 +49,9 @@ class PlaylistsControllerTest < ActionDispatch::IntegrationTest
     assert_match "No playlists found", response.body
   end
 
-  # The scope was added after people had already signed in, so their token
-  # predates it. "Unavailable" would leave them waiting for a fix that only they
-  # can perform.
-  test "a 403 tells the user to sign in again rather than blaming Spotify" do
+  # Spotify only opens the items of a playlist the user owns or that another
+  # person made; one they merely follow stays closed however they sign in.
+  test "a 403 says the playlist is closed rather than blaming an outage" do
     error = Spotify::Error.new("Spotify request failed: 403", status: 403)
 
     stub_method(Spotify::Playlists, :search, raising: error) do
@@ -60,7 +59,7 @@ class PlaylistsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
-    assert_match "Sign out and in again", response.body
+    assert_match "does not share this playlist", response.body
   end
 
   test "any other Spotify failure reports an outage" do
@@ -72,7 +71,7 @@ class PlaylistsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match "Spotify is unavailable", response.body
-    assert_no_match "Sign out and in again", response.body
+    assert_no_match "does not share this playlist", response.body
   end
 
   # A result link lives inside the results turbo-frame, so it has to break out
@@ -128,7 +127,7 @@ class PlaylistsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
-    assert_match "Sign out and in again", response.body
+    assert_match "does not share this playlist", response.body
   end
 
   test "GET /playlists/:id requires authentication" do
