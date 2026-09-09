@@ -27,6 +27,11 @@
             class: "flex items-center gap-3 rounded-lg px-3 py-2 text-sm #{current_page?(collections_path) ? "bg-white/5 font-semibold text-lime-accent" : "text-neutral-400 hover:text-neutral-100"}" do %>
         <span aria-hidden="true">☰</span> Collections
       <% end %>
+
+      <%= link_to favorites_path,
+            class: "flex items-center gap-3 rounded-lg px-3 py-2 text-sm #{current_page?(favorites_path) ? "bg-white/5 font-semibold text-lime-accent" : "text-neutral-400 hover:text-neutral-100"}" do %>
+        <span aria-hidden="true">★</span> Favoritos
+      <% end %>
     <% end %>
   </nav>
 

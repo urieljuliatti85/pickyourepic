@@ -358,3 +358,15 @@ drawn to match the art.
 
 The one thing not carried over is the slight arch on the baseline of the
 original; the letters sit flat.
+
+## Favorites
+
+- [~] Favorite an Epic
+
+**Note:** Pick was already the public act — someone else's public Epic, counted,
+listed on the Epic page, feeding trending. Favorite is the private counterpart:
+your own list, your own Epics included (private ones too), nothing shown to
+anyone else. `resource :favorite, only: [:create, :destroy]` nested under Epic,
+singular for the same reason as Pick, plus `GET /favorites`. Another user's
+private Epic 404s instead of failing validation, which would confirm the id
+exists. 8 model + 7 controller + 3 system tests. Awaiting CI.

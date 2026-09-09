@@ -1,0 +1,26 @@
+<%# Botao de favoritar/desfavoritar um Epic.
+
+    Diferente do Pick (shared/_pick_button), que so aparece para Epic publico
+    de outra pessoa: favoritar e privado, entao vale para o proprio Epic
+    tambem. O unico caso sem botao e Epic privado de outro user, que nem
+    chega a ser visivel. %>
+
+<% if current_user %>
+  <% favorited = current_user.favorites.exists?(epic_id: epic.id) %>
+
+  <% if favorited %>
+    <%= button_to epic_favorite_path(epic), method: :delete,
+          class: "inline-flex items-center gap-2 rounded-full border border-lime-accent/40 px-4 py-2 text-sm font-semibold text-lime-accent hover:bg-lime-accent/10",
+          form: { class: "inline-block" },
+          aria: { label: "Remover dos favoritos" } do %>
+      <span aria-hidden="true">★</span> Favoritado
+    <% end %>
+  <% else %>
+    <%= button_to epic_favorite_path(epic), method: :post,
+          class: "inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-neutral-300 hover:border-lime-accent/50 hover:text-lime-accent",
+          form: { class: "inline-block" },
+          aria: { label: "Adicionar aos favoritos" } do %>
+      <span aria-hidden="true">☆</span> Favoritar
+    <% end %>
+  <% end %>
+<% end %>

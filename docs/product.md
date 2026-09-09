@@ -48,6 +48,26 @@ A **Pick** represents a user choosing an Epic created by another user.
 
 ---
 
+### Favorite
+
+A **Favorite** is a user saving an Epic for themselves. It is private: only the
+user who favorited it sees the list, and nothing about it is shown on the Epic
+or on any profile.
+
+**Attributes**
+- **user** — The user saving the Epic
+- **epic** — The Epic being saved
+
+**Rules**
+- A user can Favorite the same Epic at most once
+- A user **can** Favorite their own Epic, including a private one
+- A user **cannot** Favorite another user's private Epic
+- A Favorite does not duplicate the Epic; it merely records the choice
+
+**Favorite vs. Pick** — a Pick is a public act on someone else's public Epic:
+it is counted, it names the picker on the Epic page, and it feeds trending.
+A Favorite is a private bookmark, with none of those effects.
+
 ### Collection
 
 A **Collection** organizes Epics into curated groups.

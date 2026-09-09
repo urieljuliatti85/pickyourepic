@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_08_161521) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_09_050911) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -50,6 +50,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_08_161521) do
     t.index ["user_id"], name: "index_epics_on_user_id"
     t.check_constraint "end_time > start_time", name: "epics_end_time_greater_than_start"
     t.check_constraint "start_time >= 0", name: "epics_start_time_non_negative"
+  end
+
+  create_table "favorites", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "epic_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["epic_id"], name: "index_favorites_on_epic_id"
+    t.index ["user_id", "epic_id"], name: "index_favorites_on_user_id_and_epic_id", unique: true
+    t.index ["user_id"], name: "index_favorites_on_user_id"
   end
 
   create_table "picks", force: :cascade do |t|
@@ -105,6 +115,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_08_161521) do
   add_foreign_key "collections", "users", on_delete: :cascade
   add_foreign_key "epics", "tracks", on_delete: :cascade
   add_foreign_key "epics", "users", on_delete: :cascade
+  add_foreign_key "favorites", "epics", on_delete: :cascade
+  add_foreign_key "favorites", "users", on_delete: :cascade
   add_foreign_key "picks", "epics", on_delete: :cascade
   add_foreign_key "picks", "users", on_delete: :cascade
   add_foreign_key "spotify_accounts", "users"

@@ -48,6 +48,8 @@
         <% if @epic.visibility_public? %>
           <%= render "shared/pick_button", epic: @epic %>
         <% end %>
+
+        <%= render "shared/favorite_button", epic: @epic %>
       </div>
     </div>
 

@@ -10,8 +10,12 @@ Rails.application.routes.draw do
     # Um user tem no maximo um Pick por Epic, entao o destroy nao precisa de
     # id proprio: o Pick e identificado pelo par (current_user, epic).
     resource :pick, only: [ :create, :destroy ]
+
+    # Mesmo motivo do Pick para ser singular: um Favorite por (user, epic).
+    resource :favorite, only: [ :create, :destroy ]
   end
   resources :profiles, only: [ :show ], param: :username
+  resources :favorites, only: [ :index ]
   resources :collections do
     resources :collection_epics, only: [ :create, :destroy ]
   end

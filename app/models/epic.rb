@@ -4,6 +4,7 @@ class Epic < ApplicationRecord
   belongs_to :user
   belongs_to :track
   has_many :picks, dependent: :destroy
+  has_many :favorites, dependent: :destroy
   has_many :collection_epics, dependent: :destroy
 
   enum :visibility, { public: 0, private: 1 }, prefix: :visibility
