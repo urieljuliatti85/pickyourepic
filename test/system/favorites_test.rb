@@ -14,18 +14,18 @@ class FavoritesTest < ApplicationSystemTestCase
   test "User can favorite and unfavorite an epic" do
     visit epic_path(@epic)
 
-    click_button "Favoritar"
-    assert_text "Epic favoritado!"
-    assert_button "Favoritado"
+    click_button "Favorite"
+    assert_text "Epic favorited!"
+    assert_button "Favorited"
 
-    click_button "Favoritado"
-    assert_text "Removido dos favoritos."
-    assert_button "Favoritar"
+    click_button "Favorited"
+    assert_text "Removed from favorites."
+    assert_button "Favorite"
   end
 
   test "Favorited epics appear on the favorites page" do
     visit epic_path(@epic)
-    click_button "Favoritar"
+    click_button "Favorite"
 
     visit favorites_path
 
@@ -36,6 +36,6 @@ class FavoritesTest < ApplicationSystemTestCase
   test "The favorites page explains itself when empty" do
     visit favorites_path
 
-    assert_text "Você ainda não favoritou nenhum Epic"
+    assert_text "You have not favorited any Epic yet"
   end
 end

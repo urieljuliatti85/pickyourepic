@@ -1,15 +1,15 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Barra de player global (CLAUDE.md § Architecture — Playback).
+// Global player bar (CLAUDE.md § Architecture — Playback).
 //
-// Os players antigos viviam dentro da pagina: sair dela destruia o controller,
-// e com ele o device do SDK, entao o som parava. Este vive no layout, dentro de
-// um turbo-frame permanent, e sobrevive a navegacao — o Turbo reaproveita o
-// mesmo elemento em vez de recria-lo.
+// The old players lived inside the page: leaving it destroyed the controller,
+// and with it the SDK device, so the sound stopped. This one lives in the
+// layout, inside a permanent turbo-frame, and survives navigation — Turbo
+// reuses the same element instead of recreating it.
 //
-// Uma pagina nao instancia mais o SDK: ela despacha `epic:play` (um Epic) ou
-// `epic:play-queue` (uma Collection inteira) e esta barra toca. Ver
-// shared/_epic_play_button e shared/_collection_player.
+// A page no longer instantiates the SDK: it dispatches `epic:play` (one Epic) or
+// `epic:play-queue` (a whole Collection) and this bar plays. See
+// shared/_epic_play_button and shared/_collection_player.
 export default class extends Controller {
   static targets = [
     "title", "subtitle", "artwork", "button", "prev", "next",
@@ -24,7 +24,7 @@ export default class extends Controller {
     this.stopTimer = null
     this.tickTimer = null
 
-    // A fila e sempre um array; um Epic avulso e uma fila de um.
+    // The queue is always an array; a lone Epic is a queue of one.
     this.queue = []
     this.index = 0
     this.seekOffset = 0
@@ -44,7 +44,7 @@ export default class extends Controller {
     if (this.player) this.player.disconnect()
   }
 
-  // --- API da barra ---
+  // --- The bar's API ---
 
   async playQueue(epics, startIndex) {
     if (!epics || epics.length === 0) return
@@ -52,7 +52,7 @@ export default class extends Controller {
     const sameQueue = this.queue.length === epics.length &&
       this.queue.every((e, i) => e.uri === epics[i].uri && e.startTime === epics[i].startTime)
 
-    // Reclicar no que ja toca alterna play/pause em vez de reiniciar.
+    // Clicking again on what is already playing toggles play/pause instead of restarting.
     if (sameQueue && this.index === startIndex && this.playing) {
       this.pause()
       return
@@ -69,7 +69,7 @@ export default class extends Controller {
     if (this.playing) {
       this.pause()
     } else {
-      // Retoma de onde parou, nao do inicio do trecho.
+      // Resumes where it stopped, not from the start of the excerpt.
       this.playCurrent({ from: this.elapsedMs() })
     }
   }
@@ -81,8 +81,8 @@ export default class extends Controller {
   }
 
   previous() {
-    // Como num player de musica: depois de alguns segundos o "anterior"
-    // reinicia o trecho atual em vez de pular para o de tras.
+    // As in a music player: after a few seconds "previous" restarts the current
+    // excerpt instead of jumping to the one behind.
     if (this.elapsedMs() > 3000 || this.index === 0) {
       this.playCurrent()
       return
@@ -91,8 +91,8 @@ export default class extends Controller {
     this.playCurrent()
   }
 
-  // O range envia input durante o arrasto e change ao soltar: mover o ponteiro
-  // so atualiza o rotulo, e o seek de verdade sai uma vez, no fim.
+  // The range fires input while dragging and change on release: moving the thumb
+  // only updates the label, and the real seek goes out once, at the end.
   scrubbing_start() {
     this.scrubbing = true
   }
@@ -123,7 +123,7 @@ export default class extends Controller {
     this.setButton("▶")
   }
 
-  // --- Privado ---
+  // --- Private ---
 
   current() {
     return this.queue[this.index]
@@ -144,7 +144,7 @@ export default class extends Controller {
     if (!epic) return
 
     this.seekOffset = from
-    this.render({ title: epic.title, subtitle: epic.subtitle, artwork: epic.artwork, status: from ? null : "Carregando…" })
+    this.render({ title: epic.title, subtitle: epic.subtitle, artwork: epic.artwork, status: from ? null : "Loading…" })
     this.renderQueuePosition()
 
     try {
@@ -154,7 +154,7 @@ export default class extends Controller {
       if (!this.player) await this.initializePlayer(token)
       await this.startPlayback(token, from)
     } catch (error) {
-      this.render({ status: "Erro na reprodução" })
+      this.render({ status: "Playback error" })
       console.error("Playback error:", error)
     }
   }
@@ -164,8 +164,8 @@ export default class extends Controller {
     const data = await response.json()
 
     if (!response.ok) {
-      // 403 aqui e o caso normal de conta sem Premium.
-      this.render({ status: data.error || "Não foi possível tocar" })
+      // A 403 here is the normal case of an account without Premium.
+      this.render({ status: data.error || "Could not play" })
       return null
     }
     return data.access_token
@@ -175,10 +175,10 @@ export default class extends Controller {
     return new Promise((resolve, reject) => {
       if (window.Spotify) return this.createPlayer(accessToken, resolve, reject)
 
-      // O callback TEM que existir antes do script entrar no DOM: o SDK o
-      // invoca assim que carrega, e com o script em cache isso acontece antes
-      // da linha seguinte rodar — a barra ficava presa em "Carregando…" para
-      // sempre porque ninguem chamava createPlayer.
+      // The callback MUST exist before the script enters the DOM: the SDK invokes
+      // it as soon as it loads, and with the script cached that happens before the
+      // next line runs — the bar stayed stuck on "Loading…" forever because
+      // nobody called createPlayer.
       window.onSpotifyWebPlaybackSDKReady = () => this.createPlayer(accessToken, resolve, reject)
 
       const script = document.createElement("script")
@@ -205,16 +205,16 @@ export default class extends Controller {
       resolve()
     })
 
-    // `not_ready` tambem dispara depois, quando o device sai do ar. Rejeitar
-    // uma promise ja resolvida nao faz nada, mas zerar o deviceId garante que
-    // o proximo play reconecte em vez de tocar num device morto.
+    // `not_ready` also fires later, when the device goes offline. Rejecting an
+    // already-resolved promise does nothing, but clearing deviceId makes sure the
+    // next play reconnects instead of playing on a dead device.
     this.player.addListener("not_ready", () => {
       this.deviceId = null
       reject(new Error("Device not ready"))
     })
 
-    // Sem estes listeners uma falha de auth/conta ficava silenciosa e a barra
-    // parecia apenas "travada".
+    // Without these listeners an auth/account failure stayed silent and the bar
+    // just looked "stuck".
     this.player.addListener("initialization_error", ({ message }) => reject(new Error(message)))
     this.player.addListener("authentication_error", ({ message }) => reject(new Error(message)))
     this.player.addListener("account_error", ({ message }) => reject(new Error(message)))
@@ -235,7 +235,7 @@ export default class extends Controller {
     )
 
     if (!response.ok) {
-      this.render({ status: "Não foi possível tocar" })
+      this.render({ status: "Could not play" })
       return
     }
 
@@ -243,8 +243,8 @@ export default class extends Controller {
     this.setButton("⏸")
     this.render({ subtitle: epic.subtitle })
 
-    // O Epic e um trecho: para no end_time. Numa fila, o fim de um e o
-    // comeco do proximo.
+    // An Epic is an excerpt: it stops at end_time. In a queue, the end of one is
+    // the start of the next.
     const remaining = this.duration() - from
     this.clearTimers()
     this.stopTimer = setTimeout(() => this.advance(), remaining)
@@ -261,7 +261,7 @@ export default class extends Controller {
     } else {
       this.pause()
       this.pausedAt = 0
-      this.render({ status: this.queue.length > 1 ? "Collection terminou" : "Epic terminou" })
+      this.render({ status: this.queue.length > 1 ? "Collection finished" : "Epic finished" })
       this.setProgress(0)
     }
   }
@@ -305,7 +305,7 @@ export default class extends Controller {
   renderQueuePosition() {
     if (!this.hasQueuePositionTarget) return
 
-    // Um Epic avulso nao e uma fila: mostrar "1/1" so faria ruido.
+    // A lone Epic is not a queue: showing "1/1" would be noise.
     this.queuePositionTarget.textContent =
       this.queue.length > 1 ? `${this.index + 1}/${this.queue.length}` : ""
 

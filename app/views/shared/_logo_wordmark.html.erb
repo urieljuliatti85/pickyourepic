@@ -1,14 +1,14 @@
-<%# Wordmark "PickYourEpic" da arte original, como paths.
-    O lettering e uma slab serif com a fita passando por baixo e dobrando em
-    ponta a direita. Os glifos vem de Rockwell Bold convertidos em contornos —
-    convertidos, e nao font-family, porque a app nao carrega fonte serifada
-    nenhuma e com texto o desenho mudaria de maquina para maquina.
-    A cor vem de currentColor, igual ao disco em shared/_logo_mark. %>
+<%# The "PickYourEpic" wordmark from the original art, as paths.
+    The lettering is a slab serif with the ribbon passing underneath and folding to
+    a point on the right. The glyphs come from Rockwell Bold converted to outlines
+    — converted, not font-family, because the app loads no serif face and as text
+    the drawing would change from machine to machine.
+    The color comes from currentColor, like the disc in shared/_logo_mark. %>
 <svg viewBox="0 0 1100 200" fill="currentColor" role="img"
      class="<%= local_assigns.fetch(:size, "h-10") %>">
   <title>PickYourEpic</title>
 
-  <%# Fita: passa por tras das letras e termina na ponta dobrada. %>
+  <%# Ribbon: it passes behind the letters and ends in the folded point. %>
   <path d="M34 146 Q 470 124 700 137 Q 900 149 1000 172 L1032 138 L1040 196 L975 190
            Q 855 166 688 155 Q 468 142 34 168 Z"/>
 

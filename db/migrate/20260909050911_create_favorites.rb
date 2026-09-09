@@ -7,8 +7,8 @@ class CreateFavorites < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    # Um Favorite por user por Epic. O indice, e nao so a validacao, e o que
-    # resolve dois cliques simultaneos no mesmo botao.
+    # One Favorite per user per Epic. The index, not just the validation, is what
+    # settles two simultaneous clicks on the same button.
     add_index :favorites, [ :user_id, :epic_id ], unique: true
   end
 end

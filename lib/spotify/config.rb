@@ -1,16 +1,16 @@
 module Spotify
-  # Credenciais e escopos do app. Nao conhece models de dominio.
+  # App credentials and scopes. Knows no domain models.
   module Config
     AUTHORIZE_URL = "https://accounts.spotify.com/authorize".freeze
     TOKEN_URL     = "https://accounts.spotify.com/api/token".freeze
     API_BASE_URL  = "https://api.spotify.com/v1".freeze
 
-    # streaming                   -> Web Playback SDK (unica via de reproducao
-    #                                para apps novos; ver CLAUDE.md § Architecture — Playback)
-    # user-modify-playback-state  -> iniciar a faixa em position_ms (o inicio do Epic)
-    # user-read-playback-state    -> saber em que device o playback esta
-    # user-read-email             -> identificar a conta
-    # user-read-private           -> ler o campo `product` (premium?)
+    # streaming                   -> Web Playback SDK (the only playback route for
+    #                                new apps; see CLAUDE.md § Architecture — Playback)
+    # user-modify-playback-state  -> start the track at position_ms (the Epic's start)
+    # user-read-playback-state    -> know which device playback is on
+    # user-read-email             -> identify the account
+    # user-read-private           -> read the `product` field (premium?)
     SCOPES = %w[
       streaming
       user-modify-playback-state

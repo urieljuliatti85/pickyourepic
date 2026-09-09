@@ -115,7 +115,7 @@ class EpicTest < ActiveSupport::TestCase
   end
 
   test "visibility defaults to public" do
-    # Sem a chave visibility: o default da coluna e quem decide.
+    # Without the visibility key: the column's default decides.
     epic = Epic.create!(valid_attributes.except(:visibility))
 
     assert epic.visibility_public?

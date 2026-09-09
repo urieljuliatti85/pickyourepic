@@ -1,15 +1,15 @@
-<%# Layout inspirado na referencia do hero do Spotify: gradiente teal->indigo,
-    titulo grande, copy secundaria suave e botoes em pilula (um preenchido, um
-    apenas contornado). Os tokens (ink, lime-accent) sao os mesmos do resto do
-    app — aqui so muda a forma, nao a paleta. %>
+<%# Layout after the Spotify hero reference: a teal->indigo gradient, a large
+    title, soft secondary copy and pill buttons (one filled, one outlined only).
+    The tokens (ink, lime-accent) are the same as the rest of the app — only the
+    shape changes here, not the palette. %>
 <div class="mx-auto max-w-2xl px-4 py-8">
 
   <div class="overflow-hidden rounded-3xl border border-white/10 bg-ink-soft shadow-2xl shadow-black/30">
 
-    <%# Hero: o gradiente vai do ciano do tema para o indigo do fundo. %>
+    <%# Hero: the gradient runs from the theme's cyan to the background's indigo. %>
     <div class="bg-gradient-to-br from-lime-accent/30 via-lime-accent/10 to-indigo-500/20 px-6 py-8 sm:px-10 sm:py-10">
-      <%# Capa ao lado do titulo. `Spotify::Search` guarda a MENOR imagem do
-          album (~64px), entao ela fica pequena de proposito. %>
+      <%# Artwork beside the title. `Spotify::Search` keeps the SMALLEST album
+          image (~64px), so it stays small on purpose. %>
       <div class="flex items-start gap-5">
         <% if @track.album_artwork_url.present? %>
           <%= image_tag @track.album_artwork_url, alt: "",
@@ -37,7 +37,7 @@
     </div>
 
     <%= form_with model: @epic, local: true, class: "px-6 py-8 sm:px-10" do |form| %>
-      <%# O controller resolve a Track por spotify_id em params[:track_id]. %>
+      <%# The controller resolves the Track by spotify_id in params[:track_id]. %>
       <%= hidden_field_tag :track_id, @track.spotify_id %>
 
       <% if @epic.errors.any? %>
@@ -67,9 +67,9 @@
       </div>
 
       <div class="mb-5 grid gap-4 sm:grid-cols-2">
-        <%# MM:SS, como num player. Campo de texto (nao number_field, que nao
-            aceita ":") com pattern para o browser barrar formato invalido; o
-            model revalida de qualquer forma. %>
+        <%# MM:SS, as in a player. A text field (not number_field, which will
+            not take ":") with a pattern so the browser blocks an invalid
+            format; the model revalidates anyway. %>
         <% mmss = { pattern: "\\d+:[0-5]\\d(\\.\\d+)?", placeholder: "0:30", inputmode: "text" } %>
 
         <div>
@@ -86,7 +86,7 @@
       <div class="mb-8">
         <span class="<%= label %>">Visibility</span>
 
-        <%# Pilulas tambem aqui, para o radio nao destoar dos botoes. %>
+        <%# Pills here too, so the radio does not clash with the buttons. %>
         <div class="mt-2 flex flex-wrap gap-2">
           <% [ [ "public", "Public" ], [ "private", "Private" ] ].each do |value, text| %>
             <label class="flex cursor-pointer items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-neutral-300 hover:border-lime-accent/50 has-[:checked]:border-lime-accent has-[:checked]:text-neutral-50">
@@ -97,7 +97,7 @@
         </div>
       </div>
 
-      <%# Botoes da referencia: primario preenchido, secundario so contornado. %>
+      <%# The reference's buttons: filled primary, outlined-only secondary. %>
       <div class="flex flex-wrap items-center gap-3">
         <%= form.submit "Create Epic",
               class: "cursor-pointer rounded-full bg-lime-accent px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-neutral-950 hover:bg-lime-bright" %>

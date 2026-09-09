@@ -1,9 +1,9 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Botao de play de um Epic. Nao toca nada: so pede para a barra global tocar
-// (player_bar_controller), que e quem detem o device do SDK.
+// An Epic's play button. It plays nothing itself: it asks the global bar to
+// play (player_bar_controller), which is what holds the SDK device.
 //
-// Um Epic e um intervalo de um track, entao o evento carrega start/end.
+// An Epic is an interval of a track, so the event carries start/end.
 export default class extends Controller {
   static values = {
     uri: String,
@@ -28,7 +28,7 @@ export default class extends Controller {
     }))
   }
 
-  // Uma Collection inteira: a barra toca em sequencia e avanca sozinha.
+  // A whole Collection: the bar plays in sequence and advances on its own.
   playQueue() {
     document.dispatchEvent(new CustomEvent("epic:play-queue", {
       detail: { epics: this.queueValue, startIndex: 0 }

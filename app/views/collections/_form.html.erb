@@ -1,5 +1,5 @@
-<%# Mesmos campos e pilulas do form de Epic, para as duas telas de criacao
-    parecerem a mesma app. %>
+<%# The same fields and pills as the Epic form, so the two creation screens
+    look like the same app. %>
 <%= form_with(model: collection) do |form| %>
   <% if collection.errors.any? %>
     <div class="mb-6 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-red-200">
@@ -18,12 +18,12 @@
   <% label = "text-xs font-semibold uppercase tracking-wider text-neutral-400" %>
 
   <div class="mb-5">
-    <%= form.label :title, "Título", class: label %>
+    <%= form.label :title, "Title", class: label %>
     <%= form.text_field :title, required: true, class: field %>
   </div>
 
   <div class="mb-5">
-    <%= form.label :description, "Descrição (opcional)", class: label %>
+    <%= form.label :description, "Description (optional)", class: label %>
     <%= form.text_area :description, rows: 3, class: field %>
   </div>
 

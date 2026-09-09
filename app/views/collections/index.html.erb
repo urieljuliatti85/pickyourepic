@@ -1,7 +1,7 @@
-<%# Layout da referencia: hero em degrade com titulo grande e botoes em
-    pilula, e abaixo uma rail horizontal de capas com titulo/subtitulo.
-    `hero-glow`, `rail` e `card-dark` ja existem (application.css) e sao os
-    mesmos que a Discover usa — a ideia e as duas telas parecerem a mesma app. %>
+<%# The reference layout: a gradient hero with a large title and pill buttons,
+    and below it a horizontal rail of artwork with title/subtitle. `hero-glow`,
+    `rail` and `card-dark` already exist (application.css) and are the same ones
+    Discover uses — the point is for the two screens to look like one app. %>
 <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
 
   <section class="hero-glow overflow-hidden rounded-3xl border border-white/10 px-6 py-10 sm:px-10 sm:py-14">
@@ -10,11 +10,11 @@
     </h1>
 
     <p class="mt-3 max-w-lg text-sm leading-relaxed text-neutral-300 sm:text-base">
-      Seus Epics agrupados do seu jeito — os que você criou e os que você pickou.
+      Your Epics grouped your way — the ones you created and the ones you picked.
     </p>
 
     <div class="mt-7 flex flex-wrap items-center gap-3">
-      <%= link_to "Nova Collection", new_collection_path,
+      <%= link_to "New Collection", new_collection_path,
             class: "rounded-full bg-lime-accent px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-neutral-950 hover:bg-lime-bright" %>
 
       <%= link_to "Discover", discover_path,
@@ -26,16 +26,16 @@
     <section class="mt-12">
       <h2 class="text-2xl font-bold tracking-tight">Suas Collections</h2>
 
-      <%# Rail horizontal, como "Popular Albums" da referencia. %>
+      <%# Horizontal rail, like the reference's "Popular Albums". %>
       <div class="rail mt-5 pb-2">
         <% @collections.each do |collection| %>
           <article class="card-dark w-56 rounded-2xl p-4">
             <%= link_to collection_path(collection), class: "block" do %>
-              <%# A capa da Collection e a do primeiro Epic: ela nao tem imagem
-                  propria, e o Epic aponta para uma Track que tem. %>
-              <%# `.first` na associacao ja carregada (o controller faz o
-                  includes); `epics.includes(...)` aqui dispararia uma query
-                  nova por card, anulando o preload. %>
+              <%# A Collection's cover is its first Epic's: it has no image of
+                  its own, and the Epic points at a Track that does. %>
+              <%# `.first` on the already-loaded association (the controller
+                  does the includes); `epics.includes(...)` here would fire a
+                  fresh query per card, undoing the preload. %>
               <% cover = collection.epics.first&.track&.album_artwork_url %>
 
               <% if cover.present? %>
@@ -65,7 +65,7 @@
   <% else %>
     <section class="mt-12 rounded-3xl border border-white/10 bg-ink-soft p-10 text-center">
       <p class="text-sm text-neutral-400">
-        Você ainda não tem Collections. Crie a primeira e agrupe seus Epics.
+        You have no Collections yet. Create the first one and group your Epics.
       </p>
     </section>
   <% end %>

@@ -35,7 +35,7 @@ class PicksTurboStreamTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match "0 Picks", response.body
-    assert_match "Ninguém pickou este Epic ainda", response.body
+    assert_match "Nobody has picked this Epic yet", response.body
   end
 
   test "a plain request still redirects, so no-JS keeps working" do
@@ -48,6 +48,6 @@ class PicksTurboStreamTest < ActionDispatch::IntegrationTest
     post epic_pick_path(@epic), as: :turbo_stream
 
     assert_match "flash", response.body
-    assert_match "Epic foi pickado!", response.body
+    assert_match "Epic picked!", response.body
   end
 end

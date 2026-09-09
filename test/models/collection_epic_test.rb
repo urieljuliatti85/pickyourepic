@@ -38,8 +38,8 @@ class CollectionEpicTest < ActiveSupport::TestCase
     assert_includes ce.errors[:epic_id], "can't be blank"
   end
 
-  # A coluna tem default 0, entao position so fica em branco se for anulada
-  # explicitamente; e esse caso que a validacao de presenca protege.
+  # The column defaults to 0, so position is only blank when explicitly nulled;
+  # that is the case the presence validation guards.
   test "requires position" do
     ce = CollectionEpic.new(collection: @collection, epic: @epic, position: nil)
     assert_not ce.valid?

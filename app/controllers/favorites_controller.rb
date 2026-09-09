@@ -4,7 +4,7 @@ class FavoritesController < ApplicationController
 
   # GET /favorites
   def index
-    # includes porque a lista mostra capa, faixa e autor de cada Epic.
+    # includes because the list shows artwork, track and author for each Epic.
     @epics = current_user.favorited_epics
       .includes(:track, :user, :picks)
       .order("favorites.created_at DESC")
@@ -15,29 +15,29 @@ class FavoritesController < ApplicationController
     favorite = current_user.favorites.build(epic: @epic)
 
     if favorite.save
-      redirect_back_to_epic notice: "Epic favoritado!"
+      redirect_back_to_epic notice: "Epic favorited!"
     else
       redirect_back_to_epic alert: favorite.errors.full_messages.first
     end
   end
 
   # DELETE /epics/:epic_id/favorite
-  # A busca parte de current_user, entao ninguem remove o Favorite de outro.
+  # The lookup starts from current_user, so nobody removes someone else's Favorite.
   def destroy
     favorite = current_user.favorites.find_by(epic: @epic)
 
     if favorite
       favorite.destroy
-      redirect_back_to_epic notice: "Removido dos favoritos."
+      redirect_back_to_epic notice: "Removed from favorites."
     else
-      redirect_back_to_epic alert: "Este Epic não está nos seus favoritos."
+      redirect_back_to_epic alert: "This Epic is not in your favorites."
     end
   end
 
   private
 
-  # Epic privado de outra pessoa nao existe para quem olha de fora: 404, e nao
-  # um erro de validacao, que confirmaria que aquele id existe.
+  # Another user's private Epic does not exist from the outside: 404, not a
+  # validation error, which would confirm that the id exists.
   def set_epic
     @epic = Epic.find(params[:epic_id])
 
@@ -46,8 +46,8 @@ class FavoritesController < ApplicationController
     end
   end
 
-  # O botao vive no Epic, no Discover e no perfil; voltar para a pagina de
-  # origem evita jogar o usuario para fora de onde ele estava.
+  # The button lives on the Epic page, on Discover and on the profile; going back
+  # to where it was clicked avoids throwing the user out of where they were.
   def redirect_back_to_epic(**flash_options)
     redirect_back fallback_location: epic_path(@epic), **flash_options
   end

@@ -8,29 +8,29 @@ class LoggedOutPlaybackTest < ActionDispatch::IntegrationTest
                          start_time: 0, end_time: 5_000, visibility: :public)
   end
 
-  # A reproducao usa a conta Spotify do proprio ouvinte (Web Playback SDK),
-  # entao deslogado nao ha o que tocar. O que da para consertar e o beco sem
-  # saida: antes a pagina culpava o Premium de quem nem tinha entrado.
+  # Playback uses the listener's own Spotify account (Web Playback SDK), so signed
+  # out there is nothing to play. What can be fixed is the dead end: the page used
+  # to blame the Premium of someone who had not even signed in.
   test "a signed out visitor is offered sign in, not a premium warning" do
     get epic_path(@epic)
 
     assert_response :success
     assert_select "form[action=?]", auth_spotify_path
-    assert_select "button", /Entrar para ouvir/
-    assert_select "p", { text: /Premium é necessário para tocar/, count: 0 }
+    assert_select "button", /Sign in to listen/
+    assert_select "p", { text: /Premium is required to play/, count: 0 }
   end
 
   test "a signed in non-premium user still sees the premium explanation" do
-    # sign_in_as percorre o OAuth real e o profile stubado regrava `product`,
-    # entao a conta vira free so depois do login.
+    # sign_in_as walks the real OAuth and the stubbed profile rewrites `product`,
+    # so the account only turns free after signing in.
     user = sign_in_as(User.create!(username: "free"))
     user.spotify_account.update!(product: "free")
 
     get epic_path(@epic)
 
     assert_response :success
-    assert_select "p", /Premium é necessário para tocar/
-    assert_select "button", { text: /Entrar para ouvir/, count: 0 }
+    assert_select "p", /Premium is required to play/
+    assert_select "button", { text: /Sign in to listen/, count: 0 }
   end
 
   test "the playback token is never issued to a signed out visitor" do

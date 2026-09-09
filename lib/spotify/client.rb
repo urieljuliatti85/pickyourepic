@@ -4,16 +4,16 @@ require "json"
 require "base64"
 
 module Spotify
-  # Error e AuthError vivem em arquivos proprios (error.rb, auth_error.rb)
-  # para que o Zeitwerk os resolva sem depender deste arquivo ter sido lido.
+  # Error and AuthError live in their own files (error.rb, auth_error.rb) so that
+  # Zeitwerk resolves them without this file having been loaded first.
 
-  # Cliente HTTP do Spotify. Isolado do dominio
-  # (CLAUDE.md § Architecture — The Spotify boundary): fala apenas HTTP e
-  # Hash, nao conhece User nem SpotifyAccount.
+  # Spotify HTTP client. Isolated from the domain
+  # (CLAUDE.md § Architecture — The Spotify boundary): it speaks only HTTP and
+  # Hashes, and knows neither User nor SpotifyAccount.
   module Client
     extend self
 
-    # Passo 1 do Authorization Code flow.
+    # Step 1 of the Authorization Code flow.
     def authorize_url(state:, redirect_uri:)
       params = {
         client_id: Config.client_id,
@@ -26,7 +26,7 @@ module Spotify
       "#{Config::AUTHORIZE_URL}?#{URI.encode_www_form(params)}"
     end
 
-    # Passo 3: troca o code por tokens.
+    # Step 3: exchange the code for tokens.
     def exchange_code(code:, redirect_uri:)
       token_request(
         grant_type: "authorization_code",
@@ -35,8 +35,8 @@ module Spotify
       )
     end
 
-    # Renova um access_token expirado. O Spotify pode ou nao devolver um novo
-    # refresh_token; quando nao devolve, o anterior continua valido.
+    # Refreshes an expired access_token. Spotify may or may not return a new
+    # refresh_token; when it does not, the previous one stays valid.
     def refresh_token(refresh_token:)
       token_request(
         grant_type: "refresh_token",
@@ -44,7 +44,7 @@ module Spotify
       )
     end
 
-    # Perfil do usuario autenticado. Traz `product`, que diz se ha Premium.
+    # The authenticated user's profile. Carries `product`, which says whether Premium is on.
     def me(access_token:)
       get("/me", access_token: access_token)
     end
@@ -65,7 +65,7 @@ module Spotify
       uri = URI(Config::TOKEN_URL)
 
       request = Net::HTTP::Post.new(uri)
-      # client_secret vai no header Basic, nunca no corpo nem no frontend.
+      # client_secret goes in the Basic header, never in a body nor in the frontend.
       credentials = Base64.strict_encode64("#{Config.client_id}:#{Config.client_secret}")
       request["Authorization"] = "Basic #{credentials}"
       request["Content-Type"] = "application/x-www-form-urlencoded"

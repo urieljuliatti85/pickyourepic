@@ -7,9 +7,9 @@ module Authentication
 
   private
 
-  # A sidebar aparece em toda pagina, entao estas duas consultas rodariam a
-  # cada request. Memoizadas: so acontecem se a sidebar de fato renderizar
-  # (visitante deslogado nao dispara nenhuma), e uma unica vez por request.
+  # The sidebar appears on every page, so these two queries would run on each
+  # request. Memoized: they only happen if the sidebar actually renders (a signed
+  # out visitor fires neither), and only once per request.
   SIDEBAR_LIMIT = 8
 
   def sidebar_epics

@@ -54,8 +54,8 @@ class ProfileLayoutTest < ActionDispatch::IntegrationTest
     assert_select "ol li", false
   end
 
-  # O botao de Pick passou a aparecer nas linhas do perfil, entao as regras do
-  # model (CLAUDE.md § Authorization) precisam valer tambem aqui.
+  # The Pick button now appears in the profile's rows, so the model's rules
+  # (CLAUDE.md § Authorization) have to hold here too.
   test "the profile rows offer Pick for another user's epic" do
     visitor = create_signed_in_user(username: "visitor")
     epic_for(@owner, 3)
@@ -89,8 +89,8 @@ class ProfileLayoutTest < ActionDispatch::IntegrationTest
     assert_select "button[type=submit]", text: "Picked ✓"
   end
 
-  # O botao chama picked_epic_ids em vez de um exists? por linha; sem isso cada
-  # Epic da pagina somaria uma query.
+  # The button calls picked_epic_ids instead of an exists? per row; without it
+  # every Epic on the page would add a query.
   test "the profile loads its lists without an N+1 while signed in" do
     visitor = create_signed_in_user(username: "visitor3")
     5.times { |i| Pick.create!(user: visitor, epic: epic_for(@owner, i)) }

@@ -28,7 +28,7 @@ class CollectionEpicsControllerTest < ActionDispatch::IntegrationTest
       post collection_collection_epics_path(@collection), params: { epic_id: @epic.id }
     end
     assert_redirected_to collection_path(@collection)
-    assert_equal "Epic adicionado à Collection!", flash[:notice]
+    assert_equal "Epic added to the Collection!", flash[:notice]
   end
 
   test "POST requires authentication" do
@@ -98,7 +98,7 @@ class CollectionEpicsControllerTest < ActionDispatch::IntegrationTest
       delete collection_collection_epic_path(@collection, ce)
     end
     assert_redirected_to collection_path(@collection)
-    assert_equal "Epic removido da Collection!", flash[:notice]
+    assert_equal "Epic removed from the Collection!", flash[:notice]
   end
 
   test "DELETE rejects non-owner" do

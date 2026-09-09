@@ -38,7 +38,7 @@ class FavoritesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  # Um erro de validacao confirmaria que o id existe; 404 nao conta nada.
+  # A validation error would confirm the id exists; a 404 tells nothing.
   test "another user's private epic is not found" do
     epic = epic_for(@other, visibility: :private)
 

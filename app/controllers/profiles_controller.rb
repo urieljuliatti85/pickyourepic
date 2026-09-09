@@ -9,8 +9,8 @@ class ProfilesController < ApplicationController
       return
     end
 
-    # A lista mostra capa, faixa e contagem de Picks de cada Epic; sem o
-    # includes cada linha renderizada dispara suas proprias queries.
+    # The list shows artwork, track and Pick count for each Epic; without the
+    # includes every rendered row fires its own queries.
     @epics = @user.epics.visibility_public.includes(:track, :picks).order(created_at: :desc)
     @picked_epics = Epic.visibility_public
       .joins(:picks).where(picks: { user_id: @user.id })

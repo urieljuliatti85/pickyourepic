@@ -1,13 +1,13 @@
-<%# Mesmo layout do Create Epic (referencia do hero do Spotify): gradiente
-    teal->indigo, titulo grande, copy secundaria suave e botoes em pilula.
-    Os tokens (ink, lime-accent) sao os mesmos do resto do app. %>
+<%# The same layout as Create Epic (the Spotify hero reference): a teal->indigo
+    gradient, a large title, soft secondary copy and pill buttons. The tokens
+    (ink, lime-accent) are the same as the rest of the app. %>
 <div class="mx-auto max-w-2xl px-4 py-8">
 
   <div class="overflow-hidden rounded-3xl border border-white/10 bg-ink-soft shadow-2xl shadow-black/30">
 
     <div class="bg-gradient-to-br from-lime-accent/30 via-lime-accent/10 to-indigo-500/20 px-6 py-8 sm:px-10 sm:py-10">
-      <%# Capa ao lado do titulo, nao como banner: `Spotify::Search` guarda a
-          MENOR imagem do album (~64px), que esticada ficaria borrada. %>
+      <%# Artwork beside the title, not as a banner: `Spotify::Search` keeps
+          the SMALLEST album image (~64px), which would blur if stretched. %>
       <div class="flex items-start gap-5">
         <% if @epic.track.album_artwork_url.present? %>
           <%= image_tag @epic.track.album_artwork_url, alt: "",
@@ -38,23 +38,24 @@
         </div>
       </div>
 
-      <%# Play e Pick lado a lado, como PLAY / FOLLOW da referencia. %>
+      <%# Play and Pick side by side, like the reference's PLAY / FOLLOW. %>
       <div class="mt-6 flex flex-wrap items-center gap-3">
         <%= render "shared/epic_play_button", epic: @epic %>
 
-        <%# O partial ja cobre "nao e meu Epic" e "um Pick por user"; o
-            visibility_public? e a regra extra desta pagina, que mostra Epic
-            privado para o dono. %>
+        <%# The partial already covers "not my Epic" and "one Pick per user";
+            visibility_public? is this page's extra rule, since it shows a
+            private Epic to its owner. %>
         <% if @epic.visibility_public? %>
           <%= render "shared/pick_button", epic: @epic %>
         <% end %>
 
         <%= render "shared/favorite_button", epic: @epic %>
 
-        <%# Apagar e irreversivel e leva junto os Picks que o Epic recebeu,
-            entao o turbo_confirm diz o que se perde, nao so "tem certeza?". %>
+        <%# Deleting is irreversible and takes the Picks the Epic received with
+            it, so the turbo_confirm says what is lost rather than a bare
+            "are you sure?". %>
         <% if current_user == @epic.user %>
-          <%= button_to "Excluir", epic_path(@epic), method: :delete,
+          <%= button_to "Delete", epic_path(@epic), method: :delete,
                 form: { class: "inline-block" },
                 data: { turbo_confirm: "Excluir \"#{@epic.title}\"? Os Picks que ele recebeu se perdem." },
                 class: "rounded-full border border-red-500/40 px-4 py-2 text-sm font-semibold text-red-300 hover:bg-red-500/10" %>
@@ -64,9 +65,9 @@
 
     <div class="px-6 py-8 sm:px-10">
 
-      <%# O trecho: e a informacao central de um Epic. %>
+      <%# The excerpt: an Epic's central piece of information. %>
       <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
-        <p class="text-xs font-semibold uppercase tracking-wider text-neutral-400">Trecho</p>
+        <p class="text-xs font-semibold uppercase tracking-wider text-neutral-400">Excerpt</p>
 
         <p class="mt-2 text-2xl font-semibold tabular-nums text-neutral-50">
           <%= number_to_duration(@epic.start_time) %>
@@ -106,7 +107,7 @@
       </div>
 
       <div class="mt-8 flex flex-wrap items-center gap-3">
-        <%= link_to "Voltar", tracks_path,
+        <%= link_to "Back", tracks_path,
               class: "rounded-full border border-lime-accent/60 px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-lime-accent hover:bg-lime-accent/10" %>
       </div>
     </div>

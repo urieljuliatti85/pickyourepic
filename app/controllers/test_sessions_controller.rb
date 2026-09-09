@@ -1,5 +1,5 @@
-# Atalho de login para system tests. A rota so e desenhada em Rails.env.test?
-# (config/routes.rb), entao esta classe nao e alcancavel em produção.
+# Sign-in shortcut for system tests. The route is only drawn in Rails.env.test?
+# (config/routes.rb), so this class is unreachable in production.
 class TestSessionsController < ApplicationController
   skip_forgery_protection
 

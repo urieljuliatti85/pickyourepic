@@ -1,5 +1,5 @@
-# CollectionEpic é um join table entre Collection e Epic.
-# Permite organizar Epics dentro de Collections com ordenação via position.
+# CollectionEpic is the join table between Collection and Epic.
+# It keeps Epics ordered inside a Collection through position.
 class CollectionEpic < ApplicationRecord
   belongs_to :collection
   belongs_to :epic
@@ -11,10 +11,10 @@ class CollectionEpic < ApplicationRecord
 
   private
 
-  # Uma Collection pode conter apenas:
-  # - Epics próprios do owner (public ou private)
-  # - Epics públicos de outros users (picked ou não)
-  # NÃO pode conter Epics privados de outro user.
+  # A Collection may hold only:
+  # - the owner's own Epics (public or private)
+  # - public Epics from other users (picked or not)
+  # It must NOT hold another user's private Epic.
   def cannot_add_private_epic_from_another_user
     if epic&.visibility_private? && epic&.user_id != collection&.user_id
       errors.add(:epic_id, "cannot add private Epic from another user")

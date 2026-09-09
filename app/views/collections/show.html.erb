@@ -1,5 +1,5 @@
-<%# Mesmo layout da index e da referencia: hero em degrade com titulo grande e
-    botoes em pilula, e abaixo a rail de capas. %>
+<%# The same layout as the index and the reference: a gradient hero with a large
+    title and pill buttons, and the artwork rail below. %>
 <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
 
   <% epics = @collection.collection_epics.includes(epic: [ :track, :user, :picks ]) %>
@@ -15,8 +15,8 @@
       · <%= pluralize(epics.size, "Epic") %>
     </p>
 
-    <%# Badge sempre visivel: saber se a Collection e publica importa tanto
-        para o dono quanto para quem visita. %>
+    <%# The badge is always visible: whether a Collection is public matters
+        as much to its owner as to a visitor. %>
     <p class="mt-3">
       <% if @collection.visibility_public? %>
         <span class="rounded-full bg-lime-accent/15 px-3 py-1 text-xs font-semibold text-lime-accent">Public</span>
@@ -31,17 +31,17 @@
       </p>
     <% end %>
 
-    <%# Play e as acoes do dono, no lugar de PLAY / FOLLOW da referencia. %>
+    <%# Play and the owner's actions, in place of the reference's PLAY / FOLLOW. %>
     <div class="mt-7 flex flex-wrap items-center gap-3">
       <%= render "shared/collection_player", collection: @collection %>
 
       <% if current_user == @collection.user %>
-        <%= link_to "Editar", edit_collection_path(@collection),
+        <%= link_to "Edit", edit_collection_path(@collection),
               class: "rounded-full border border-lime-accent/60 px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-lime-accent hover:bg-lime-accent/10" %>
 
-        <%= button_to "Excluir", collection_path(@collection), method: :delete,
+        <%= button_to "Delete", collection_path(@collection), method: :delete,
               form: { class: "inline-block" },
-              data: { turbo_confirm: "Tem certeza?" },
+              data: { turbo_confirm: "Are you sure?" },
               class: "rounded-full border border-red-500/40 px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-red-300 hover:bg-red-500/10" %>
       <% end %>
     </div>
@@ -80,14 +80,14 @@
               · <%= render "shared/pick_count", epic: ce.epic %>
             </p>
 
-            <%# Um Epic na Collection pode ser de outra pessoa; o partial some
-                sozinho quando e do proprio user. %>
+            <%# An Epic in the Collection may belong to someone else; the partial
+                hides itself when it is the user's own. %>
             <div class="mt-3">
               <%= render "shared/pick_button", epic: ce.epic, compact: true %>
             </div>
 
             <% if current_user == @collection.user %>
-              <%= button_to "Remover", collection_collection_epic_path(@collection, ce),
+              <%= button_to "Remove", collection_collection_epic_path(@collection, ce),
                     method: :delete,
                     class: "mt-2 w-full rounded-full border border-white/10 px-3 py-1.5 text-xs font-semibold text-neutral-400 hover:border-red-500/40 hover:text-red-300" %>
             <% end %>
@@ -96,26 +96,26 @@
       </div>
     <% else %>
       <div class="mt-5 rounded-3xl border border-white/10 bg-ink-soft p-10 text-center">
-        <p class="text-sm text-neutral-400">Nenhum Epic nesta Collection ainda.</p>
+        <p class="text-sm text-neutral-400">No Epics in this Collection yet.</p>
       </div>
     <% end %>
   </section>
 
   <% if current_user == @collection.user %>
     <section class="mt-8 rounded-3xl border border-white/10 bg-ink-soft p-6 sm:p-8">
-      <h3 class="text-xs font-semibold uppercase tracking-wider text-neutral-400">Adicionar Epic</h3>
+      <h3 class="text-xs font-semibold uppercase tracking-wider text-neutral-400">Add Epic</h3>
 
-      <%# Antes este campo pedia o ID numerico do Epic; agora a busca resolve
-          por nome do Epic, da musica ou da banda. %>
+      <%# This field used to ask for the Epic's numeric id; the search now
+          resolves it by Epic title, song or artist. %>
       <p class="mt-3">
-        <%= link_to "Buscar Epic", new_collection_collection_epic_path(@collection),
+        <%= link_to "Search for an Epic", new_collection_collection_epic_path(@collection),
               class: "inline-block rounded-full bg-lime-accent px-8 py-2 text-sm font-semibold uppercase tracking-wide text-neutral-950 hover:bg-lime-bright" %>
       </p>
     </section>
   <% end %>
 
   <div class="mt-8">
-    <%= link_to "Voltar", collections_path,
+    <%= link_to "Back", collections_path,
           class: "rounded-full border border-lime-accent/60 px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-lime-accent hover:bg-lime-accent/10" %>
   </div>
 </div>

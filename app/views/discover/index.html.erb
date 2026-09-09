@@ -2,19 +2,19 @@
 
 <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6">
 
-  <%# O h1 e da pagina, nao do hero: o titulo do Epic em destaque muda a cada
-      visita, e a pagina precisa de um cabecalho estavel. %>
+  <%# The h1 belongs to the page, not the hero: the featured Epic's title changes
+      on every visit, and the page needs a stable heading. %>
   <h1 class="text-2xl font-bold tracking-tight">
     Discover <span class="text-lime-accent">Epics.</span>
   </h1>
-  <p class="mt-1 text-sm text-neutral-400">Os momentos mais pickados primeiro.</p>
+  <p class="mt-1 text-sm text-neutral-400">The most picked moments first.</p>
 
   <% if @epics.any? %>
-    <%# Hero: o Epic mais pickado, como o bloco "Flume: Skin" da referencia. %>
+    <%# Hero: the most picked Epic, like the reference's "Flume: Skin" block. %>
     <% featured = @epics.first %>
     <section class="hero-glow mt-6 overflow-hidden rounded-3xl px-6 py-10 sm:px-10 sm:py-14">
       <p class="text-xs font-semibold uppercase tracking-[0.2em] text-lime-accent">
-        Mais pickado
+        Most picked
       </p>
 
       <h2 class="mt-3 max-w-2xl text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
@@ -38,11 +38,11 @@
       </div>
     </section>
 
-    <%# Linha horizontal, como "Popular Albums". %>
+    <%# Horizontal row, like "Popular Albums". %>
     <% rest = @epics.drop(1) %>
     <% if rest.any? %>
       <section class="mt-12">
-        <h2 class="text-2xl font-bold tracking-tight">Epics em alta</h2>
+        <h2 class="text-2xl font-bold tracking-tight">Trending Epics</h2>
 
         <div class="rail mt-5 pb-2">
           <% rest.each do |epic| %>
@@ -81,7 +81,7 @@
     <div class="card-dark mt-10 rounded-2xl p-10 text-center">
       <p class="text-neutral-400">No public Epics yet. Be the first to create one!</p>
       <% if signed_in? %>
-        <%= link_to "Buscar música", tracks_path,
+        <%= link_to "Search for a song", tracks_path,
               class: "mt-5 inline-block rounded-full bg-lime-accent px-5 py-2.5 text-sm font-semibold text-neutral-950 hover:bg-lime-bright" %>
       <% end %>
     </div>

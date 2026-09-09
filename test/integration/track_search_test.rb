@@ -53,7 +53,7 @@ class TrackSearchTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
-    assert_match "Nenhuma música encontrada", response.body
+    assert_match "No songs found", response.body
   end
 
   test "a spotify outage degrades without breaking the page" do

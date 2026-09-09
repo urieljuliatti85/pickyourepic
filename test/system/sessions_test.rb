@@ -1,29 +1,29 @@
 require "application_system_test_case"
 
 class SessionsTest < ApplicationSystemTestCase
-  # O botao de sign in e o unico ponto da app que redireciona para fora do
-  # dominio. O Turbo intercepta submits de form e segue o redirect por fetch,
-  # o que o Spotify recusa por CORS — o clique falha em silencio. Um teste de
-  # integracao nao pega isso: o Turbo so existe no browser.
+  # The sign in button is the app's only point that redirects off-domain. Turbo
+  # intercepts form submits and follows the redirect by fetch, which Spotify
+  # refuses on CORS — the click fails silently. An integration test does not
+  # catch this: Turbo only exists in the browser.
   test "signing in navigates the browser away from the app" do
     setup_spotify_credentials
 
-    # O destino precisa ser cross-origin: e exatamente isso que o Turbo nao
-    # consegue seguir por fetch. Um destino local passaria mesmo com o bug
-    # presente. Este host nao existe (.invalid e reservado para isso, RFC 2606),
-    # entao nenhuma requisicao sai de fato — o browser navega para a propria
-    # pagina de erro de DNS, que ja prova que ele saiu da app por conta propria.
+    # The destination has to be cross-origin: that is exactly what Turbo cannot
+    # follow by fetch. A local destination would pass even with the bug present.
+    # This host does not exist (.invalid is reserved for it, RFC 2606), so no
+    # request actually leaves — the browser navigates to its own DNS error page,
+    # which already proves it left the app on its own.
     stub_method(Spotify::Client, :authorize_url, "https://spotify-oauth.invalid/authorize") do
       visit root_path
-      within("main") { click_button "Entrar com Spotify" }
+      within("main") { click_button "Sign in with Spotify" }
 
       assert_no_current_path(root_path, wait: 5)
     end
   end
 
-  # A rota de sign out sempre funcionou e os testes de controller sempre a
-  # chamaram direto, entao ninguem percebeu quando a tela deixou de ter o botao.
-  # Este teste passa pela interface: clica no que o usuario ve.
+  # The sign out route always worked and the controller tests always called it
+  # directly, so nobody noticed when the screen lost the button. This test goes
+  # through the interface: it clicks what the user sees.
   test "a signed in user can sign out from the nav" do
     user = create_signed_in_user(username: "uriel")
     sign_in_as(user)
@@ -31,7 +31,7 @@ class SessionsTest < ApplicationSystemTestCase
     visit discover_path
     assert_text "@uriel"
 
-    click_button "Sair"
+    click_button "Sign out"
 
     assert_text "Signed out."
     assert_no_text "@uriel"
@@ -41,7 +41,7 @@ class SessionsTest < ApplicationSystemTestCase
     clear_spotify_credentials
 
     visit root_path
-    within("main") { click_button "Entrar com Spotify" }
+    within("main") { click_button "Sign in with Spotify" }
 
     assert_text "Spotify integration is not configured."
   end

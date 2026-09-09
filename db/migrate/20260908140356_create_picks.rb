@@ -7,7 +7,7 @@ class CreatePicks < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    # Um user não faz Pick do mesmo Epic duas vezes (CLAUDE.md § 6)
+    # A user does not Pick the same Epic twice (CLAUDE.md § 6)
     add_index :picks, [ :user_id, :epic_id ], unique: true
   end
 end

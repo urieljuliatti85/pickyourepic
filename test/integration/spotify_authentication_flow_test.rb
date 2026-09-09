@@ -18,9 +18,9 @@ class SpotifyAuthenticationFlowTest < ActionDispatch::IntegrationTest
     assert_equal auth_spotify_callback_url, params["redirect_uri"]
   end
 
-  # Regressao: o redirect_uri era derivado do host da requisicao, entao abrir o
-  # app por localhost gerava um URI que o Spotify nao tem cadastrado (ele so
-  # aceita 127.0.0.1) e o login falhava com INVALID_CLIENT.
+  # Regression: redirect_uri was derived from the request host, so opening the
+  # app on localhost produced a URI Spotify does not have registered (it only
+  # accepts 127.0.0.1) and sign-in failed with INVALID_CLIENT.
   test "development pins the callback host to 127.0.0.1 regardless of request host" do
     with_spotify_configured do
       stub_method(Rails.env, :development?, true) do

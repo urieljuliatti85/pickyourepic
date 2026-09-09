@@ -51,7 +51,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
       post collections_path, params: { collection: { title: "New Col", visibility: "public" } }
     end
     assert_redirected_to collection_path(Collection.last)
-    assert_equal "Collection criada!", flash[:notice]
+    assert_equal "Collection created!", flash[:notice]
   end
 
   test "POST /collections sets current_user as owner" do
@@ -84,7 +84,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     other_private = Collection.create!(user: @other_user, title: "Secret", visibility: :private)
     get collection_path(other_private)
     assert_redirected_to collections_path
-    assert_equal "Collection não encontrada.", flash[:alert]
+    assert_equal "Collection not found.", flash[:alert]
   end
 
   test "GET /collections/:id shows epics in collection" do
@@ -159,8 +159,8 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # PICK NOS CARDS
   #
-  # Uma Collection pode conter Epic de outra pessoa, entao o card oferece o
-  # Pick; no Epic do proprio dono o partial nao renderiza nada
+  # A Collection can hold someone else's Epic, so the card offers the Pick; on the
+  # owner's own Epic the partial renders nothing
   # (CLAUDE.md § Authorization).
 
   test "GET /collections/:id offers Pick on another user's epic" do

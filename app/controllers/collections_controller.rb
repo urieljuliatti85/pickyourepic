@@ -5,8 +5,8 @@ class CollectionsController < ApplicationController
 
   # GET /collections
   def index
-    # `epics: :track` porque o card mostra a capa do primeiro Epic; sem isso
-    # a rail dispara duas queries por Collection.
+    # `epics: :track` because the card shows the first Epic's artwork; without it
+    # the rail fires two queries per Collection.
     @collections = current_user.collections
       .includes(epics: :track)
       .order(created_at: :desc)
@@ -22,7 +22,7 @@ class CollectionsController < ApplicationController
     @collection = current_user.collections.build(collection_params)
 
     if @collection.save
-      redirect_to @collection, notice: "Collection criada!"
+      redirect_to @collection, notice: "Collection created!"
     else
       render :new, status: :unprocessable_entity
     end
@@ -32,7 +32,7 @@ class CollectionsController < ApplicationController
   def show
     # Public collections visible to all, private only to owner
     if @collection.visibility_private? && @collection.user != current_user
-      redirect_to collections_path, alert: "Collection não encontrada."
+      redirect_to collections_path, alert: "Collection not found."
     end
   end
 
@@ -43,7 +43,7 @@ class CollectionsController < ApplicationController
   # PATCH /collections/:id
   def update
     if @collection.update(collection_params)
-      redirect_to @collection, notice: "Collection atualizada!"
+      redirect_to @collection, notice: "Collection updated!"
     else
       render :edit, status: :unprocessable_entity
     end
@@ -52,7 +52,7 @@ class CollectionsController < ApplicationController
   # DELETE /collections/:id
   def destroy
     @collection.destroy
-    redirect_to collections_path, notice: "Collection removida!"
+    redirect_to collections_path, notice: "Collection deleted!"
   end
 
   private
@@ -63,7 +63,7 @@ class CollectionsController < ApplicationController
 
   def authorize_collection_owner
     unless @collection.user == current_user
-      redirect_to collections_path, alert: "Acesso não autorizado."
+      redirect_to collections_path, alert: "Not authorized."
     end
   end
 

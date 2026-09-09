@@ -156,7 +156,7 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     get epic_path(epic)
 
     assert_redirected_to root_path
-    assert_equal "Epic não encontrado.", flash[:alert]
+    assert_equal "Epic not found.", flash[:alert]
   end
 
   test "GET /epics/:id works without authentication for public epic" do
@@ -250,7 +250,7 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to profile_path(@user)
-    assert_equal "Epic removido.", flash[:notice]
+    assert_equal "Epic deleted.", flash[:notice]
   end
 
   test "DELETE /epics/:id destroys a private epic too" do
@@ -273,7 +273,7 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to epic_path(epic)
-    assert_equal "Acesso não autorizado.", flash[:alert]
+    assert_equal "Not authorized.", flash[:alert]
   end
 
   test "DELETE /epics/:id requires authentication" do
@@ -287,8 +287,8 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_path
   end
 
-  # O que o Epic recebeu sai junto (dependent: :destroy), senao sobrariam
-  # Picks e linhas de Collection apontando para um Epic que nao existe mais.
+  # What the Epic received goes with it (dependent: :destroy), or Picks and
+  # Collection rows would be left pointing at an Epic that no longer exists.
   test "DELETE /epics/:id takes its picks, favorites and collection rows with it" do
     epic = own_epic
     picker = User.create!(username: "picker")
@@ -305,14 +305,14 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     assert Collection.exists?(collection.id), "a Collection em si nao deve sumir"
   end
 
-  # Sem botao, a pagina diz por que — um espaco vazio se confunde com bug.
+  # With no button, the page says why — an empty slot reads as a bug.
   test "GET /epics/:id explains why your own Epic has no Pick button" do
     epic = own_epic
 
     get epic_path(epic)
 
     assert_select "button[type=submit]", { text: "Pick", count: 0 }
-    assert_match "Este Epic é seu", response.body
+    assert_match "This Epic is yours", response.body
   end
 
   test "GET /epics/:id invites a signed out visitor to sign in" do
@@ -322,7 +322,7 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     get epic_path(epic)
 
     assert_select "button[type=submit]", { text: "Pick", count: 0 }
-    assert_match "Entre para pickar", response.body
+    assert_match "Sign in to pick", response.body
   end
 
   test "GET /epics/:id shows no note when the Pick button is there" do
@@ -333,18 +333,18 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     get epic_path(epic)
 
     assert_select "button[type=submit]", text: "Pick"
-    assert_no_match "Este Epic é seu", response.body
+    assert_no_match "This Epic is yours", response.body
   end
 
-  # O botao so aparece para o dono: quem visita nao deve nem ver a opcao.
+  # The button only shows to the owner: a visitor should not even see the option.
   test "GET /epics/:id shows the delete button only to the owner" do
     epic = own_epic
 
     get epic_path(epic)
-    assert_select "button[type=submit]", text: "Excluir"
+    assert_select "button[type=submit]", text: "Delete"
 
     sign_in_as(create_signed_in_user(username: "bob"))
     get epic_path(epic)
-    assert_select "button[type=submit]", { text: "Excluir", count: 0 }
+    assert_select "button[type=submit]", { text: "Delete", count: 0 }
   end
 end

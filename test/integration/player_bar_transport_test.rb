@@ -31,7 +31,7 @@ class PlayerBarTransportTest < ActionDispatch::IntegrationTest
     get collection_path(collection)
 
     assert_response :success
-    # A Collection nao instancia SDK proprio: so despacha a fila.
+    # A Collection instantiates no SDK of its own: it only dispatches the queue.
     assert_select "[data-action='play-request#playQueue']"
     queue = JSON.parse(css_select("[data-play-request-queue-value]").first["data-play-request-queue-value"])
     assert_equal 1, queue.size
