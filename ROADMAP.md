@@ -17,7 +17,7 @@ Both suites must be green, because neither command runs the other:
 
 ```bash
 bin/rails test          # unit, controller, integration
-bin/rails test:system   # NOT included above; also commented out in config/ci.rb
+bin/rails test:system   # NOT included above
 ```
 
 This is not bureaucracy. The MVP phases below were once all `[x]` with a note
@@ -361,7 +361,7 @@ original; the letters sit flat.
 
 ## Favorites
 
-- [~] Favorite an Epic
+- [x] Favorite an Epic
 
 **Note:** Pick was already the public act — someone else's public Epic, counted,
 listed on the Epic page, feeding trending. Favorite is the private counterpart:
@@ -369,4 +369,129 @@ your own list, your own Epics included (private ones too), nothing shown to
 anyone else. `resource :favorite, only: [:create, :destroy]` nested under Epic,
 singular for the same reason as Pick, plus `GET /favorites`. Another user's
 private Epic 404s instead of failing validation, which would confirm the id
-exists. 8 model + 7 controller + 3 system tests. Awaiting CI.
+exists. 8 model + 7 controller + 3 system tests.
+
+Green on CI at `1e822a8`, and on every run since — the checks on `03c5c15`
+cover it. The note said "Awaiting CI" for a day after the code had already
+shipped, which is the drift §8 exists to catch.
+
+## Collections
+
+- [x] Delete your own Epic
+
+**Note:** Green on CI at `e423b2d`. Epics were the one thing you could create
+but never remove: Collections had a full CRUD, an Epic only had
+new/create/show. A typo in a title meant living with it, and the unique index
+on `(user_id, track_id)` meant you could not even create a corrected one for
+the same track. The guard is ownership, not visibility, and it redirects
+rather than raises, like the rest of the app. Picks, Favorites and
+CollectionEpics cascade, so deleting also removes the Epic from other
+people's Collections — the intended reading of an Epic being a pointer, not a
+copy. The confirmation says the Picks are lost rather than asking a bare "are
+you sure?".
+
+- [x] Public Collections area
+
+**Note:** Green on CI at `e423b2d`. Public Collections only existed on their
+owner's profile, so the only way to meet one was to already know whose it
+was. `/collections/discover` lists them all, biggest first, with the Epics
+rendered inline so a Pick is one click from the listing. Public like
+Discover: browsing needs no account, signing in is what Picking is for.
+
+Building it surfaced a leak that was already live. `CollectionEpic` refuses
+another user's private Epic but not your own, so a public Collection can hold
+its owner's private ones — and `collections#show` rendered every row to every
+visitor. Worse, the Play button serialized the whole queue into a data
+attribute, carrying private titles and Spotify URIs into the HTML of a page
+whose cards showed none of them. `Collection#collection_epics_visible_to`
+now decides that in one place.
+
+The Pick button also moved out of the row's `hidden sm:flex` block, which had
+made every row unpickable below 640px — on a mobile-first app, and on a
+screen whose whole purpose is picking other people's Epics.
+
+## Language
+
+- [x] Every user-facing string in English
+
+**Note:** Green on CI at `b316bf8`. The interface was mixed: flashes were
+English in `epics`/`sessions` and Portuguese in `collections`/`picks`, so
+which language a message came in depended on which controller answered.
+Everything the user reads is now English — flashes, buttons, empty states,
+form labels, aria-labels, landing copy — along with the code comments, which
+had been Portuguese by an explicit convention that CLAUDE.md §5 now reverses.
+91 files.
+
+Five player-bar strings turned out to be user-facing and were missed on the
+first pass: they live in JS `render` calls rather than a view. Stragglers kept
+surfacing for the rest of the session, each one caught by a screenshot rather
+than a test — a reminder that no test asserts on text nobody thought to check.
+
+## Visual
+
+- [x] The reference palette across the app
+
+**Note:** Green on CI at `5e74e94`. Navy at three depths with a pale cyan
+accent, read off the web player reference, plus the deep teal bar at the top.
+Five tokens carry it across 150 places in the views, so the whole app
+recolours from `app/assets/tailwind/application.css` without a view being
+touched — which is why the token names (`ink`, `lime-accent`) stayed as they
+were when the palette moved.
+
+The two gradients had the old colours written into them and would have been
+left behind, still ending in a purple that no longer appears anywhere.
+
+- [x] Toasts, skeletons and empty states
+
+**Note:** Green on CI at `1fe363e`. Feedback was a flash line at the top of
+the page: it said "Not authorized" for a rule the user could have understood,
+and it arrived after a reload. Three ViewComponents replace it — a toast that
+dismisses itself, a skeleton for loading, an empty state that says what the
+page would hold and offers the way to fill it. Picks and Favorites answer
+over turbo_stream, so the toast appears and the button flips without the page
+moving. `view_component` comes with it.
+
+Three things in that work did not run at all until they were tested: the
+toasts container was written with escaped quotes, so `turbo_stream.append`
+never found its target; `FavoritesController` set a local where the template
+read an instance variable; and the favorite button had no frame for the
+stream to replace. All three passed review as written code.
+
+## Phase 13 — Detailed error messages
+
+- [x] Every validation failure carries a key, and every key has a message
+
+**Note:** Green on CI at `9a18e21`. `ErrorMessagesHelper` held eleven entries
+and four were reached. The other seven were written, never wired, and the
+models went on reporting sentences no screen translated — so "must be greater
+than start_time" reached the user while "The Epic must end after it begins"
+sat unused in the helper.
+
+The Epic validations and the three uniqueness rules now report keys. The
+Epic's stay on their attribute rather than moving to `:base`: the form needs
+to know which field failed, unlike the Pick and Favorite rules, which belong
+to no single field.
+
+`test/helpers/error_keys_test.rb` holds the two sides together. Nothing failed
+when they drifted, because nothing compared them.
+
+## Tooling
+
+- [x] Open and queue a pull request on every push
+
+**Note:** Green on CI at `03c5c15`. Pushing a branch meant opening the PR by
+hand, and a branch pushed and forgotten sat outside `main` with nothing to
+show for it. `.github/workflows/auto-pr.yml` opens it from the commit
+messages and hands it to GitHub's auto-merge, which waits for the required
+checks — never merging on its own, since §8 counts work as done only when CI
+is green.
+
+Three settings had to change before it worked, each hidden behind the last:
+Actions needed write permission, then permission to create PRs at all, then
+`main` needed branch protection — auto-merge exists to wait for required
+checks, and with none configured the API refuses.
+
+One rough edge remains: CI on a PR opened by an Action lands in
+`action_required` and needs approving by hand. That is GitHub refusing to let
+a workflow trigger workflows, and closing/reopening the PR does not get
+around it.
