@@ -1,16 +1,20 @@
 @import "tailwindcss";
 
-/* Paleta do produto: azul-marinho profundo com ciano como acento, seguindo a
-   referencia do web player. Os nomes dos tokens (ink, lime-accent) sao os
-   mesmos de antes de proposito — sao usados em toda a app, e trocar so os
-   valores recolore tudo sem mexer em cada view.
-   Tailwind v4 le os tokens daqui, sem tailwind.config.js. */
+/* The product palette, taken from the web player reference: navy at three
+   depths with a pale cyan accent. The rail is the darkest, the page sits a
+   step above it, and cards a step above that — the reference separates its
+   surfaces by depth rather than by borders.
+
+   The token names (ink, lime-accent) are deliberately the ones from before:
+   they are used across 150 places in the views, so changing the values here
+   recolours the whole app without touching a single view.
+   Tailwind v4 reads the tokens from this file, with no tailwind.config.js. */
 @theme {
-  --color-ink: #0b1020;
-  --color-ink-soft: #121a30;
-  --color-ink-rail: #080d1a;
-  --color-lime-accent: #22d3ee;
-  --color-lime-bright: #67e8f9;
+  --color-ink: #0f1c33;
+  --color-ink-soft: #17263f;
+  --color-ink-rail: #0a1428;
+  --color-lime-accent: #7fd4e8;
+  --color-lime-bright: #a9e6f2;
 }
 
 /* The top bar, from the reference: a deep desaturated teal, drifting a shade
@@ -27,13 +31,13 @@
   background-image: linear-gradient(100deg, #2b6b68 0%, #367f79 55%, #3e8d84 100%);
 }
 
-/* The highlight blocks' gradient: the accent cyan running into the
-   reference's purple background. */
+/* The highlight blocks' gradient: the reference's teal dissolving into its
+   navy, the same move the hero makes behind the artist photo. */
 .surface-glow {
-  background-image: linear-gradient(135deg, #22d3ee 0%, #3b82f6 45%, #7c3aed 100%);
+  background-image: linear-gradient(135deg, #4fb3ad 0%, #2f6f86 45%, #1b3a63 100%);
 }
 
-/* Card escuro padrao: borda quase invisivel que so aparece no hover. */
+/* The standard dark card: a border so faint it only shows on hover. */
 .card-dark {
   background-color: var(--color-ink-soft);
   border: 1px solid rgb(255 255 255 / 0.07);
@@ -44,16 +48,17 @@
   border-color: rgb(255 255 255 / 0.16);
 }
 
-/* Hero da Discover: o degrade que na referencia vem da foto do artista. */
+/* Discover's hero: in the reference this glow comes from the artist photo —
+   teal light at one corner falling away into the navy. */
 .hero-glow {
   background-image:
-    radial-gradient(ellipse at 75% 30%, rgb(34 211 238 / 0.28) 0%, transparent 55%),
-    radial-gradient(ellipse at 30% 80%, rgb(124 58 237 / 0.30) 0%, transparent 60%),
-    linear-gradient(120deg, #16203c 0%, #0d1426 100%);
+    radial-gradient(ellipse at 75% 30%, rgb(79 179 173 / 0.30) 0%, transparent 55%),
+    radial-gradient(ellipse at 25% 85%, rgb(47 111 134 / 0.32) 0%, transparent 60%),
+    linear-gradient(120deg, #1a2d4a 0%, #101f38 100%);
 }
 
-/* Linha horizontal de cards, como "Popular Albums": rola no eixo x sem
-   estourar o body (a barra some, o gesto continua). */
+/* A horizontal row of cards, like "Popular Albums": scrolls on the x axis
+   without spilling the body (the scrollbar goes, the gesture stays). */
 .rail {
   display: flex;
   gap: 1.25rem;
