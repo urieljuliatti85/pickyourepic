@@ -15,6 +15,11 @@
         <%# Antes apontava para root_path, entao o proprio perfil nao tinha link. %>
         <%= link_to "@#{current_user.username}", profile_path(current_user),
               class: "rounded-full bg-white/5 px-3 py-1.5 font-medium text-neutral-100 hover:bg-lime-accent hover:text-neutral-950" %>
+
+        <%# A rota de sign out existia desde o inicio, mas nenhuma tela linkava
+            para ela — quem entrava nao tinha como sair. %>
+        <%= button_to "Sair", sign_out_path, method: :delete,
+              class: "text-neutral-500 underline underline-offset-4 hover:text-neutral-300" %>
       <% else %>
         <%= button_to "Entrar", auth_spotify_path,
               form: { data: { turbo: false } },

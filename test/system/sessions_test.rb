@@ -21,6 +21,22 @@ class SessionsTest < ApplicationSystemTestCase
     end
   end
 
+  # A rota de sign out sempre funcionou e os testes de controller sempre a
+  # chamaram direto, entao ninguem percebeu quando a tela deixou de ter o botao.
+  # Este teste passa pela interface: clica no que o usuario ve.
+  test "a signed in user can sign out from the nav" do
+    user = create_signed_in_user(username: "uriel")
+    sign_in_as(user)
+
+    visit discover_path
+    assert_text "@uriel"
+
+    click_button "Sair"
+
+    assert_text "Signed out."
+    assert_no_text "@uriel"
+  end
+
   test "signing in without credentials configured reports it instead of doing nothing" do
     clear_spotify_credentials
 
