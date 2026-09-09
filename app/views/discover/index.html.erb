@@ -29,7 +29,7 @@
       <p class="mt-1 text-sm text-neutral-400">
         <%= number_to_duration(featured.start_time) %> – <%= number_to_duration(featured.end_time) %>
         · <%= render "shared/pick_count", epic: featured %>
-        · por <%= link_to featured.user.username, profile_path(featured.user), class: "text-neutral-200 hover:text-lime-accent" %>
+        · by <%= link_to featured.user.username, profile_path(featured.user), class: "text-neutral-200 hover:text-lime-accent" %>
       </p>
 
       <div class="mt-7 flex flex-wrap items-center gap-3">
