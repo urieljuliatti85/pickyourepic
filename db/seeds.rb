@@ -16,17 +16,27 @@ else
   # As faixas: sem Spotify configurado nao ha busca, entao o seed traz os
   # metadados prontos. Sao dados publicos de catalogo, nao audio
   # (CLAUDE.md § Spotify policy constraints).
+  #
+  # Os spotify_id sao REAIS, e precisam ser: o botao de play monta
+  # "spotify:track:#{spotify_id}" e entrega ao Web Playback SDK, entao um id
+  # inventado da um Epic que abre mas nao toca. Vieram da busca da propria
+  # app, com nome, duracao e capa como o Spotify os devolveu.
   tracks = [
-    { spotify_id: "seed_track_01", name: "Lake Bodom",
-      artist_name: "Children Of Bodom", duration_ms: 241_800 },
-    { spotify_id: "seed_track_02", name: "I'm Shipping Up To Boston",
-      artist_name: "Dropkick Murphys", duration_ms: 170_253 },
-    { spotify_id: "seed_track_03", name: "Innerbloom",
-      artist_name: "RÜFÜS DU SOL", duration_ms: 559_000 },
-    { spotify_id: "seed_track_04", name: "Everlong",
-      artist_name: "Foo Fighters", duration_ms: 250_546 },
-    { spotify_id: "seed_track_05", name: "Teardrop",
-      artist_name: "Massive Attack", duration_ms: 330_866 }
+    { spotify_id: "7MhEPacsDaXu33MGvT0WJ3", name: "Lake Bodom",
+      artist_name: "Children Of Bodom", duration_ms: 241_800,
+      album_artwork_url: "https://i.scdn.co/image/ab67616d0000485128e69c33cab73d9eacf92576" },
+    { spotify_id: "7vC957qXhk06DB5f90ei4s", name: "I´m Shipping Up To Boston",
+      artist_name: "Children Of Bodom", duration_ms: 170_253,
+      album_artwork_url: "https://i.scdn.co/image/ab67616d00004851127c9e3be534edd650c450d4" },
+    { spotify_id: "4xshDuSn1JrMLTRi19GKBh", name: "Lake Bodom - Live",
+      artist_name: "Children Of Bodom", duration_ms: 249_453,
+      album_artwork_url: "https://i.scdn.co/image/ab67616d00004851e5ae646588f9a8af78e8d59f" },
+    { spotify_id: "6Ph8QwsRfZunN5e1GGBIqa", name: "Hurt",
+      artist_name: "Oliver Tree", duration_ms: 145_147,
+      album_artwork_url: "https://i.scdn.co/image/ab67616d00004851c1bdf5564ed647ab6cb12f4b" },
+    { spotify_id: "7GtTrm75kT8YnuyxywPVWg", name: "Lake Bodom - Final Show in Helsinki Ice Hall 2019",
+      artist_name: "Children Of Bodom", duration_ms: 243_560,
+      album_artwork_url: "https://i.scdn.co/image/ab67616d00004851aeeb9916152ce66db30a073a" }
   ].each_with_object({}) do |attrs, index|
     track = Track.find_or_create_by!(spotify_id: attrs[:spotify_id]) do |t|
       t.assign_attributes(attrs.except(:spotify_id))
@@ -35,15 +45,18 @@ else
   end
 
   # Um Epic por (user, track): e o que o indice unico permite.
+  #
+  # Os intervalos cabem na duracao real de cada faixa: end_time > duration_ms
+  # nao passa da validacao do Epic (CLAUDE.md §4).
   epics = [
-    [ "mariana_riffs", "seed_track_01", "O riff que abre tudo",       15_000,  45_000, :public ],
-    [ "mariana_riffs", "seed_track_02", "Essa batida no comeco",           0,  28_000, :public ],
-    [ "joao_drops",    "seed_track_03", "O drop que vale a musica",  240_000, 288_000, :public ],
-    [ "joao_drops",    "seed_track_04", "Solo inteiro, sem cortes",  120_000, 168_000, :public ],
-    [ "bia_curadora",  "seed_track_05", "O momento que arrepia",      88_000, 121_000, :public ],
+    [ "mariana_riffs", "7MhEPacsDaXu33MGvT0WJ3", "O riff que abre tudo",      15_000,  45_000, :public ],
+    [ "mariana_riffs", "7vC957qXhk06DB5f90ei4s", "Essa batida no comeco",           0,  28_000, :public ],
+    [ "joao_drops",    "4xshDuSn1JrMLTRi19GKBh", "A virada ao vivo",          60_000, 102_000, :public ],
+    [ "joao_drops",    "6Ph8QwsRfZunN5e1GGBIqa", "O refrao inteiro",          52_000,  88_000, :public ],
+    [ "bia_curadora",  "7GtTrm75kT8YnuyxywPVWg", "O momento que arrepia",     88_000, 121_000, :public ],
     # Um privado: so a dona o ve, e ele nao pode aparecer no Discover nem
     # receber Pick — o caso que as guardas de visibilidade precisam exercitar.
-    [ "bia_curadora",  "seed_track_01", "Anotacao pessoal",           30_000,  50_000, :private ]
+    [ "bia_curadora",  "7MhEPacsDaXu33MGvT0WJ3", "Anotacao pessoal",          30_000,  50_000, :private ]
   ].map do |username, track_id, title, start_time, end_time, visibility|
     user = User.find_or_create_by!(username: username)
 
