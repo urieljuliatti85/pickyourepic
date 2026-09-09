@@ -6,6 +6,14 @@ Rails.application.routes.draw do
   delete "sign_out", to: "sessions#destroy", as: :sign_out
 
   resources :tracks, only: :index
+
+  # Playlist browsing is disabled. Spotify closed both halves of it: the genre
+  # endpoints (/browse/categories and friends) answer 403 since 2024-11-27, and
+  # in development mode only the caller's OWN playlists open — a stranger's
+  # contents are refused, which left a screen where most cards did nothing.
+  # lib/spotify/playlists.rb and its tests stay, so this is a route away from
+  # working if the app ever leaves development mode.
+  # resources :playlists, only: [ :index, :show ]
   resources :epics, only: [ :new, :create, :show, :destroy ] do
     # Um user tem no maximo um Pick por Epic, entao o destroy nao precisa de
     # id proprio: o Pick e identificado pelo par (current_user, epic).

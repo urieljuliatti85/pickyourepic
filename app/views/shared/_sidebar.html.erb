@@ -21,7 +21,7 @@
         account — signing in is what Picking needs. %>
     <%= link_to public_collections_path,
           class: "flex items-center gap-3 rounded-lg px-3 py-2 text-sm #{current_page?(public_collections_path) ? "bg-white/5 font-semibold text-lime-accent" : "text-neutral-400 hover:text-neutral-100"}" do %>
-      <span aria-hidden="true">◫</span> Collections
+      <span aria-hidden="true">◫</span> Public Collections
     <% end %>
 
     <% if signed_in? %>
@@ -45,7 +45,7 @@
   <% if signed_in? && sidebar_epics.any? %>
     <div class="mt-6 min-h-0 flex-1 overflow-y-auto px-3 pb-6">
       <p class="px-3 pb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
-        Seus Epics
+        Your Epics
       </p>
 
       <ol class="space-y-0.5">

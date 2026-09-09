@@ -117,11 +117,79 @@ class SpotifyPlaylistsTest < ActiveSupport::TestCase
     assert_equal Spotify::Playlists::MAX_LIMIT, calls.first.last[:params][:limit]
   end
 
+  # SEARCH
+  #
+  # The genre browse this replaces: /browse/categories and friends have answered
+  # 403 since 2024-11-27, so a free-text search is what the API still allows.
+
+  test "search returns public playlists matching a term" do
+    payload = { "playlists" => { "items" => [ playlist_item ] } }
+
+    results = stub_method(Spotify::Client, :get, payload) do
+      Spotify::Playlists.search(query: "rock", access_token: "token")
+    end
+
+    assert_equal [ "pl_abc" ], results.map { |p| p[:spotify_id] }
+  end
+
+  # Spotify puts literal nulls among the results — roughly a third of a page in
+  # practice — and normalize would raise on them.
+  test "search survives the nulls Spotify mixes into the results" do
+    payload = { "playlists" => { "items" => [ nil, playlist_item, nil ] } }
+
+    results = stub_method(Spotify::Client, :get, payload) do
+      Spotify::Playlists.search(query: "rock", access_token: "token")
+    end
+
+    assert_equal [ "pl_abc" ], results.map { |p| p[:spotify_id] }
+  end
+
+  test "search asks Spotify for playlists, not tracks" do
+    calls = recording_client_get({ "playlists" => { "items" => [] } }) do
+      Spotify::Playlists.search(query: "rock", access_token: "token")
+    end
+
+    path, kwargs = calls.first
+    assert_equal "/search", path
+    assert_equal "playlist", kwargs[:params][:type]
+    assert_equal "rock", kwargs[:params][:q]
+  end
+
+  test "search returns nothing for a blank term" do
+    assert_empty Spotify::Playlists.search(query: "", access_token: "token")
+    assert_empty Spotify::Playlists.search(query: nil, access_token: "token")
+  end
+
+  # /search omits the track total that /users/{id}/playlists carries.
+  test "a search result with no track total keeps it nil rather than zero" do
+    result = Spotify::Playlists.normalize(playlist_item("tracks" => nil))
+
+    assert_nil result[:track_count]
+  end
+
+  # Development mode only opens the caller's own playlists, so the list needs the
+  # owner id to know which cards to offer.
+  test "the owner id comes through so the list can tell whose it is" do
+    result = Spotify::Playlists.normalize(
+      playlist_item("owner" => { "id" => "user_9", "display_name" => "isah.se" })
+    )
+
+    assert_equal "user_9", result[:owner_id]
+  end
+
+  test "the owner name comes through when Spotify sends one" do
+    result = Spotify::Playlists.normalize(
+      playlist_item("owner" => { "display_name" => "isah.se" })
+    )
+
+    assert_equal "isah.se", result[:owner_name]
+  end
+
   # TRACKS
 
   def track_row(overrides = {})
     {
-      "track" => {
+      "item" => {
         "id" => "track_1",
         "name" => "Lake Bodom",
         "duration_ms" => 241_800,
@@ -144,9 +212,32 @@ class SpotifyPlaylistsTest < ActiveSupport::TestCase
     assert_equal 241_800, results.first[:duration_ms]
   end
 
-  # A local file or a removed track arrives with a null `track`.
+  # A local file or a removed track arrives with a null item, and Spotify also
+  # mixes plain nulls into the rows.
   test "rows without a playable track are dropped" do
-    payload = { "items" => [ track_row, { "track" => nil }, { "track" => {} } ] }
+    payload = { "items" => [ track_row, { "item" => nil }, { "item" => {} }, nil ] }
+
+    results = stub_method(Spotify::Client, :get, payload) do
+      Spotify::Playlists.tracks(playlist_id: "pl_abc", access_token: "token")
+    end
+
+    assert_equal [ "track_1" ], results.map { |t| t[:spotify_id] }
+  end
+
+  # /playlists/{id}/tracks was removed in Spotify's February 2026 change and now
+  # answers 403 even on the caller's own playlist.
+  test "tracks asks for items, not the removed tracks endpoint" do
+    calls = recording_client_get({ "items" => [] }) do
+      Spotify::Playlists.tracks(playlist_id: "pl_abc", access_token: "token")
+    end
+
+    assert_equal "/playlists/pl_abc/items", calls.first.first
+  end
+
+  # The replacement renamed the row key; reading both costs nothing and keeps
+  # this working if a response ever arrives in the old shape.
+  test "a row in the old track shape is still read" do
+    payload = { "items" => [ { "track" => track_row["item"] } ] }
 
     results = stub_method(Spotify::Client, :get, payload) do
       Spotify::Playlists.tracks(playlist_id: "pl_abc", access_token: "token")

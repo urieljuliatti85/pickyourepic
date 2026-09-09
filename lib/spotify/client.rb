@@ -20,7 +20,12 @@ module Spotify
         response_type: "code",
         redirect_uri: redirect_uri,
         scope: Config.scope,
-        state: state
+        state: state,
+        # Without this Spotify silently skips the consent screen for an app the
+        # user already approved and hands back a token carrying the OLD scopes.
+        # Signing out and in again would then change nothing — the playlist
+        # calls would keep answering 403 with no way for the user to fix it.
+        show_dialog: true
       }
 
       "#{Config::AUTHORIZE_URL}?#{URI.encode_www_form(params)}"
@@ -80,7 +85,7 @@ module Spotify
       end
 
       unless response.is_a?(Net::HTTPSuccess)
-        raise error_class, "Spotify request failed: #{response.code}"
+        raise error_class.new("Spotify request failed: #{response.code}", status: response.code.to_i)
       end
 
       JSON.parse(response.body)
