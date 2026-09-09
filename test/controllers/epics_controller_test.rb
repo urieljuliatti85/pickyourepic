@@ -305,6 +305,37 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     assert Collection.exists?(collection.id), "a Collection em si nao deve sumir"
   end
 
+  # Sem botao, a pagina diz por que — um espaco vazio se confunde com bug.
+  test "GET /epics/:id explains why your own Epic has no Pick button" do
+    epic = own_epic
+
+    get epic_path(epic)
+
+    assert_select "button[type=submit]", { text: "Pick", count: 0 }
+    assert_match "Este Epic é seu", response.body
+  end
+
+  test "GET /epics/:id invites a signed out visitor to sign in" do
+    epic = own_epic
+    delete sign_out_path
+
+    get epic_path(epic)
+
+    assert_select "button[type=submit]", { text: "Pick", count: 0 }
+    assert_match "Entre para pickar", response.body
+  end
+
+  test "GET /epics/:id shows no note when the Pick button is there" do
+    other = User.create!(username: "carol")
+    epic = Epic.create!(user: other, track: @track, title: "Da Carol",
+                        start_time: 0, end_time: 30_000, visibility: :public)
+
+    get epic_path(epic)
+
+    assert_select "button[type=submit]", text: "Pick"
+    assert_no_match "Este Epic é seu", response.body
+  end
+
   # O botao so aparece para o dono: quem visita nao deve nem ver a opcao.
   test "GET /epics/:id shows the delete button only to the owner" do
     epic = own_epic
