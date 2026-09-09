@@ -60,6 +60,12 @@
     <div class="hidden flex-none items-center gap-4 text-xs tabular-nums text-neutral-500 sm:flex">
       <span><%= number_to_duration(epic.end_time - epic.start_time) %></span>
       <span class="w-14 text-right"><%= render "shared/pick_count", epic: epic %></span>
+
+      <%# z-10: o link do titulo cobre a linha inteira (before:inset-0), entao
+          sem isso o clique no Pick cairia no link e abriria o Epic. %>
+      <span class="relative z-10">
+        <%= render "shared/pick_button", epic: epic, compact: true %>
+      </span>
     </div>
   </div>
 </li>

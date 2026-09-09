@@ -22,6 +22,26 @@ class Epic < ApplicationRecord
   validate :end_time_within_track_duration
   validate :validate_mmss_format
 
+  # Epics que `user` pode colocar numa Collection: os proprios (publicos ou
+  # privados) e os publicos de qualquer um. Espelha a validacao de
+  # CollectionEpic (CLAUDE.md § Authorization) — sem isso a busca ofereceria
+  # Epics que o save recusaria depois.
+  scope :addable_by, ->(user) {
+    where(visibility: :public).or(where(user_id: user.id))
+  }
+
+  # Busca por titulo do Epic, nome da faixa ou artista. ILIKE porque a busca
+  # nao deve depender de caixa; o valor vai por bind, entao nao ha injecao.
+  scope :matching, ->(term) {
+    next all if term.blank?
+
+    pattern = "%#{sanitize_sql_like(term.to_s.strip)}%"
+    joins(:track).where(
+      "epics.title ILIKE :q OR tracks.name ILIKE :q OR tracks.artist_name ILIKE :q",
+      q: pattern
+    )
+  }
+
   # O formulario fala em MM:SS (como um player), mas as colunas sao
   # milissegundos (CLAUDE.md §4). A conversao vive aqui para que o form leia e
   # escreva a mesma unidade.

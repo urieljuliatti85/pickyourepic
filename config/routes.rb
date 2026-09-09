@@ -17,7 +17,7 @@ Rails.application.routes.draw do
   resources :profiles, only: [ :show ], param: :username
   resources :favorites, only: [ :index ]
   resources :collections do
-    resources :collection_epics, only: [ :create, :destroy ]
+    resources :collection_epics, only: [ :new, :create, :destroy ]
   end
   get "discover", to: "discover#index"
 

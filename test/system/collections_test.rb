@@ -61,7 +61,8 @@ class CollectionsTest < ApplicationSystemTestCase
     )
 
     visit collection_path(collection)
-    fill_in "epic_id", with: epic.id
+    click_link "Buscar Epic"
+    fill_in "q", with: "Epic Song"
     click_button "Adicionar"
 
     assert_text "Epic adicionado à Collection!"
@@ -69,5 +70,29 @@ class CollectionsTest < ApplicationSystemTestCase
 
     click_button "Remover"
     assert_text "Epic removido da Collection!"
+  end
+
+  test "User adds an epic to a collection by searching for it" do
+    other = User.create!(username: "bandmate")
+    track = Track.create!(spotify_id: "srch1", name: "Bohemian Rhapsody",
+                          artist_name: "Queen", duration_ms: 300_000)
+    Epic.create!(user: other, track: track, title: "O solo",
+                 start_time: 0, end_time: 30_000, visibility: :public)
+
+    collection = Collection.create!(user: @user, title: "Busca", visibility: :public)
+
+    visit collection_path(collection)
+    click_link "Buscar Epic"
+
+    # Busca pela banda: o Epic nao tem "queen" no titulo.
+    fill_in "q", with: "queen"
+
+    assert_text "O solo"
+    assert_text "Bohemian Rhapsody"
+
+    click_button "Adicionar"
+
+    assert_text "Epic adicionado à Collection!"
+    assert_text "O solo"
   end
 end
