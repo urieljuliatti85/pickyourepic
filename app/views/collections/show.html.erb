@@ -1,90 +1,117 @@
-<div class="max-w-4xl mx-auto p-4">
-  <!-- Collection Header -->
-  <div class="mb-6 p-4 bg-gray-100 rounded">
-    <div class="flex items-center justify-between">
-      <div>
-        <h1 class="text-2xl font-bold"><%= @collection.title %></h1>
-        <p class="text-sm text-gray-600 mt-1">
-          By <strong><%= @collection.user.username %></strong>
-        </p>
-      </div>
-      <div>
-        <% if @collection.visibility_public? %>
-          <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Public</span>
-        <% else %>
-          <span class="px-2 py-1 bg-gray-300 text-gray-800 rounded text-xs">Private</span>
-        <% end %>
-      </div>
-    </div>
+<%# Mesmo layout da index e da referencia: hero em degrade com titulo grande e
+    botoes em pilula, e abaixo a rail de capas. %>
+<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+
+  <% epics = @collection.collection_epics.includes(epic: [ :track, :user, :picks ]) %>
+
+  <section class="hero-glow overflow-hidden rounded-3xl border border-white/10 px-6 py-10 sm:px-10 sm:py-14">
+    <h1 class="text-3xl font-bold tracking-tight text-neutral-50 sm:text-5xl">
+      <%= @collection.title %>
+    </h1>
+
+    <p class="mt-3 text-sm text-neutral-300">
+      <%= link_to "@#{@collection.user.username}", profile_path(@collection.user),
+            class: "font-medium hover:text-lime-accent" %>
+      · <%= pluralize(epics.size, "Epic") %>
+    </p>
+
+    <%# Badge sempre visivel: saber se a Collection e publica importa tanto
+        para o dono quanto para quem visita. %>
+    <p class="mt-3">
+      <% if @collection.visibility_public? %>
+        <span class="rounded-full bg-lime-accent/15 px-3 py-1 text-xs font-semibold text-lime-accent">Public</span>
+      <% else %>
+        <span class="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-neutral-300">Private</span>
+      <% end %>
+    </p>
+
     <% if @collection.description.present? %>
-      <p class="text-sm mt-2"><%= @collection.description %></p>
+      <p class="mt-2 max-w-lg text-sm leading-relaxed text-neutral-400">
+        <%= @collection.description %>
+      </p>
     <% end %>
-  </div>
 
-  <!-- Owner Actions -->
-  <% if current_user == @collection.user %>
-    <div class="mb-4 flex gap-2">
-      <%= link_to "Edit", edit_collection_path(@collection), class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" %>
-      <%= button_to "Delete", collection_path(@collection), method: :delete,
-          class: "px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600",
-          data: { turbo_confirm: "Are you sure?" } %>
+    <%# Play e as acoes do dono, no lugar de PLAY / FOLLOW da referencia. %>
+    <div class="mt-7 flex flex-wrap items-center gap-3">
+      <%= render "shared/collection_player", collection: @collection %>
+
+      <% if current_user == @collection.user %>
+        <%= link_to "Editar", edit_collection_path(@collection),
+              class: "rounded-full border border-lime-accent/60 px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-lime-accent hover:bg-lime-accent/10" %>
+
+        <%= button_to "Excluir", collection_path(@collection), method: :delete,
+              form: { class: "inline-block" },
+              data: { turbo_confirm: "Tem certeza?" },
+              class: "rounded-full border border-red-500/40 px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-red-300 hover:bg-red-500/10" %>
+      <% end %>
     </div>
-  <% end %>
+  </section>
 
-  <!-- Collection Player -->
-  <div class="mb-6">
-    <%= render "shared/collection_player", collection: @collection %>
-  </div>
+  <section class="mt-12">
+    <h2 class="text-2xl font-bold tracking-tight">Epics</h2>
 
-  <!-- Epics in Collection -->
-  <div class="mb-8">
-    <h2 class="text-xl font-bold mb-4">Epics (<%= @collection.epics.count %>)</h2>
+    <% if epics.any? %>
+      <div class="rail mt-5 pb-2">
+        <% epics.each do |ce| %>
+          <article class="card-dark w-56 rounded-2xl p-4">
+            <%= link_to epic_path(ce.epic), class: "block" do %>
+              <% cover = ce.epic.track.album_artwork_url %>
 
-    <% if @collection.collection_epics.any? %>
-      <div class="grid grid-cols-1 gap-4">
-        <% @collection.collection_epics.includes(epic: [:track, :user]).each do |ce| %>
-          <div class="p-4 border border-gray-300 rounded hover:shadow-md transition flex items-center justify-between">
-            <div>
-              <h3 class="font-semibold text-lg">
-                <%= link_to ce.epic.title, epic_path(ce.epic), class: "text-blue-600 hover:underline" %>
+              <% if cover.present? %>
+                <%= image_tag cover, alt: "", loading: "lazy",
+                      class: "mb-3 aspect-square w-full rounded-xl object-cover" %>
+              <% else %>
+                <div class="mb-3 flex aspect-square w-full items-center justify-center rounded-xl bg-white/5 text-2xl text-neutral-700">
+                  ♪
+                </div>
+              <% end %>
+
+              <h3 class="truncate text-sm font-semibold text-neutral-100 hover:text-lime-accent">
+                <%= ce.epic.title %>
               </h3>
-              <p class="text-sm text-gray-600 mt-1">
-                <strong><%= ce.epic.track.name %></strong> by <%= ce.epic.track.artist_name %>
-              </p>
-              <p class="text-sm text-gray-600">
-                Interval: <%= number_to_duration(ce.epic.start_time) %> - <%= number_to_duration(ce.epic.end_time) %>
-              </p>
-              <p class="text-xs text-gray-500 mt-1">
-                By <%= ce.epic.user.username %> · <%= pluralize(ce.epic.picks.count, "Pick") %>
-              </p>
-            </div>
-            <% if current_user == @collection.user %>
-              <%= button_to "Remove",
-                  collection_collection_epic_path(@collection, ce),
-                  method: :delete,
-                  class: "px-3 py-1 bg-red-100 text-red-800 rounded text-sm hover:bg-red-200" %>
             <% end %>
-          </div>
+
+            <p class="mt-0.5 truncate text-xs text-neutral-400">
+              <%= ce.epic.track.name %> · <%= ce.epic.track.artist_name %>
+            </p>
+
+            <p class="mt-1 truncate text-xs tabular-nums text-neutral-500">
+              <%= number_to_duration(ce.epic.start_time) %>–<%= number_to_duration(ce.epic.end_time) %>
+              · <%= pluralize(ce.epic.picks.size, "Pick") %>
+            </p>
+
+            <% if current_user == @collection.user %>
+              <%= button_to "Remover", collection_collection_epic_path(@collection, ce),
+                    method: :delete,
+                    class: "mt-3 w-full rounded-full border border-white/10 px-3 py-1.5 text-xs font-semibold text-neutral-400 hover:border-red-500/40 hover:text-red-300" %>
+            <% end %>
+          </article>
         <% end %>
       </div>
     <% else %>
-      <p class="text-gray-600">No Epics in this collection yet.</p>
+      <div class="mt-5 rounded-3xl border border-white/10 bg-ink-soft p-10 text-center">
+        <p class="text-sm text-neutral-400">Nenhum Epic nesta Collection ainda.</p>
+      </div>
     <% end %>
-  </div>
+  </section>
 
-  <!-- Add Epic (owner only) -->
   <% if current_user == @collection.user %>
-    <div class="mb-8 p-4 bg-blue-50 border border-blue-200 rounded">
-      <h3 class="font-bold mb-2">Add Epic</h3>
-      <%= form_with url: collection_collection_epics_path(@collection), method: :post, class: "flex gap-2" do |form| %>
-        <%= form.number_field :epic_id, placeholder: "Epic ID", class: "flex-1 rounded border-gray-300 shadow-sm", required: true %>
-        <%= form.submit "Add", class: "px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer" %>
+    <section class="mt-8 rounded-3xl border border-white/10 bg-ink-soft p-6 sm:p-8">
+      <h3 class="text-xs font-semibold uppercase tracking-wider text-neutral-400">Adicionar Epic</h3>
+
+      <%= form_with url: collection_collection_epics_path(@collection), method: :post,
+            class: "mt-3 flex flex-wrap gap-3" do |form| %>
+        <%= form.number_field :epic_id, placeholder: "Epic ID", required: true,
+              class: "w-40 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-neutral-100 placeholder:text-neutral-500 focus:border-lime-accent focus:outline-none" %>
+
+        <%= form.submit "Adicionar",
+              class: "cursor-pointer rounded-full bg-lime-accent px-8 py-2 text-sm font-semibold uppercase tracking-wide text-neutral-950 hover:bg-lime-bright" %>
       <% end %>
-    </div>
+    </section>
   <% end %>
 
-  <!-- Back Link -->
-  <div class="flex gap-2 mt-8">
-    <%= link_to "Back to Collections", collections_path, class: "px-4 py-2 border border-gray-300 rounded hover:bg-gray-100" %>
+  <div class="mt-8">
+    <%= link_to "Voltar", collections_path,
+          class: "rounded-full border border-lime-accent/60 px-8 py-2.5 text-sm font-semibold uppercase tracking-wide text-lime-accent hover:bg-lime-accent/10" %>
   </div>
 </div>

@@ -5,7 +5,11 @@ class CollectionsController < ApplicationController
 
   # GET /collections
   def index
-    @collections = current_user.collections.order(created_at: :desc)
+    # `epics: :track` porque o card mostra a capa do primeiro Epic; sem isso
+    # a rail dispara duas queries por Collection.
+    @collections = current_user.collections
+      .includes(epics: :track)
+      .order(created_at: :desc)
   end
 
   # GET /collections/new
