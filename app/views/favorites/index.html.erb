@@ -1,5 +1,5 @@
-<%# Favoritos: lista privada do proprio usuario. Reaproveita shared/_epic_row,
-    a mesma linha do perfil. %>
+<%# Favorites: the user's own private list. Reuses shared/_epic_row, the same
+    row as the profile. %>
 <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6">
 
   <section class="hero-glow overflow-hidden rounded-3xl border border-white/10 px-6 py-10 sm:px-10">
@@ -14,7 +14,7 @@
     <% if @epics.any? %>
       <ol class="space-y-0.5">
         <% @epics.each_with_index do |epic, index| %>
-          <%# byline porque a lista mistura Epics seus e de outras pessoas. %>
+          <%# byline because the list mixes your Epics with other people's. %>
           <%= render "shared/epic_row", epic: epic, index: index, byline: true %>
         <% end %>
       </ol>

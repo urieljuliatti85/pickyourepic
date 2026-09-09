@@ -1,29 +1,29 @@
 <nav class="sticky top-0 z-20 border-b border-white/5 bg-ink/85 backdrop-blur">
   <div class="mx-auto flex max-w-7xl items-center gap-6 px-4 py-3.5 sm:px-6">
 
-    <%# A marca some quando a sidebar aparece: la ela ja esta no topo da coluna. %>
+    <%# The mark disappears once the sidebar shows: there it already sits atop the column. %>
     <%= link_to root_path, class: "flex shrink-0 items-center gap-2 text-sm font-bold tracking-tight lg:hidden" do %>
       <span class="text-lime-accent"><%= render "shared/logo_mark" %></span>
       Pick Up Your Epic!
     <% end %>
 
-    <%# Abas, como DISCOVER / MY LIBRARY / RADIO da referencia. A aba ativa
-        ganha o sublinhado ciano. %>
+    <%# Tabs, like the reference's DISCOVER / MY LIBRARY / RADIO. The active tab
+        gets the cyan underline. %>
     <div class="flex items-center gap-5 text-sm font-semibold uppercase tracking-wide">
       <% tab = ->(active) { active ? "border-b-2 border-lime-accent pb-1 text-neutral-100" : "pb-1 text-neutral-500 hover:text-neutral-200" } %>
 
       <%= link_to "Discover", discover_path, class: tab.call(current_page?(discover_path)) %>
 
       <% if signed_in? %>
-        <%# O proprio perfil ja tem link no @handle a direita; duas entradas
-            para a mesma pagina so ocupariam espaco. %>
+        <%# Your own profile is already linked from the @handle on the right;
+            two entries to the same page would only take up space. %>
         <%= link_to "Collections", collections_path, class: tab.call(current_page?(collections_path)) %>
       <% end %>
     </div>
 
     <% if signed_in? %>
-      <%# Busca no topo, como na referencia. Continua sendo o form real de
-          /tracks: um GET simples, sem JS. %>
+      <%# Search at the top, as in the reference. It is still the real /tracks
+          form: a plain GET, no JS. %>
       <%= form_with url: tracks_path, method: :get, class: "ml-auto hidden max-w-xs flex-1 sm:block" do |form| %>
         <%= form.search_field :q, value: params[:q],
               placeholder: "Search for a song…", autocomplete: "off",
@@ -36,8 +36,8 @@
         <%= link_to "@#{current_user.username}", profile_path(current_user),
               class: "rounded-full bg-white/5 px-3 py-1.5 font-medium text-neutral-100 hover:bg-lime-accent hover:text-neutral-950" %>
 
-        <%# A rota de sign out existia desde o inicio, mas nenhuma tela linkava
-            para ela — quem entrava nao tinha como sair. %>
+        <%# The sign out route existed from the start, but no screen linked to
+            it — whoever signed in had no way out. %>
         <%= button_to "Sign out", sign_out_path, method: :delete,
               class: "text-neutral-500 underline underline-offset-4 hover:text-neutral-300" %>
       <% else %>

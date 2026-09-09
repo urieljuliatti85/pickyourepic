@@ -1,5 +1,5 @@
-<%# Busca de Epics para adicionar a uma Collection. Substitui o campo que
-    pedia o ID numerico do Epic — ninguem sabe o id de um Epic de cabeca. %>
+<%# Search for Epics to add to a Collection. Replaces the field that asked for
+    the Epic's numeric id — nobody knows an Epic's id by heart. %>
 <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6">
 
   <section class="hero-glow overflow-hidden rounded-3xl border border-white/10 px-6 py-10 sm:px-10">
@@ -13,8 +13,8 @@
   </section>
 
   <section class="mt-8">
-    <%# `new` responde em turbo_stream, entao digitar troca so a lista.
-        O debounce evita uma requisicao por tecla. %>
+    <%# `new` answers in turbo_stream, so typing swaps only the list.
+        The debounce avoids one request per keystroke. %>
     <%= form_with url: new_collection_collection_epic_path(@collection),
           method: :get,
           data: { controller: "search", turbo_frame: "epic_search_results" } do |form| %>
@@ -24,7 +24,7 @@
             data: { action: "input->search#submit" },
             class: "w-full rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-neutral-100 placeholder:text-neutral-500 focus:border-lime-accent focus:outline-none" %>
 
-      <%# Sem JS o botao continua submetendo a busca. %>
+      <%# Without JS the button still submits the search. %>
       <noscript>
         <%= form.submit "Search",
               class: "mt-3 cursor-pointer rounded-full bg-lime-accent px-8 py-2 text-sm font-semibold uppercase tracking-wide text-neutral-950" %>

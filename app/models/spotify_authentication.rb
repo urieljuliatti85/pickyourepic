@@ -1,6 +1,6 @@
-# Fronteira entre a integracao Spotify e o dominio
+# The seam between the Spotify integration and the domain
 # (CLAUDE.md § Architecture — The Spotify boundary).
-# Recebe dados ja normalizados do Spotify e devolve um User do dominio.
+# Takes already-normalized Spotify data and returns a domain User.
 class SpotifyAuthentication
   def self.call(profile:, tokens:)
     new(profile:, tokens:).call
@@ -11,8 +11,8 @@ class SpotifyAuthentication
     @tokens = tokens
   end
 
-  # Cria ou atualiza User + SpotifyAccount numa transacao: os dois registros
-  # sao uma coisa so do ponto de vista de identidade (CLAUDE.md § Conventions).
+  # Creates or updates User + SpotifyAccount in one transaction: as identity
+  # goes, the two records are a single thing (CLAUDE.md § Conventions).
   def call
     SpotifyAccount.transaction do
       account = SpotifyAccount.find_by(spotify_uid: uid)
@@ -24,7 +24,7 @@ class SpotifyAuthentication
         access_token: @tokens["access_token"],
         expires_at: expires_at
       )
-      # O refresh_token so vem na primeira autorizacao; nao sobrescrever com nil.
+      # The refresh_token only comes on the first authorization; never overwrite it with nil.
       account.refresh_token = @tokens["refresh_token"] if @tokens["refresh_token"].present?
 
       account.save!
@@ -49,8 +49,8 @@ class SpotifyAuthentication
     )
   end
 
-  # O display_name do Spotify nao e unico nem seguro como username, entao e
-  # apenas o ponto de partida para um handle unico no nosso dominio.
+  # Spotify's display_name is neither unique nor safe as a username, so it is
+  # only the starting point for a unique handle in our domain.
   def available_username
     base = @profile["display_name"].to_s.downcase.gsub(/[^a-z0-9_]/, "")
     base = "epic" if base.blank?

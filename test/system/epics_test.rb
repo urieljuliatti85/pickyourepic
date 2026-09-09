@@ -57,11 +57,11 @@ class EpicsTest < ApplicationSystemTestCase
 
     assert_text "Epic was successfully created"
 
-    # O dono e quem esta logado, nao quem criou a Track.
+    # The owner is whoever is signed in, not whoever created the Track.
     epic = Epic.last
     assert_equal @user.id, epic.user_id
   end
-  # O turbo_confirm e um dialog nativo: sem aceita-lo o DELETE nao sai.
+  # The turbo_confirm is a native dialog: without accepting it the DELETE never goes out.
   test "Owner deletes an Epic after confirming" do
     epic = Epic.create!(user: @user, track: @track, title: "Para apagar",
                         start_time: 0, end_time: 30_000, visibility: :public)

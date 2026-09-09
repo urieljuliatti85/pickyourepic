@@ -158,8 +158,8 @@ class PicksControllerTest < ActionDispatch::IntegrationTest
   test "Multiple users can pick same epic" do
     post epic_pick_path(@public_epic)
 
-    # post_as ignorava o user recebido, entao o segundo POST vinha do mesmo
-    # usuario e o teste passava afirmando 0 — o oposto do que o nome diz.
+    # post_as ignored the user it received, so the second POST came from the same
+    # user and the test passed asserting 0 — the opposite of what its name says.
     sign_in_as(create_signed_in_user(username: "bob"))
 
     assert_difference "Pick.count", 1 do
@@ -209,7 +209,7 @@ class PicksControllerTest < ActionDispatch::IntegrationTest
       delete epic_pick_path(@public_epic)
     end
 
-    # O Pick da outra pessoa continua de pe.
+    # The other person's Pick still stands.
     assert Pick.exists?(user: other, epic: @public_epic)
     assert_not Pick.exists?(user: @user, epic: @public_epic)
   end

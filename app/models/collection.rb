@@ -1,6 +1,6 @@
-# Collection organiza Epics em grupos curados (docs/product.md).
-# Uma Collection pode conter Epics próprios ou Epics que o user pickou.
-# Epics dentro de uma Collection podem ser ordenados via position.
+# Collection groups Epics into curated sets (docs/product.md).
+# A Collection can hold the user's own Epics or Epics they picked.
+# Epics inside a Collection are ordered by position.
 class Collection < ApplicationRecord
   belongs_to :user
   has_many :collection_epics, -> { order(:position) }, dependent: :destroy

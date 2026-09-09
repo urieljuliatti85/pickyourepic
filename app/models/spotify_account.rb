@@ -1,5 +1,5 @@
 class SpotifyAccount < ApplicationRecord
-  # Tokens nunca trafegam em texto claro no banco (CLAUDE.md § Spotify policy constraints).
+  # Tokens never sit in clear text in the database (CLAUDE.md § Spotify policy constraints).
   encrypts :access_token
   encrypts :refresh_token
 
@@ -7,8 +7,8 @@ class SpotifyAccount < ApplicationRecord
 
   validates :spotify_uid, presence: true, uniqueness: true
 
-  # Considera expirado um pouco antes do prazo real, para não emitir uma
-  # requisicao com token que expira em transito.
+  # Treats the token as expired slightly early, so a request is never sent with
+  # one that expires in transit.
   EXPIRY_LEEWAY = 60.seconds
 
   def token_expired?
@@ -17,12 +17,12 @@ class SpotifyAccount < ApplicationRecord
     expires_at <= Time.current + EXPIRY_LEEWAY
   end
 
-  # Premium e requisito do Web Playback SDK; sem ele o usuario cria e descobre
-  # Epics, mas nao consegue reproduzi-los (CLAUDE.md § Architecture — Playback).
+  # Premium is a Web Playback SDK requirement; without it a user creates and
+  # discovers Epics but cannot play them (CLAUDE.md § Architecture — Playback).
   def premium? = product == "premium"
 
-  # Devolve um access_token utilizavel, renovando quando necessario.
-  # Toda chamada a API passa por aqui em vez de ler access_token direto.
+  # Returns a usable access_token, refreshing when needed.
+  # Every API call goes through here instead of reading access_token directly.
   def fresh_access_token!
     return access_token unless token_expired?
     raise Spotify::AuthError, "missing refresh token" if refresh_token.blank?
@@ -30,7 +30,7 @@ class SpotifyAccount < ApplicationRecord
     tokens = Spotify::Client.refresh_token(refresh_token: refresh_token)
 
     self.access_token = tokens.fetch("access_token")
-    # O Spotify so reenvia o refresh_token as vezes; manter o atual quando nao vem.
+    # Spotify only sometimes returns the refresh_token; keep the current one when it does not.
     self.refresh_token = tokens["refresh_token"] if tokens["refresh_token"].present?
     self.expires_at = tokens["expires_in"].present? ? Time.current + tokens["expires_in"].to_i.seconds : nil
     save!

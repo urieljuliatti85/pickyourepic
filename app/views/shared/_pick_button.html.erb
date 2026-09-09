@@ -1,22 +1,22 @@
-<%# Botao de Pick/Unpick. Estava inline no Discover; virou partial porque o
-    hero e os cards da linha precisam do mesmo comportamento.
+<%# Pick/Unpick button. It was inline on Discover; it became a partial because
+    the hero and the row's cards need the same behavior.
 
-    As tres condicoes espelham as regras do model (CLAUDE.md § Authorization):
-    nao se pica o proprio Epic, e um Pick por user por Epic.
+    The three conditions mirror the model's rules (CLAUDE.md § Authorization):
+    you do not pick your own Epic, and there is one Pick per user per Epic.
 
-    O turbo_frame_tag e o alvo do turbo_stream no PicksController: sem ele o
-    clique recarregaria a pagina inteira e o usuario perderia a posicao na
-    lista. O id inclui o epic porque o mesmo Epic pode aparecer mais de uma
-    vez na pagina (hero + rail do Discover).
+    The turbo_frame_tag is the target of PicksController's turbo_stream: without
+    it a click would reload the whole page and the user would lose their place in
+    the list. The id includes the epic because the same Epic can appear more than
+    once on a page (Discover's hero + rail).
 
-    Quando nao ha botao a mostrar, a pagina do Epic explica o porque: sem
-    isso o lugar fica vazio e "nao da para pickar" e indistinguivel de
-    "quebrou" — foi o que aconteceu com um Epic proprio. Nas listas a nota
-    nao aparece: repetida por linha viraria ruido, e ali o vazio se le no
-    contraste com as outras linhas.
+    When there is no button to show, the Epic page explains why: without that the
+    slot sits empty and "you cannot pick this" is indistinguishable from "it
+    broke" — which is exactly what happened with someone's own Epic. Lists say
+    nothing: repeated per row it would be noise, and there the empty slot reads
+    against the rows that do have one.
 
-    Locais: epic. Opcional: compact (true nas listas e cards, onde a pilula
-    cheia do hero nao cabe, e onde a nota fica de fora). %>
+    Locals: epic. Optional: compact (true in lists and cards, where the hero's
+    full pill does not fit, and where the note is left out). %>
 <% compact = local_assigns[:compact] %>
 <% size = compact ? "px-3 py-1 text-xs" : "px-4 py-2 text-sm" %>
 

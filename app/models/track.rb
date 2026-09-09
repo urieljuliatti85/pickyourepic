@@ -1,4 +1,4 @@
-# Metadados e referencia a uma musica do Spotify. Nunca audio
+# Metadata and a reference to a Spotify song. Never audio
 # (CLAUDE.md § Spotify policy constraints).
 class Track < ApplicationRecord
   has_many :epics, dependent: :destroy
@@ -7,8 +7,8 @@ class Track < ApplicationRecord
   validates :name, :artist_name, presence: true
   validates :duration_ms, numericality: { only_integer: true, greater_than: 0 }
 
-  # Uma musica existe uma unica vez no banco. A corrida entre duas buscas
-  # simultaneas pela mesma faixa e resolvida pelo indice unico, nao pelo find.
+  # A song exists once in the database. The race between two concurrent searches
+  # for the same track is settled by the unique index, not by the find.
   def self.upsert_from_spotify!(attributes)
     spotify_id = attributes.fetch(:spotify_id)
 

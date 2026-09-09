@@ -1,10 +1,10 @@
-# Favorite representa um user salvando um Epic para si.
+# Favorite is a user saving an Epic for themselves.
 #
-# Diferente de Pick, que e um ato publico e so vale para Epic publico de outra
-# pessoa (docs/product.md § Who Picked an Epic): favoritar e privado, aparece
-# so para quem favoritou, e vale tambem para o proprio Epic. A unica coisa que
-# nao da para favoritar e Epic privado de outro user — o mesmo limite que rege
-# Pick e CollectionEpic (CLAUDE.md § Authorization).
+# Unlike Pick, which is a public act and only applies to someone else's public
+# Epic (docs/product.md § Who Picked an Epic): favoriting is private, shows only
+# to whoever favorited, and applies to your own Epic too. The one thing you
+# cannot favorite is another user's private Epic — the same limit that governs
+# Pick and CollectionEpic (CLAUDE.md § Authorization).
 class Favorite < ApplicationRecord
   belongs_to :user
   belongs_to :epic

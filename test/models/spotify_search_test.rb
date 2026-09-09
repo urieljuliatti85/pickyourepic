@@ -72,10 +72,10 @@ class SpotifySearchTest < ActiveSupport::TestCase
     assert_equal "track_abc", results.first[:spotify_id]
   end
 
-  # O /search recusa limit > 10 com 400 "Invalid limit", e a busca inteira caia
-  # em "Nenhuma música encontrada" porque o controller trata Spotify::Error como
-  # lista vazia. Os outros testes stubam Client.get ignorando os argumentos,
-  # entao nenhum via o limit que de fato ia para o Spotify.
+  # /search refuses limit > 10 with a 400 "Invalid limit", and the whole search
+  # fell through to "No songs found" because the controller treats Spotify::Error
+  # as an empty list. The other tests stub Client.get ignoring the arguments, so
+  # none of them saw the limit that actually went to Spotify.
   test "never asks spotify for more than it accepts" do
     sent = nil
     singleton = Spotify::Client.singleton_class
@@ -89,7 +89,7 @@ class SpotifySearchTest < ActiveSupport::TestCase
       Spotify::Search.tracks(query: "amenra", access_token: "token")
       assert_operator sent[:limit], :<=, 10, "limit acima de 10 faz o Spotify devolver 400"
 
-      # Um pedido explicitamente maior tambem tem que ser reduzido.
+      # An explicitly larger request has to be clamped too.
       Spotify::Search.tracks(query: "amenra", access_token: "token", limit: 50)
       assert_operator sent[:limit], :<=, 10
     ensure

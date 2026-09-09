@@ -3,9 +3,9 @@ require "test_helper"
 class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   driven_by :selenium, using: :headless_chrome, screen_size: [ 390, 844 ]
 
-  # O OAuth do Spotify nao e percorrivel pelo browser em teste, entao a sessao
-  # e estabelecida pela rota que so existe em Rails.env.test?. O POST e feito
-  # por um form real para que o cookie ja esteja gravado quando o metodo volta.
+  # Spotify's OAuth cannot be walked by the browser under test, so the session is
+  # established through the route that only exists in Rails.env.test?. The POST
+  # goes through a real form so the cookie is already written when this returns.
   def sign_in_as(user)
     visit root_path
     page.execute_script(<<~JS)
@@ -15,7 +15,7 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
       document.body.appendChild(f);
       f.submit();
     JS
-    # A navegacao do submit termina antes desta assercao passar.
+    # The submit's navigation finishes before this assertion passes.
     assert_current_path(/./, wait: 5)
     user
   end

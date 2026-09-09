@@ -9,8 +9,8 @@ class PlayerBarMarkupTest < ActionDispatch::IntegrationTest
     get epic_path(epic)
     assert_response :success
 
-    # O no preservado pelo Turbo tem que ser o mesmo que hospeda o Stimulus,
-    # senao a navegacao recria o controller e derruba o device do SDK.
+    # The node Turbo preserves has to be the one hosting the Stimulus controller,
+    # or navigation recreates it and tears down the SDK device.
     assert_select "#player_bar_shell[data-turbo-permanent][data-controller='player-bar']"
   end
 end

@@ -1,6 +1,6 @@
 module Spotify
-  # Zeitwerk resolve Spotify::Error por este arquivo. Definir a constante
-  # dentro de client.rb a deixava invisivel para quem nao tivesse carregado
-  # Spotify::Client antes — o caso de SpotifyAccount#fresh_access_token!.
+  # Zeitwerk resolves Spotify::Error through this file. Defining the constant
+  # inside client.rb left it invisible to anyone who had not loaded
+  # Spotify::Client first — the case of SpotifyAccount#fresh_access_token!.
   Error = Class.new(StandardError)
 end

@@ -24,15 +24,15 @@ class EpicsController < ApplicationController
 
   # GET /epics/:id
   def show
-    # Quem pickou, do mais recente para o mais antigo. `includes(:user)` evita
-    # um SELECT por Pick ao renderizar a lista.
+    # Who picked, newest first. `includes(:user)` avoids one SELECT per Pick
+    # when rendering the list.
     @picks = @epic.picks.includes(:user).order(created_at: :desc)
   end
 
   # DELETE /epics/:id
   def destroy
-    # Picks, Favorites e CollectionEpics saem junto (dependent: :destroy no
-    # model), entao o Epic de outra pessoa some das Collections que o continham.
+    # Picks, Favorites and CollectionEpics go with it (dependent: :destroy on the
+    # model), so the Epic also leaves the Collections that held it.
     @epic.destroy
     redirect_to profile_path(current_user), notice: "Epic deleted."
   end
@@ -47,16 +47,16 @@ class EpicsController < ApplicationController
     @epic = Epic.find(params[:id])
   end
 
-  # Public epics: visíveis para todos
-  # Private epics: visíveis apenas para o owner
+  # Public epics: visible to everyone
+  # Private epics: visible only to the owner
   def authorize_epic_visibility
     if @epic.visibility_private? && current_user != @epic.user
       redirect_to root_path, alert: "Epic not found."
     end
   end
 
-  # Só o dono apaga. Redireciona em vez de levantar, como o resto do app
-  # (CLAUDE.md § Authorization).
+  # Only the owner deletes. Redirects rather than raises, like the rest of the
+  # app (CLAUDE.md § Authorization).
   def authorize_epic_owner
     unless @epic.user == current_user
       redirect_to epic_path(@epic), alert: "Not authorized."
@@ -64,7 +64,7 @@ class EpicsController < ApplicationController
   end
 
   def epic_params
-    # O form envia MM:SS; Epic converte para os milissegundos das colunas.
+    # The form sends MM:SS; Epic converts to the columns' milliseconds.
     params.require(:epic).permit(:title, :description, :start_time_mmss, :end_time_mmss, :visibility)
   end
 end

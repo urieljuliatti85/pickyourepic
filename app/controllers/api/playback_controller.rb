@@ -3,8 +3,8 @@ module Api
     before_action :require_authentication
 
     # GET /api/playback_token
-    # Retorna um fresh access_token para o Web Playback SDK.
-    # Requer Premium (CLAUDE.md § Architecture — Playback).
+    # Returns a fresh access_token for the Web Playback SDK.
+    # Requires Premium (CLAUDE.md § Architecture — Playback).
     def token
       spotify_account = current_user.spotify_account
 

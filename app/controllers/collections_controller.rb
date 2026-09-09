@@ -5,8 +5,8 @@ class CollectionsController < ApplicationController
 
   # GET /collections
   def index
-    # `epics: :track` porque o card mostra a capa do primeiro Epic; sem isso
-    # a rail dispara duas queries por Collection.
+    # `epics: :track` because the card shows the first Epic's artwork; without it
+    # the rail fires two queries per Collection.
     @collections = current_user.collections
       .includes(epics: :track)
       .order(created_at: :desc)

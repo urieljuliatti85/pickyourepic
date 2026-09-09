@@ -13,9 +13,9 @@ class TracksController < ApplicationController
 
   private
 
-  # Persiste cada resultado: a tela seguinte (EpicsController#new) resolve o
-  # track por `spotify_id` no banco, entao um resultado so e clicavel se o
-  # Track ja existir localmente.
+  # Persists every result: the next screen (EpicsController#new) resolves the
+  # track by `spotify_id` in the database, so a result is only clickable once the
+  # Track exists locally.
   def search_tracks
     Spotify::Search.tracks(
       query: @query,

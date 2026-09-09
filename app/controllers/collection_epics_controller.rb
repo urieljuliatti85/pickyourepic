@@ -4,8 +4,8 @@ class CollectionEpicsController < ApplicationController
   before_action :authorize_collection_owner
 
   # GET /collections/:collection_id/collection_epics/new
-  # Busca de Epics para adicionar. Responde tambem em turbo_stream: digitar no
-  # campo troca so a lista de resultados, sem recarregar a pagina.
+  # Search for Epics to add. Also answers in turbo_stream: typing in the field
+  # swaps only the result list, without reloading the page.
   def new
     @term = params[:q].to_s
 
@@ -34,8 +34,8 @@ class CollectionEpicsController < ApplicationController
     else
       redirect_to @collection, alert: @collection_epic.errors.full_messages.first
     end
-    # A validacao de CollectionEpic e a ultima palavra: mesmo que a busca
-    # ofereça algo indevido, o save recusa (CLAUDE.md § Authorization).
+    # The CollectionEpic validation has the last word: even if the search
+    # offered something it should not, the save refuses (CLAUDE.md § Authorization).
   end
 
   # DELETE /collections/:collection_id/collection_epics/:id

@@ -1,11 +1,11 @@
-<%# Sidebar fixa a esquerda, como a coluna "Playlist" da referencia.
+<%# Sidebar fixed to the left, like the reference's "Playlist" column.
 
-    Escondida no mobile (a app e mobile-first: la a navegacao continua sendo a
-    nav do topo) e fixa a partir de lg. %>
+    Hidden on mobile (the app is mobile-first: there the top nav remains the
+    navigation) and fixed from lg up. %>
 <aside class="hidden lg:flex lg:fixed lg:inset-y-0 lg:left-0 lg:w-64 lg:flex-col
               border-r border-white/5 bg-ink-rail">
 
-  <%# A marca leva para a home, como a do topo no mobile. %>
+  <%# The mark leads home, like the one at the top on mobile. %>
   <%= link_to root_path, class: "flex items-center gap-2 px-6 py-5 hover:opacity-80" do %>
     <span class="text-lime-accent"><%= render "shared/logo_mark" %></span>
     <span class="text-sm font-bold tracking-tight">Pick Up Your Epic!</span>

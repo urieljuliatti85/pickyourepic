@@ -1,21 +1,21 @@
-<%# Barra de player fixa no rodape.
+<%# Player bar pinned to the bottom.
 
-    Layout da referencia: capa + titulo/artista a esquerda, transporte
-    (anterior / play / proximo) ao centro, tempo decorrido, barra de progresso
-    arrastavel e tempo total, e o volume a direita.
+    The reference's layout: artwork + title/artist on the left, transport
+    (previous / play / next) in the middle, elapsed time, a draggable progress bar
+    and total time, and volume on the right.
 
-    Vive dentro de um turbo-frame `permanent`: o Turbo reaproveita este mesmo
-    elemento entre navegacoes em vez de recria-lo, entao o device do SDK
-    sobrevive e a musica nao para ao trocar de pagina.
+    It lives inside a `permanent` turbo-frame: Turbo reuses this same element
+    across navigations instead of recreating it, so the SDK device survives and
+    the music does not stop when the page changes.
 
-    So aparece para quem pode tocar (Premium); comeca escondida e a propria
-    barra se revela no primeiro play. %>
+    It only appears for someone who can play (Premium); it starts hidden and
+    reveals itself on the first play. %>
 <% if current_user&.spotify_account&.premium? %>
-  <%# O `turbo-permanent` e o `data-controller` precisam estar NO MESMO
-      elemento (e ele precisa de id): o Turbo so preserva o no marcado. Com o
-      controller num filho, cada navegacao — o redirect apos criar um Epic,
-      por exemplo — recriava o elemento, o disconnect() derrubava o device do
-      SDK e o play seguinte ficava carregando sem nunca tocar. %>
+  <%# `turbo-permanent` and `data-controller` must sit on THE SAME element
+      (and it needs an id): Turbo only preserves the marked node. With the
+      controller on a child, every navigation — the redirect after creating an
+      Epic, for instance — recreated the element, disconnect() tore down the SDK
+      device and the next play spun forever without sound. %>
   <%= turbo_frame_tag "player_bar" do %>
     <div id="player_bar_shell" data-turbo-permanent
          class="hidden fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-ink-rail/95 backdrop-blur"
@@ -23,7 +23,7 @@
          data-player-bar-token-url-value="<%= api_playback_token_path %>">
       <div class="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:px-6">
 
-        <%# Faixa atual: capa, titulo, artista. %>
+        <%# Current track: artwork, title, artist. %>
         <div class="flex min-w-0 flex-1 items-center gap-3 sm:w-64 sm:flex-none">
           <img data-player-bar-target="artwork" hidden alt=""
                class="h-11 w-11 flex-none rounded object-cover">
@@ -34,8 +34,8 @@
           </div>
         </div>
 
-        <%# Transporte. `disabled:opacity-30` porque com um Epic avulso nao ha
-            para onde pular. %>
+        <%# Transport. `disabled:opacity-30` because with a lone Epic there is
+            nowhere to skip to. %>
         <div class="flex flex-none items-center gap-2 sm:gap-3">
           <button type="button" aria-label="Previous"
                   data-player-bar-target="prev"
@@ -62,8 +62,8 @@
                 data-player-bar-target="queuePosition"></span>
         </div>
 
-        <%# Progresso: um range real por cima da trilha pintada, para o trecho
-            ser arrastavel com teclado e leitor de tela, nao so com o mouse. %>
+        <%# Progress: a real range on top of the painted track, so the excerpt
+            is draggable with a keyboard and a screen reader, not just a mouse. %>
         <div class="hidden flex-1 items-center gap-3 sm:flex">
           <span class="w-10 text-right text-xs tabular-nums text-neutral-400"
                 data-player-bar-target="elapsed">0:00</span>

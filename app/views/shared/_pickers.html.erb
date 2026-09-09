@@ -1,13 +1,13 @@
-<%# Contagem e lista de quem pickou um Epic. Num frame proprio porque um Pick
-    muda os dois de uma vez (shared/_pick_count cobre os lugares onde so a
-    contagem aparece).
+<%# The count and the list of who picked an Epic. In a frame of its own because
+    one Pick changes both at once (shared/_pick_count covers the places where only
+    the count appears).
 
-    Perfis privados entram na lista: visibilidade rege conteudo, nao se o
-    username pode ser listado (docs/product.md § Who Picked an Epic).
+    Private profiles are listed: visibility governs content, not whether a
+    username may be listed (docs/product.md § Who Picked an Epic).
 
-    target: "_top" porque o frame existe so para ser alvo de turbo_stream —
-    sem isso, clicar no nome de um picker carregaria o perfil DENTRO do frame
-    em vez de navegar. %>
+    target: "_top" because the frame exists only to be a turbo_stream target —
+    without it, clicking a picker's name would load the profile INSIDE the frame
+    instead of navigating. %>
 <%= turbo_frame_tag dom_id(epic, :pickers), target: "_top" do %>
   <p class="text-xs font-semibold uppercase tracking-wider text-neutral-400">
     <%= pluralize(picks.size, "Pick") %>

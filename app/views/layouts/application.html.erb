@@ -20,19 +20,20 @@
   </head>
 
   <body class="h-full bg-ink text-neutral-100 antialiased">
-    <%# Shell do web player: sidebar fixa a esquerda (a partir de lg), conteudo
-        deslocado por lg:pl-64, e a barra de player colada no rodape. %>
+    <%# The web player shell: a sidebar fixed to the left (from lg up), content
+        offset by lg:pl-64, and the player bar pinned to the bottom. %>
     <%= render "shared/sidebar" %>
 
     <div class="lg:pl-64">
-      <%# Nav e flash no layout: cada um era renderizado por uma pagina isolada,
-          entao o resto da app ficava sem navegacao e sem mensagens. %>
+      <%# Nav and flash in the layout: each was rendered by one isolated page, so
+          the rest of the app had no navigation and no messages. %>
       <%= render "shared/nav" %>
 
-      <%# pb-24 reserva o espaco da barra fixa, senao ela cobre o fim da pagina. %>
+      <%# pb-24 reserves room for the fixed bar, which would otherwise cover the end
+          of the page. %>
       <main class="min-h-full pb-24">
-        <%# id="flash" e o alvo do turbo_stream: uma acao via Turbo troca so
-            este bloco, sem recarregar a pagina. %>
+        <%# id="flash" is the turbo_stream's target: an action over Turbo swaps
+            only this block, without reloading the page. %>
         <div id="flash" class="max-w-4xl mx-auto px-4 pt-4">
           <%= render "shared/flash" %>
         </div>

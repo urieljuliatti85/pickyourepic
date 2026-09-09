@@ -10,12 +10,12 @@ module ActiveSupport
   end
 end
 
-# Minitest 6 removeu minitest/mock, entao Object#stub nao existe mais.
-# Em vez de adicionar uma gem de mocking (CLAUDE.md § Conventions), um helper minimo:
-# troca um metodo por outro e restaura no ensure.
+# Minitest 6 dropped minitest/mock, so Object#stub no longer exists.
+# Rather than add a mocking gem (CLAUDE.md § Conventions), a minimal helper:
+# it swaps one method for another and restores it in the ensure.
 module MethodStubbing
-  # `raising:` cobre o caso de simular falha da integracao, ja que o bloco
-  # do metodo e usado pelo corpo do teste.
+  # `raising:` covers simulating an integration failure, since the method's block
+  # is used by the test body.
   def stub_method(object, name, value = nil, raising: nil)
     implementation = raising ? ->(*, **) { raise raising } : ->(*, **) { value }
     singleton = object.singleton_class
@@ -34,9 +34,9 @@ module MethodStubbing
   end
 end
 
-# Stubs da integracao Spotify. Testes nunca tocam a rede
-# (CLAUDE.md § Architecture — The Spotify boundary: a integracao e isolada,
-# entao e substituivel nos testes).
+# Spotify integration stubs. Tests never touch the network
+# (CLAUDE.md § Architecture — The Spotify boundary: the integration is isolated,
+# so it is replaceable in tests).
 module SpotifyStubs
   SPOTIFY_CREDENTIALS = {
     "SPOTIFY_CLIENT_ID" => "test_client_id",
@@ -69,8 +69,8 @@ module SpotifyStubs
     }.merge(overrides)
   end
 
-  # Substitui as chamadas HTTP do cliente por valores fixos, preservando o
-  # resto do fluxo (state, sessao, persistencia) sob teste.
+  # Replaces the client's HTTP calls with fixed values, keeping the rest of the
+  # flow (state, session, persistence) under test.
   def stub_spotify_oauth(profile: spotify_profile, tokens: spotify_tokens, &block)
     stub_method(Spotify::Client, :exchange_code, tokens) do
       stub_method(Spotify::Client, :me, profile, &block)
@@ -78,10 +78,10 @@ module SpotifyStubs
   end
 end
 
-# Fabricas minimas de dominio. Um user so pode ter um Epic por track
-# (docs/product.md), entao cada Epic de um mesmo user precisa da sua propria
-# Track: o contador garante spotify_id/username unicos sem que cada teste
-# tenha que inventar nomes.
+# Minimal domain factories. A user can only have one Epic per track
+# (docs/product.md), so each Epic of the same user needs its own Track: the
+# counter keeps spotify_id/username unique without every test having to invent
+# names.
 module DomainFactories
   def next_sequence
     @sequence = (@sequence || 0) + 1
@@ -102,8 +102,8 @@ module DomainFactories
     User.create!({ username: "user#{next_sequence}" }.merge(overrides))
   end
 
-  # `track:` fica opcional de proposito: quando omitido cada Epic ganha uma
-  # Track propria, que e o que respeita a regra de um Epic por user/track.
+  # `track:` is optional on purpose: when omitted each Epic gets a Track of its
+  # own, which is what honors the one-Epic-per-user/track rule.
   def create_epic(user:, track: nil, **overrides)
     Epic.create!({
       user: user,
@@ -116,11 +116,11 @@ module DomainFactories
   end
 end
 
-# Cria os registros de um usuario com conta Spotify ligada. So toca models,
-# entao serve tanto a testes de integracao quanto a system tests.
+# Creates the records for a user with a linked Spotify account. It only touches
+# models, so it serves integration tests and system tests alike.
 module UserFactory
-  # uid default unico: dois users no mesmo teste colidiriam no indice unico de
-  # spotify_uid se compartilhassem o valor fixo.
+  # A unique default uid: two users in the same test would collide on the
+  # spotify_uid unique index if they shared a fixed value.
   def create_signed_in_user(username: "uriel", uid: nil, product: "premium")
     uid ||= "spotify_uid_#{SecureRandom.hex(6)}"
     user = User.create!(username: username)
@@ -139,12 +139,12 @@ class ActiveSupport::TestCase
   include UserFactory
 end
 
-# sign_in_as percorre o fluxo OAuth com os helpers HTTP de integracao, que o
-# Capybara nao tem: por isso fica separado do UserFactory.
+# sign_in_as walks the OAuth flow with the integration HTTP helpers, which
+# Capybara does not have: hence it lives apart from UserFactory.
 module AuthenticationHelpers
   def sign_in_as(user = create_signed_in_user)
-    # O login e sempre via Spotify, entao um user criado direto (sem conta
-    # ligada) ganha uma aqui em vez de quebrar o helper.
+    # Sign-in always goes through Spotify, so a user created directly (with no
+    # linked account) gets one here instead of breaking the helper.
     account = user.spotify_account || SpotifyAccount.create!(
       user: user, spotify_uid: "spotify_uid_#{SecureRandom.hex(6)}",
       product: "premium", access_token: "access", refresh_token: "refresh",

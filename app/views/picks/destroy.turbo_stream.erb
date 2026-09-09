@@ -1,10 +1,10 @@
-<%# Troca botao, contagem e lista de quem pickou — todas as aparicoes deste
-    Epic na pagina. O mesmo conteudo serve create e destroy: os dois so
-    alternam o estado.
+<%# Swaps button, count and the list of who picked — every appearance of this
+    Epic on the page. The same content serves create and destroy: the two only
+    toggle the state.
 
-    `replace` em frame que nao existe na pagina atual e no-op, entao um mesmo
-    template serve o Discover (so botao + contagem) e a pagina do Epic (que
-    tem tambem a lista). %>
+    A `replace` on a frame absent from the current page is a no-op, so one
+    template serves Discover (button + count only) and the Epic page (which also
+    has the list). %>
 <%= turbo_stream.replace dom_id(@epic, :pick_button) do %>
   <%= render "shared/pick_button", epic: @epic %>
 <% end %>

@@ -287,8 +287,8 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_path
   end
 
-  # O que o Epic recebeu sai junto (dependent: :destroy), senao sobrariam
-  # Picks e linhas de Collection apontando para um Epic que nao existe mais.
+  # What the Epic received goes with it (dependent: :destroy), or Picks and
+  # Collection rows would be left pointing at an Epic that no longer exists.
   test "DELETE /epics/:id takes its picks, favorites and collection rows with it" do
     epic = own_epic
     picker = User.create!(username: "picker")
@@ -305,7 +305,7 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     assert Collection.exists?(collection.id), "a Collection em si nao deve sumir"
   end
 
-  # Sem botao, a pagina diz por que — um espaco vazio se confunde com bug.
+  # With no button, the page says why — an empty slot reads as a bug.
   test "GET /epics/:id explains why your own Epic has no Pick button" do
     epic = own_epic
 
@@ -336,7 +336,7 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
     assert_no_match "This Epic is yours", response.body
   end
 
-  # O botao so aparece para o dono: quem visita nao deve nem ver a opcao.
+  # The button only shows to the owner: a visitor should not even see the option.
   test "GET /epics/:id shows the delete button only to the owner" do
     epic = own_epic
 

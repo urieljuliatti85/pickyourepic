@@ -8,9 +8,9 @@ class LoggedOutPlaybackTest < ActionDispatch::IntegrationTest
                          start_time: 0, end_time: 5_000, visibility: :public)
   end
 
-  # A reproducao usa a conta Spotify do proprio ouvinte (Web Playback SDK),
-  # entao deslogado nao ha o que tocar. O que da para consertar e o beco sem
-  # saida: antes a pagina culpava o Premium de quem nem tinha entrado.
+  # Playback uses the listener's own Spotify account (Web Playback SDK), so signed
+  # out there is nothing to play. What can be fixed is the dead end: the page used
+  # to blame the Premium of someone who had not even signed in.
   test "a signed out visitor is offered sign in, not a premium warning" do
     get epic_path(@epic)
 
@@ -21,8 +21,8 @@ class LoggedOutPlaybackTest < ActionDispatch::IntegrationTest
   end
 
   test "a signed in non-premium user still sees the premium explanation" do
-    # sign_in_as percorre o OAuth real e o profile stubado regrava `product`,
-    # entao a conta vira free so depois do login.
+    # sign_in_as walks the real OAuth and the stubbed profile rewrites `product`,
+    # so the account only turns free after signing in.
     user = sign_in_as(User.create!(username: "free"))
     user.spotify_account.update!(product: "free")
 

@@ -1,5 +1,5 @@
 module Spotify
-  # Falha de autenticacao/autorizacao no Spotify: token expirado sem refresh,
-  # credenciais invalidas, code de OAuth recusado.
+  # Authentication/authorization failure at Spotify: an expired token with no
+  # refresh, invalid credentials, a refused OAuth code.
   AuthError = Class.new(Error)
 end

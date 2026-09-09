@@ -1,9 +1,9 @@
-<%# Botao de favoritar/desfavoritar um Epic.
+<%# Favorite/unfavorite button for an Epic.
 
-    Diferente do Pick (shared/_pick_button), que so aparece para Epic publico
-    de outra pessoa: favoritar e privado, entao vale para o proprio Epic
-    tambem. O unico caso sem botao e Epic privado de outro user, que nem
-    chega a ser visivel. %>
+    Unlike Pick (shared/_pick_button), which only appears for someone else's
+    public Epic: favoriting is private, so it applies to your own Epic too. The
+    one case with no button is another user's private Epic, which is never
+    visible in the first place. %>
 
 <% if current_user %>
   <% favorited = current_user.favorites.exists?(epic_id: epic.id) %>

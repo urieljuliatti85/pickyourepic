@@ -1,13 +1,13 @@
 module Spotify
-  # Traduz a resposta de busca do Spotify para hashes que o dominio entende.
-  # Nenhum model conhece este formato (CLAUDE.md § Architecture — The Spotify boundary).
+  # Translates Spotify's search response into hashes the domain understands.
+  # No model knows this format (CLAUDE.md § Architecture — The Spotify boundary).
   module Search
     extend self
 
-    # O /search recusa qualquer limit acima de 10 com 400 "Invalid limit" —
-    # a mensagem fala do parametro, mas o teto e da conta: 11 ja falha, 10
-    # devolve 200 com resultados reais. A doc ainda diz 50; nao siga a doc
-    # (CLAUDE.md § Spotify policy constraints: verificar a API antes).
+    # /search refuses any limit above 10 with a 400 "Invalid limit" — the message
+    # blames the parameter, but the ceiling belongs to the account: 11 already
+    # fails, 10 returns 200 with real results. The docs still say 50; do not
+    # follow the docs (CLAUDE.md § Spotify policy constraints: verify the API first).
     MAX_LIMIT = 10
 
     def tracks(query:, access_token:, limit: MAX_LIMIT)
@@ -22,8 +22,8 @@ module Spotify
       Array(payload.dig("tracks", "items")).filter_map { |item| normalize(item) }
     end
 
-    # Guarda apenas os metadados que o produto usa (CLAUDE.md § Spotify policy constraints).
-    # `preview_url` nao e lido: apps novos nao tem acesso a ele desde 27/11/2024.
+    # Keeps only the metadata the product uses (CLAUDE.md § Spotify policy constraints).
+    # `preview_url` is not read: new apps have had no access to it since 2024-11-27.
     def normalize(item)
       spotify_id = item["id"]
       duration = item["duration_ms"].to_i

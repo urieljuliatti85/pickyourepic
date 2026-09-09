@@ -1,10 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Submete o form de busca enquanto a pessoa digita.
+// Submits the search form as the person types.
 //
-// O debounce existe porque sem ele cada tecla dispara uma requisicao: numa
-// busca de 12 letras seriam 12 idas ao servidor, e as respostas podem chegar
-// fora de ordem — a lista acabaria mostrando o resultado de um termo antigo.
+// The debounce exists because without it every keystroke fires a request: a
+// twelve-letter search would be twelve round trips, and the answers can arrive
+// out of order — the list would end up showing the result of an older term.
 export default class extends Controller {
   static values = { delay: { type: Number, default: 300 } }
 

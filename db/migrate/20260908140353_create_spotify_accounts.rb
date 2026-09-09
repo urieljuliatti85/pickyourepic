@@ -6,8 +6,8 @@ class CreateSpotifyAccounts < ActiveRecord::Migration[8.1]
       t.string :email
       t.string :product
 
-      # Criptografados em repouso via Active Record Encryption (CLAUDE.md §11).
-      # text porque o ciphertext é bem maior que o token original.
+      # Encrypted at rest through Active Record Encryption (CLAUDE.md §11).
+      # text because the ciphertext is far larger than the original token.
       t.text :access_token
       t.text :refresh_token
 

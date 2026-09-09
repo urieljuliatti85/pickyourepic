@@ -12,11 +12,11 @@ class CreateEpics < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    # Constraints conforme CLAUDE.md § 6
+    # Constraints per CLAUDE.md § 6
     add_check_constraint :epics, "start_time >= 0", name: "epics_start_time_non_negative"
     add_check_constraint :epics, "end_time > start_time", name: "epics_end_time_greater_than_start"
 
-    # Um user cria apenas 1 Epic por Track
+    # A user creates only 1 Epic per Track
     add_index :epics, [ :user_id, :track_id ], unique: true
   end
 end

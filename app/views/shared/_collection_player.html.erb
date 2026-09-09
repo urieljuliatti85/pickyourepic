@@ -1,9 +1,9 @@
-<%# Botao de play de uma Collection. Como o de um Epic, nao instancia o SDK:
-    despacha a fila para a barra global (shared/_player_bar), que e quem detem
-    o device e sobrevive a navegacao.
+<%# A Collection's play button. Like an Epic's, it does not instantiate the SDK:
+    it dispatches the queue to the global bar (shared/_player_bar), which holds
+    the device and survives navigation.
 
-    Antes esta partial tinha o proprio controller com um device separado — sair
-    da pagina matava o som, e dois devices disputavam a reproducao. %>
+    This partial used to carry its own controller with a separate device —
+    leaving the page killed the sound, and two devices fought over playback. %>
 
 <% if current_user&.spotify_account&.premium? && collection.collection_epics.any? %>
   <%
@@ -28,7 +28,7 @@
   </button>
 
 <% elsif current_user&.spotify_account&.premium? %>
-  <%# Sem Epics nao ha o que tocar; um botao morto so confundiria. %>
+  <%# With no Epics there is nothing to play; a dead button would only confuse. %>
 <% elsif current_user %>
   <p class="text-xs text-neutral-500">
     <em>Spotify Premium is required to play.</em>

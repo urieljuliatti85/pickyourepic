@@ -8,8 +8,8 @@ class HomeTest < ApplicationSystemTestCase
     assert_text "Three ideas"
   end
 
-  # A home logada era um beco sem saida: dizia "Signed in as" e oferecia
-  # apenas sair, sem nenhum caminho para as paginas do produto.
+  # The signed-in home was a dead end: it said "Signed in as" and offered only a
+  # way out, with no path to the product's pages.
   test "a signed in user can reach search and discover from the home page" do
     user = sign_in_as(create_signed_in_user(username: "uriel"))
     visit root_path
@@ -28,8 +28,8 @@ class HomeTest < ApplicationSystemTestCase
     user = sign_in_as(create_signed_in_user(username: "uriel"))
     visit discover_path
 
-    # O nav so era renderizado por tracks/index, entao o resto da app ficava
-    # sem navegacao nenhuma.
+    # The nav was only rendered by tracks/index, so the rest of the app had no
+    # navigation at all.
     click_link "Collections"
     assert_current_path collections_path
 

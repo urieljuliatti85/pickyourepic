@@ -52,7 +52,7 @@ class CollectionEpicSearchTest < ActionDispatch::IntegrationTest
     assert_match "Thunder", response.body
   end
 
-  # O limite que importa: a busca nao pode oferecer o que o save recusaria.
+  # The limit that matters: the search must not offer what the save would refuse.
   test "another user's private epic never appears" do
     epic_for(@other, title: "Segredo", visibility: :private)
 

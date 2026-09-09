@@ -43,7 +43,7 @@ class CollectionsTest < ApplicationSystemTestCase
     assert_text "Delete Me"
 
     click_link "Delete Me"
-    # O botao usa data-turbo-confirm, que abre um dialog nativo do browser.
+    # The button uses data-turbo-confirm, which opens a native browser dialog.
     accept_confirm { click_button "Delete" }
 
     assert_text "Collection deleted!"
@@ -84,7 +84,7 @@ class CollectionsTest < ApplicationSystemTestCase
     visit collection_path(collection)
     click_link "Search for an Epic"
 
-    # Busca pela banda: o Epic nao tem "queen" no titulo.
+    # Search by band: the Epic has no "queen" in its title.
     fill_in "q", with: "queen"
 
     assert_text "O solo"

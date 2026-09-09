@@ -29,8 +29,8 @@ class PicksTest < ApplicationSystemTestCase
     )
   end
 
-  # O ponto do turbo_stream: o botao troca sem a pagina recarregar. Marcamos o
-  # documento antes do clique; se a marca sobrevive, nao houve navegacao.
+  # The point of the turbo_stream: the button swaps without the page reloading. We
+  # mark the document before the click; if the mark survives, there was no navigation.
   test "Picking swaps the button without reloading the page" do
     visit epic_path(@public_epic)
     page.execute_script("window.__notReloaded = true")
@@ -61,7 +61,7 @@ class PicksTest < ApplicationSystemTestCase
 
     assert_text "Pick undone."
     assert_text(/0 Picks/i)
-    # Volta a oferecer o Pick, entao o usuario pode refazer.
+    # It offers Pick again, so the user can redo it.
     assert_button "Pick"
   end
 
@@ -70,8 +70,8 @@ class PicksTest < ApplicationSystemTestCase
     click_button "Pick"
 
     assert_text(/1 Pick/i)
-    # O nav tambem tem um link "@uriel", entao a busca e feita dentro da
-    # lista de pickers.
+    # The nav also has an "@uriel" link, so the lookup happens inside the
+    # pickers list.
     within("ul") { click_link "@#{@user.username}" }
 
     assert_current_path profile_path(@user)
@@ -90,8 +90,8 @@ class PicksTest < ApplicationSystemTestCase
   test "User cannot pick private epic" do
     visit epic_path(@private_epic)
 
-    # O Epic privado e de outro user, entao a pagina inteira e negada — mais
-    # forte do que apenas esconder o botao de Pick.
+    # The private Epic belongs to another user, so the whole page is denied —
+    # stronger than merely hiding the Pick button.
     assert_text "Epic not found."
     assert_no_button "Pick"
   end

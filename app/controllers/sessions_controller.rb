@@ -1,10 +1,10 @@
 class SessionsController < ApplicationController
-  # O callback chega do Spotify, um contexto externo: nao ha CSRF token nele.
-  # A protecao equivalente e o parametro `state`, validado abaixo.
+  # The callback arrives from Spotify, an external context: it carries no CSRF
+  # token. The equivalent protection is the `state` param, validated below.
   skip_forgery_protection only: :callback
 
-  # POST /auth/spotify — inicia o fluxo. E POST (e nao GET) para que um link
-  # de terceiro nao consiga disparar login.
+  # POST /auth/spotify — starts the flow. It is POST (not GET) so a third-party
+  # link cannot trigger a login.
   def create
     unless Spotify::Config.configured?
       return redirect_to(root_path, alert: "Spotify integration is not configured.")
@@ -25,7 +25,7 @@ class SessionsController < ApplicationController
       return redirect_to(root_path, alert: "Spotify authorization was cancelled.")
     end
 
-    # State ausente ou divergente => a requisicao nao veio do nosso fluxo.
+    # Missing or mismatched state => the request did not come from our flow.
     if expected_state.blank? || !ActiveSupport::SecurityUtils.secure_compare(params[:state].to_s, expected_state)
       return redirect_to(root_path, alert: "Sign in failed. Please try again.")
     end
@@ -50,10 +50,10 @@ class SessionsController < ApplicationController
 
   private
 
-  # O Spotify valida o redirect_uri por igualdade exata contra o que esta
-  # cadastrado no dashboard, e rejeita `localhost` (so aceita 127.0.0.1).
-  # Derivar do host da requisicao quebra o login de quem abre o app por
-  # localhost, entao em development fixamos o host cadastrado.
+  # Spotify matches redirect_uri by exact equality against what the dashboard
+  # holds, and rejects `localhost` (only 127.0.0.1 is accepted). Deriving it from
+  # the request host breaks sign-in for anyone opening the app on localhost, so
+  # in development we pin the registered host.
   def callback_url
     return auth_spotify_callback_url unless Rails.env.development?
 

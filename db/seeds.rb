@@ -1,26 +1,25 @@
-# Cenario de desenvolvimento: gente suficiente para o app fazer sentido.
+# A development scenario: enough people for the app to make sense.
 #
-# Sozinho no banco nao ha o que Pickar — nao se pica o proprio Epic
-# (CLAUDE.md § Authorization), entao um unico usuario nunca ve um botao de
-# Pick e a plataforma parece quebrada. Estes curadores existem para que o
-# Discover tenha Epics de outras pessoas, com Picks entre si para haver o que
-# ordenar.
+# Alone in the database there is nothing to Pick — you do not pick your own Epic
+# (CLAUDE.md § Authorization), so a single user never sees a Pick button and the
+# platform looks broken. These curators exist so that Discover holds other
+# people's Epics, with Picks between them to give it something to order by.
 #
-# Idempotente: `find_or_create_by!` em tudo, entao rodar de novo nao duplica.
+# Idempotent: `find_or_create_by!` throughout, so running again duplicates nothing.
 #
-# Producao fica de fora — sao pessoas inventadas, e o banco real ganha seus
-# usuarios pelo OAuth do Spotify, nao por seed.
+# Production is left out — these are invented people, and a real database gets its
+# users from the Spotify OAuth flow, not from a seed.
 if Rails.env.production?
-  puts "seeds: nada a fazer em producao."
+  puts "seeds: nothing to do in production."
 else
-  # As faixas: sem Spotify configurado nao ha busca, entao o seed traz os
-  # metadados prontos. Sao dados publicos de catalogo, nao audio
+  # The tracks: with no Spotify configured there is no search, so the seed brings
+  # the metadata ready. This is public catalogue data, not audio
   # (CLAUDE.md § Spotify policy constraints).
   #
-  # Os spotify_id sao REAIS, e precisam ser: o botao de play monta
-  # "spotify:track:#{spotify_id}" e entrega ao Web Playback SDK, entao um id
-  # inventado da um Epic que abre mas nao toca. Vieram da busca da propria
-  # app, com nome, duracao e capa como o Spotify os devolveu.
+  # The spotify_ids are REAL, and have to be: the play button builds
+  # "spotify:track:#{spotify_id}" and hands it to the Web Playback SDK, so an
+  # invented id gives an Epic that opens but will not play. They came from the
+  # app's own search, with the name, duration and artwork Spotify returned.
   tracks = [
     { spotify_id: "7MhEPacsDaXu33MGvT0WJ3", name: "Lake Bodom",
       artist_name: "Children Of Bodom", duration_ms: 241_800,
@@ -44,19 +43,19 @@ else
     index[attrs[:spotify_id]] = track
   end
 
-  # Um Epic por (user, track): e o que o indice unico permite.
+  # One Epic per (user, track): that is what the unique index allows.
   #
-  # Os intervalos cabem na duracao real de cada faixa: end_time > duration_ms
-  # nao passa da validacao do Epic (CLAUDE.md §4).
+  # The intervals fit inside each track's real duration: end_time > duration_ms
+  # does not pass the Epic validation (CLAUDE.md §4).
   epics = [
-    [ "mariana_riffs", "7MhEPacsDaXu33MGvT0WJ3", "O riff que abre tudo",      15_000,  45_000, :public ],
-    [ "mariana_riffs", "7vC957qXhk06DB5f90ei4s", "Essa batida no comeco",           0,  28_000, :public ],
-    [ "joao_drops",    "4xshDuSn1JrMLTRi19GKBh", "A virada ao vivo",          60_000, 102_000, :public ],
-    [ "joao_drops",    "6Ph8QwsRfZunN5e1GGBIqa", "O refrao inteiro",          52_000,  88_000, :public ],
-    [ "bia_curadora",  "7GtTrm75kT8YnuyxywPVWg", "O momento que arrepia",     88_000, 121_000, :public ],
-    # Um privado: so a dona o ve, e ele nao pode aparecer no Discover nem
-    # receber Pick — o caso que as guardas de visibilidade precisam exercitar.
-    [ "bia_curadora",  "7MhEPacsDaXu33MGvT0WJ3", "Anotacao pessoal",          30_000,  50_000, :private ]
+    [ "mariana_riffs", "7MhEPacsDaXu33MGvT0WJ3", "The riff that opens it all", 15_000,  45_000, :public ],
+    [ "mariana_riffs", "7vC957qXhk06DB5f90ei4s", "That beat right at the start", 0,  28_000, :public ],
+    [ "joao_drops",    "4xshDuSn1JrMLTRi19GKBh", "The live drum fill",          60_000, 102_000, :public ],
+    [ "joao_drops",    "6Ph8QwsRfZunN5e1GGBIqa", "The whole chorus",            52_000,  88_000, :public ],
+    [ "bia_curadora",  "7GtTrm75kT8YnuyxywPVWg", "The moment that gives chills", 88_000, 121_000, :public ],
+    # One private: only its owner sees it, and it can neither appear on Discover
+    # nor receive a Pick — the case the visibility guards need to exercise.
+    [ "bia_curadora",  "7MhEPacsDaXu33MGvT0WJ3", "Personal note",               30_000,  50_000, :private ]
   ].map do |username, track_id, title, start_time, end_time, visibility|
     user = User.find_or_create_by!(username: username)
 
@@ -68,8 +67,8 @@ else
     end
   end
 
-  # Picks cruzados, para o Discover ter o que ordenar: sem eles a home cai no
-  # desempate por data e a ordenacao por popularidade nao aparece.
+  # Crossed Picks, so Discover has something to order by: without them the page
+  # falls back on the date tiebreak and the popularity ordering never shows.
   curators = User.where(username: %w[mariana_riffs joao_drops bia_curadora]).index_by(&:username)
 
   [
@@ -80,18 +79,18 @@ else
     epic = epics[epic_index]
     picker = curators.fetch(username)
 
-    # As duas regras do model, respeitadas na origem para o seed nao depender
-    # de excecao: nada de Epic proprio, nada de Epic privado.
+    # The model's two rules, honored at the source so the seed does not lean on an
+    # exception: no own Epic, no private Epic.
     next if epic.user_id == picker.id || epic.visibility_private?
 
     Pick.find_or_create_by!(user: picker, epic: epic)
   end
 
-  # Uma Collection publica com Epics de mais de uma pessoa, que e o caso que a
-  # tela precisa cobrir: a de outra pessoa oferece Pick, a propria nao.
+  # A public Collection with Epics from more than one person, the case the screen
+  # needs to cover: someone else's offers a Pick, your own does not.
   collection = Collection.find_or_create_by!(user: curators.fetch("bia_curadora"),
-                                             title: "Aberturas que funcionam") do |c|
-    c.description = "Comecos que ja entregam a musica inteira."
+                                             title: "Openings that work") do |c|
+    c.description = "Openings that already give away the whole song."
     c.visibility = :public
   end
 
@@ -101,6 +100,6 @@ else
     end
   end
 
-  puts "seeds: #{User.count} usuarios, #{Epic.count} Epics, #{Pick.count} Picks, " \
+  puts "seeds: #{User.count} users, #{Epic.count} Epics, #{Pick.count} Picks, " \
        "#{Collection.count} Collections."
 end

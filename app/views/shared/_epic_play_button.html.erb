@@ -1,9 +1,9 @@
-<%# Botao de play de um Epic. Nao instancia o SDK: pede para a barra global
-    tocar (shared/_player_bar), que e quem detem o device.
+<%# An Epic's play button. It does not instantiate the SDK: it asks the global
+    bar to play (shared/_player_bar), which is what holds the device.
 
-    Para quem nao tem Premium a barra nao existe, entao aqui fica a explicacao
-    no lugar do botao — o SDK e a unica via de playback e exige Premium
-    (CLAUDE.md § Architecture — Playback). %>
+    For anyone without Premium the bar does not exist, so the explanation stands
+    here in the button's place — the SDK is the only playback route and it
+    requires Premium (CLAUDE.md § Architecture — Playback). %>
 <% if current_user&.spotify_account&.premium? %>
   <button type="button"
           class="inline-flex items-center gap-2 rounded-full bg-lime-accent px-4 py-2 text-sm font-semibold text-neutral-950 hover:bg-lime-bright"
@@ -22,10 +22,10 @@
     <em>Spotify Premium is required to play.</em>
   </p>
 <% else %>
-  <%# Deslogado nao e o mesmo caso que "sem Premium": a mensagem antiga
-      culpava a assinatura de quem nem tinha entrado, e a pagina ficava sem
-      saida. O SDK toca pela conta do proprio ouvinte, entao entrar e mesmo
-      um pre-requisito — mas agora ha o botao para isso. %>
+  <%# Signed out is not the same case as "no Premium": the old message
+      blamed the subscription of someone who had not even signed in, and the
+      page led nowhere. The SDK plays through the listener's own account, so
+      signing in really is a prerequisite — but now there is a button for it. %>
   <%= button_to "Sign in to listen", auth_spotify_path,
         form: { data: { turbo: false } },
         class: "inline-flex items-center gap-2 rounded-full bg-lime-accent px-4 py-2 text-sm font-semibold text-neutral-950 hover:bg-lime-bright" %>

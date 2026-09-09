@@ -14,8 +14,8 @@ class PicksController < ApplicationController
   end
 
   # DELETE /epics/:epic_id/pick
-  # Desfaz o Pick do usuario logado. So o proprio Pick e alcancavel: a busca
-  # parte de current_user, entao nao ha como remover o Pick de outra pessoa.
+  # Undoes the signed-in user's Pick. Only their own is reachable: the lookup
+  # starts from current_user, so nobody can remove someone else's Pick.
   def destroy
     pick = current_user.picks.find_by(epic: @epic)
 
@@ -33,12 +33,12 @@ class PicksController < ApplicationController
     @epic = Epic.find(params[:epic_id])
   end
 
-  # Turbo troca so o botao e a contagem; sem isso a pagina inteira recarregava
-  # e quem estava no meio de uma lista perdia a posicao. O redirect continua
-  # existindo para requisicao sem Turbo (e para os testes que o seguem).
+  # Turbo swaps only the button and the count; without it the whole page
+  # reloaded and anyone mid-list lost their position. The redirect stays for
+  # requests without Turbo (and for the tests that follow it).
   def respond_to_pick(**flash_options)
-    # A associacao foi carregada antes da mudanca; recarrega para a contagem e
-    # a lista refletirem o Pick que acabou de entrar ou sair.
+    # The association was loaded before the change; reload so the count and the
+    # list reflect the Pick that just came or went.
     @epic.picks.reset
     @picks = @epic.picks.includes(:user).order(created_at: :desc)
 

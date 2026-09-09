@@ -179,7 +179,7 @@ Both `Epic` and `Collection` use `enum :visibility, { public: 0, private: 1 }, p
 
 **Frontend.** Mobile-first Tailwind, server-rendered ERB with Turbo. Reach for Stimulus only where server-rendered HTML genuinely cannot do the job (currently: Web Playback SDK). No SPA. JavaScript is delivered via importmap — there is no bundler and no `node_modules`.
 
-**Language.** Code comments and product docs are written in Portuguese; identifiers, commit messages, and this file are in English. User-facing flash messages are currently mixed (English in `epics`/`sessions`, Portuguese in `collections`/`picks`) — match the surrounding file.
+**Language.** Everything in this repository is written in English: identifiers, code comments, user-facing copy (flash messages, buttons, empty states, aria-labels), product docs, commit messages, and this file. Copy lives inline in the views — there is no I18n locale file, so a string is changed where it is written, and adding one is the move if a second language is ever wanted.
 
 Comments explain *why*, not *what* — see `SpotifyAccount#fresh_access_token!` or `Track.upsert_from_spotify!` for the intended density.
 
