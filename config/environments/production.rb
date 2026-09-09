@@ -24,14 +24,17 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
-  # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  # config.assume_ssl = true
+  # O proxy do host termina o TLS e fala HTTP com a app; sem isto o Rails ve
+  # http:// e entra em loop de redirect. Importa para o OAuth: `callback_url` e
+  # montado a partir do que o Rails acha que e o esquema, e o redirect_uri
+  # precisa bater exatamente com o registrado no dashboard do Spotify.
+  config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  # config.force_ssl = true
+  config.force_ssl = true
 
-  # Skip http-to-https redirect for the default health check endpoint.
-  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
+  # O health check do host bate em /up por HTTP; o redirect o faria falhar.
+  config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
 
   # Log to STDOUT with the current request id as a default log tag.
   config.log_tags = [ :request_id ]

@@ -3,6 +3,10 @@
 # If running the rails server then create or migrate existing database
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   ./bin/rails db:prepare
+  # db:prepare so carrega o schema de um banco que ainda nao existe, e em
+  # producao os quatro configs compartilham um DATABASE_URL — o primario cria
+  # o banco e cache/queue/cable ficam sem tabela nenhuma. Ver a rake task.
+  ./bin/rails db:load_solid_schemas
 fi
 
 exec "${@}"

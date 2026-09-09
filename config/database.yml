@@ -88,21 +88,20 @@ test:
 # Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
 # for a full overview on how database connection configuration can be specified.
 #
+# O host de producao entrega um unico DATABASE_URL. Rails so o aplica sozinho
+# na conexao primaria, entao cache/queue/cable apontam para ele explicitamente:
+# os quatro compartilham o mesmo banco, separados pelos prefixos de tabela que
+# cada schema (db/cache_schema.rb e companhia) ja define.
 production:
   primary: &primary_production
     <<: *default
-    database: pickyourepic_production
-    username: pickyourepic
-    password: <%= ENV["PICKYOUREPIC_DATABASE_PASSWORD"] %>
+    url: <%= ENV["DATABASE_URL"] %>
   cache:
     <<: *primary_production
-    database: pickyourepic_production_cache
-    migrations_paths: db/cache_migrate
+    schema_dump: cache_schema.rb
   queue:
     <<: *primary_production
-    database: pickyourepic_production_queue
-    migrations_paths: db/queue_migrate
+    schema_dump: queue_schema.rb
   cable:
     <<: *primary_production
-    database: pickyourepic_production_cable
-    migrations_paths: db/cable_migrate
+    schema_dump: cable_schema.rb
