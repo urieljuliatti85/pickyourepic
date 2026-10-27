@@ -66,7 +66,7 @@ group :test do
 end
 
 # Spotify OAuth
-gem "omniauth", "~> 2.1"
+gem "omniauth", "~> 2.3"
 gem "omniauth-oauth2", "~> 1.8"
 gem "omniauth-rails_csrf_protection", "~> 2.0"
 
